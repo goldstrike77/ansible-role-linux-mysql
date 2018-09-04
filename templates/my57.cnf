@@ -1,0 +1,139 @@
+[mysql]
+# CLIENT #
+[client]
+port                                   = 3306
+socket                                 = {{ mysql_path }}/mysql/mysql.sock
+
+[mysqld_safe]
+# GENERAL #
+malloc-lib                             = /usr/lib64/libjemalloc.so.1
+thp-setting                            = never
+
+[mysqld]
+# PERFORMANCE #
+#performance-schema-instrument          = 'memory/%=ON' # https://jira.percona.com/browse/PS-3734
+performance_schema                     = 0
+userstat                               = 1
+thread_statistics                      = 1
+query_response_time_stats              = 1
+
+# GENERAL #
+server_id                              = {{ 4294967295 | random }}
+user                                   = mysql
+default_storage_engine                 = InnoDB
+character_set_server                   = utf8
+socket                                 = {{ mysql_path }}/mysql/mysql.sock
+explicit_defaults_for_timestamp        = 1
+log_timestamps                         = SYSTEM
+bind-address                           = 0.0.0.0
+ignore-db-dir                          = binlog
+ignore-db-dir                          = logs
+ignore-db-dir                          = innodb
+ignore-db-dir                          = mysqlsla_analyzes
+sql_mode                               = ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION,NO_ZERO_DATE,NO_ZERO_IN_DATE,STRICT_ALL_TABLES,STRICT_TRANS_TABLES
+
+# MyISAM #
+key_buffer_size                        = 32M
+myisam-recover-options                 = FORCE,BACKUP
+
+# SAFETY #
+skip_ssl
+core-file
+skip-name-resolve
+local-infile                           = 0
+default_password_lifetime              = 0
+log-raw                                = OFF
+max_prepared_stmt_count                = 65536
+max_allowed_packet                     = 16M
+max_connect_errors                     = 100
+
+# DATA STORAGE #
+datadir                                = {{ mysql_path }}/mysql
+
+# BINARY LOGGING #
+log_bin                                = {{ mysql_path }}/mysql/binlog/mysql_bin
+binlog_cache_size                      = 1M
+binlog_stmt_cache_size                 = 1048576
+binlog_format                          = MIXED
+expire_logs_days                       = 15
+sync_binlog                            = 100
+
+# CACHES AND LIMITS #
+connect_timeout                        = 10
+wait_timeout                           = 3600
+interactive_timeout                    = 3600
+tmp_table_size                         = 32M
+max_heap_table_size                    = 32M
+join_buffer_size                       = 2M
+read_rnd_buffer_size                   = 2M
+query_cache_type                       = 0
+query_cache_size                       = 0
+{% if ansible_memtotal_mb > 4096 and ansible_memtotal_mb <= 8192 %}
+max-connections                        = 210
+{% elif ansible_memtotal_mb > 8192 and ansible_memtotal_mb <= 16384 %}
+max-connections                        = 310
+{% elif ansible_memtotal_mb > 16384 and ansible_memtotal_mb <= 32768 %}
+max-connections                        = 510
+{% elif ansible_memtotal_mb > 32768 %}
+max-connections                        = 610
+{% else %}
+max-connections                        = 50
+{% endif %}
+thread_cache_size                      = 50
+thread_handling                        = pool-of-threads
+thread_pool_max_threads                = 1000
+thread_pool_oversubscribe              = 10
+open_files_limit                       = 65535
+performance_schema_max_table_instances = 512
+table_definition_cache                 = 4096
+table_open_cache                       = 4096
+
+# INNODB #
+innodb_data_home_dir                   = {{ mysql_path }}/mysql/innodb
+innodb_flush_method                    = O_DIRECT
+innodb_buffer_pool_instances           = 8
+innodb_purge_threads                   = 4
+innodb_page_cleaners                   = 4
+innodb_log_group_home_dir              = {{ mysql_path }}/mysql/innodb
+innodb_log_files_in_group              = 2
+innodb_log_file_size                   = 4G
+innodb_log_buffer_size                 = 16M
+innodb_max_dirty_pages_pct             = 85
+innodb_flush_log_at_trx_commit         = 2
+{% if ansible_memtotal_mb <= 8192 %}
+innodb_buffer_pool_size                = {{ (ansible_memtotal_mb * 0.585)|int * 1024 * 1024 }}
+{% else %}
+innodb_buffer_pool_size                = {{ (ansible_memtotal_mb * 0.625)|int * 1024 * 1024 }}
+{% endif %}
+innodb_read_io_threads                 = 4
+innodb_write_io_threads                = 4
+innodb_doublewrite                     = 1
+innodb_data_file_path                  = ibdata1:256M;ibdata2:256M:autoextend
+innodb_temp_data_file_path             = ibtemp1:128M;ibtemp2:128M:autoextend:max:1G
+innodb_file_per_table                  = 1
+innodb_autoinc_lock_mode               = 2
+innodb_buffer_pool_dump_at_shutdown    = 1
+innodb_buffer_pool_dump_now            = 1
+innodb_buffer_pool_load_at_startup     = 1
+innodb_buffer_pool_load_now 	       = 1
+innodb_buffer_pool_dump_pct            = 100
+innodb_undo_directory                  = {{ mysql_path }}/mysql/innodb/undolog
+innodb_undo_tablespaces                = 64
+innodb_max_undo_log_size               = 1G
+innodb_undo_log_truncate               = 1
+
+# LOGGING #
+log_error                              = {{ mysql_path }}/mysql/logs/mysql_error.log
+log_queries_not_using_indexes          = 1
+slow_query_log                         = 1
+slow_query_log_file                    = {{ mysql_path }}/mysql/logs/mysql_slow.log
+long_query_time                        = 1
+log_syslog                             = ON
+audit_log_handler                      = SYSLOG
+audit_log_format                       = CSV
+audit_log_policy                       = QUERIES
+audit_log_syslog_ident                 = mysqld
+audit_log_include_commands             = "delete,delete_multi,truncate,drop_db,drop_event,drop_function,drop_index,drop_procedure,drop_table,drop_trigger,drop_user,drop_view,alter_db,alter_event,alter_function,alter_procedure,alter_table,alter_user,rename_table,rename_user,create_trigger,grant,shutdown,create_user,revoke,revoke_all,kill"
+
+# PLUGIN #
+plugin-load                            = "audit_log=audit_log.so;QUERY_RESPONSE_TIME=query_response_time.so;QUERY_RESPONSE_TIME_AUDIT=query_response_time.so;QUERY_RESPONSE_TIME_READ=query_response_time.so;QUERY_RESPONSE_TIME_WRITE=query_response_time.so"

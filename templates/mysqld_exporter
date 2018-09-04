@@ -1,0 +1,1 @@
+OPTIONS='-log.format="logger:syslog?appname=mysqld_exporter&local=7" -config.my-cnf=/etc/prometheus.cnf -collect.{{ "=true -collect.".join(vars["mysqld_exporter_collector"]) }}=true'

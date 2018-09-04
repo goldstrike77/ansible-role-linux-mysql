@@ -1,0 +1,13 @@
+---
+mysql_repo_name: "percona"
+mysql_repo_url: "http://repo.percona.com/release/{{ansible_distribution_version.split('.')[0]}}/RPMS/{{ansible_architecture}}"
+disable_gpg_check: yes
+
+mysql_packages:
+  - 'Percona-Server-server-{{ mysql_version }}'
+  - 'percona-xtrabackup-24'
+  - 'percona-toolkit'
+  - 'pmm-client'
+  - 'qpress'
+  - 'jemalloc'
+  - 'MySQL-python'

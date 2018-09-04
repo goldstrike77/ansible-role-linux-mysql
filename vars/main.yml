@@ -1,0 +1,43 @@
+---
+mysql_folder:
+  - '{{ mysql_path }}/mysql/logs'
+  - '{{ mysql_path }}/mysql/innodb'
+  - '{{ mysql_path }}/mysql/binlog'
+  - '{{ mysql_path }}/mysql/mysqlsla_analyzes'
+  - '{{ mysql_path }}/backup'
+
+mysql_kernel_parameters:
+  - { variable: 'fs.aio-max-nr', value: '1048576' }
+  - { variable: 'vm.dirty_ratio', value: '80' }
+  - { variable: 'vm.dirty_background_ratio', value: '5' }
+  - { variable: 'vm.swappiness', value: '10' }
+
+mysql_conf_scripts:
+  - { src: 'my{{ mysql_version }}.cnf', dest: '/etc/my.cnf' }
+  - { src: 'mysql-log-rotate', dest: '{{ mysql_path }}/mysql/mysql-log-rotate' }
+  - { src: 'innobackupex-runner.sh', dest: '/usr/local/bin/innobackupex-runner.sh' }
+  - { src: 'mysqlsla_analyzes.sh', dest: '/usr/local/bin/mysqlsla_analyzes.sh' }
+  - { src: 'mysql', dest: '/etc/sysconfig/mysql' }
+
+mysql_service_parameter:
+  - { regexp: '^LimitMEMLOCK', line: 'LimitMEMLOCK = infinity' }
+  - { regexp: '^LimitCORE', line: 'LimitCORE = infinity' }
+  - { regexp: '^LimitNPROC', line: 'LimitNPROC = 65535' }
+  - { regexp: '^LimitNOFILE', line: 'LimitNOFILE = 65535' }
+
+mysqld_exporter_collector:
+  - 'auto_increment.columns'
+  - 'binlog_size'
+  - 'engine_innodb_status'
+  - 'info_schema.clientstats'
+  - 'info_schema.innodb_metrics'
+  - 'info_schema.processlist'
+  - 'info_schema.query_response_time'
+  - 'info_schema.tablestats'
+  - 'info_schema.userstats'
+  - 'perf_schema.eventsstatements'
+  - 'perf_schema.eventswaits'
+  - 'perf_schema.file_events'
+  - 'perf_schema.indexiowaits'
+  - 'perf_schema.tableiowaits'
+  - 'perf_schema.tablelocks'

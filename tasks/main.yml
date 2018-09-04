@@ -1,0 +1,159 @@
+---
+- name: Include OS-specific variables
+  include_vars: '{{ ansible_os_family }}.yml'
+
+- name: Include tasks for specific OS
+  include: '{{ ansible_os_family }}.yml'
+
+- name: Check if unused configure file exists
+  stat: 
+    path: '{{ item }}'
+  with_items:
+    - '/etc/logrotate.d/mysql'
+  register: result
+
+- name: Remove unused configure file
+  file:
+    path: '{{ item }}'
+    state: absent
+  with_items:
+    - '/etc/logrotate.d/mysql'
+  when: result.results[0].stat.exists
+
+- name: Creating MySQL folder
+  file:
+    dest: '{{ item }}'
+    state: directory
+    owner: mysql
+    group: mysql
+    mode: 0755
+  with_items:
+    - '{{ mysql_folder }}'
+
+- name: Configure kernel parameters
+  sysctl:
+    name: '{{ item.variable }}'
+    value: '{{ item.value }}'
+    state: present
+    reload: yes
+    sysctl_set: yes
+    sysctl_file: /etc/sysctl.d/20-sysctl.conf
+  with_items:
+    - '{{ mysql_kernel_parameters }}'
+
+- name: Ensure the instance is not configured
+  shell: grep audit_log_syslog_ident /etc/my.cnf
+  register: result
+  check_mode: no
+  ignore_errors: yes
+  changed_when: no
+
+- name: MySQL Configure & Scripts file transfer
+  template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: mysql
+    group: mysql
+    mode: 0664
+  with_items:
+    - '{{ mysql_conf_scripts }}'
+  when:
+    - result.rc == 1
+
+- name: Check if MySQL tablespace exists
+  stat:
+    path: '{{ item }}'
+  with_items:
+    - '{{ mysql_path }}/mysql/mysql/db.MYD'
+  register: result
+
+- name: Initializes the MySQL 5.7 system tables
+  shell: '/usr/sbin/mysqld --defaults-file=/etc/my.cnf --datadir={{ mysql_path }}/mysql --user=mysql --explicit_defaults_for_timestamp --initialize-insecure --ignore-db-dir=prometheus.cnf --ignore-db-dir=mysql-log-rotate'
+  when: 
+    - mysql_version == '57'
+    - not result.results[0].stat.exists
+  register: result
+
+- name: Changing Limits for MySQL services
+  lineinfile:
+    state: present
+    dest: '/lib/systemd/system/mysqld.service'
+    insertafter: '^\[Service\]'
+    regexp: '{{ item.regexp }}'
+    line: '{{ item.line }}'
+  with_items:
+    - '{{ mysql_service_parameter }}'
+  when:
+    - result|changed
+
+- name: Ensure MySQL service is enabled
+  systemd:
+    name: '{{ item }}'
+    enabled: yes
+    state: started
+    daemon_reload: yes
+  with_items:
+    - 'mysqld.service'
+  when:
+    - ansible_distribution_major_version|int > 6
+    - result|changed
+
+- name: Create user prometheus with privileges
+  mysql_user:
+    login_user: 'root'
+    login_password: ''
+    login_unix_socket: '{{ mysql_path }}/mysql/mysql.sock'
+    name: 'prometheus'
+    password: '{{ mysqld_exporter_user_passwd }}'
+    host: '127.0.0.1'
+    priv: '*.*:PROCESS,REPLICATION CLIENT,SELECT'
+    state: present
+  when: 
+    - result|changed
+
+- name: Modify root password
+  mysql_user:
+    login_user: 'root'
+    login_password: ''
+    login_unix_socket: '{{ mysql_path }}/mysql/mysql.sock'
+    name: 'root'
+    host: '{{ item }}'
+    password: '{{ db_sa_pass }}'
+    priv: '*.*:ALL,GRANT'
+    state: present
+  with_items:
+    - '127.0.0.1'
+    - 'localhost'
+  when:
+    - result|changed
+  no_log: true
+
+- name : MySQL backup job
+  cron:
+    user: mysql
+    name: 'MySQL backup'
+    minute: "{{ ( inventory_hostname | hash | list | map('int',0,16) | sum ) % 60 }}"
+    hour: "{{ (( inventory_hostname | hash | list | map('int',0,16) | sum ) % 2) + 1 }}"
+    job: '/bin/sh /usr/local/bin/innobackupex-runner.sh'
+  when:
+    - result|changed
+
+- name: MySQL slow query log analyzes job
+  cron:
+    user: mysql
+    name: 'MySQL slow query log analyze'
+    minute: "{{ ( inventory_hostname | hash | list | map('int',0,16) | sum ) % 60 }}"
+    hour: '0'
+    job: '/bin/sh /usr/local/bin/mysqlsla_analyzes.sh'
+  when:
+    - result|changed
+
+- include: 'mysqld_exporter.yml'
+
+- name: Ensure MTA service is enabled
+  systemd:
+    name: 'postfix.service'
+    enabled: 'yes'
+    state: 'started'
+  when:
+    - ansible_distribution_major_version|int > 6

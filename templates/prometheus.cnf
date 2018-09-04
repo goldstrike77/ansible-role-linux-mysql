@@ -1,0 +1,3 @@
+[client]
+user=prometheus
+password={{ mysqld_exporter_user_passwd }}

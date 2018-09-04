@@ -1,0 +1,38 @@
+---
+- name: Prometheus configure file transfer
+  template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: 'root'
+    group: 'root'
+    mode: 0755
+  with_items:
+    - { src: 'prometheus.cnf', dest: '/etc/' }
+    - { src: 'mysqld_exporter.service', dest: '/lib/systemd/system/' }
+    - { src: 'mysqld_exporter', dest: '/etc/default/' }    
+  register: result
+
+- name: Ensure Prometheus service is enabled
+  systemd:
+    name: 'mysqld_exporter.service'
+    enabled: 'yes'
+    state: 'started'
+    daemon_reload: yes
+  when:
+    - result.changed
+
+- name: Ensure Prometheus firewall port is allow
+  when: 
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version|int > 6
+  firewalld:
+    port: '{{ mysql_exporter_port }}'
+    permanent: 'true'
+    state: 'enabled'
+  register: result
+
+- name: Reload firewalld service
+  when: result.changed
+  service:
+    name: firewalld
+    state: reloaded
