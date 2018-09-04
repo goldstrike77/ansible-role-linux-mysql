@@ -5,7 +5,7 @@
     dest: '{{ item.dest }}'
     owner: 'root'
     group: 'root'
-    mode: 0755
+    mode: 0644
   with_items:
     - { src: 'prometheus.cnf', dest: '/etc/' }
     - { src: 'mysqld_exporter.service', dest: '/lib/systemd/system/' }

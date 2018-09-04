@@ -5,11 +5,14 @@
     description: '{{ mysql_repo_name }} YUM repository'
     file: '{{ mysql_repo_name }}'
     baseurl: '{{ mysql_repo_url }}'
+    gpgcheck: no
 
 - name: Install the MySQL packages
   yum:
-    name: '{{ ",".join(vars["mysql_packages"]) }}'
-    state: present
+    name: '{{ item }}'
+    state: 'present'
+  with_items:
+    - '{{ mysql_packages }}'
 
 - name: Ensure MySQL firewall port is allow
   firewalld:
