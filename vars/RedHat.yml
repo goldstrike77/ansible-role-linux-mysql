@@ -7,7 +7,12 @@ mysql_packages:
   - 'Percona-Server-server-{{ mysql_version }}'
   - 'percona-xtrabackup-24'
   - 'percona-toolkit'
-  - 'pmm-client'
+#  - 'pmm-client'
   - 'qpress'
   - 'jemalloc'
   - 'MySQL-python'
+
+mysqld_exporter_repo_name: "prometheus-rpm_release"
+mysqld_exporter_repo_url: "http://cache.omygods.com/prometheus-rpm/release/el/{{ansible_distribution_version.split('.')[0]}}/$basearch"
+mysqld_exporter_packages:
+  - 'mysqld_exporter'

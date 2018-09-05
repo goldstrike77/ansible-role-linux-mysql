@@ -1,5 +1,20 @@
 ---
-- name: Prometheus configure file transfer
+- name: Add mysqld_exporter YUM repositories
+  yum_repository:
+    name: '{{ mysqld_exporter_repo_name }}'
+    description: '{{ mysqld_exporter_repo_name }} YUM repository'
+    file: '{{ mysqld_exporter_repo_name }}'
+    baseurl: '{{ mysqld_exporter_repo_url }}'
+    gpgcheck: no
+
+- name: Install the mysqld_exporter packages
+  yum:
+    name: '{{ item }}'
+    state: 'present'
+  with_items:
+    - '{{ mysqld_exporter_packages }}'
+
+- name: mysqld_exporter configure file transfer
   template:
     src: '{{ item.src }}'
     dest: '{{ item.dest }}'
@@ -8,11 +23,10 @@
     mode: 0644
   with_items:
     - { src: 'prometheus.cnf', dest: '/etc/' }
-    - { src: 'mysqld_exporter.service', dest: '/lib/systemd/system/' }
     - { src: 'mysqld_exporter', dest: '/etc/default/' }    
   register: result
 
-- name: Ensure Prometheus service is enabled
+- name: mysqld_exporter service is enabled
   systemd:
     name: 'mysqld_exporter.service'
     enabled: 'yes'
