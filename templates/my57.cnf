@@ -38,7 +38,7 @@ sql_mode                               = {{ ','.join(vars['mysql_sql_mode']) }}
 key_buffer_size                        = {{ (ansible_memtotal_mb * 0.4)|int }}M
 {% else %}
 key_buffer_size                        = 32M
-{% else %}
+{% endif %}
 myisam-recover-options                 = FORCE,BACKUP
 
 # SAFETY #
@@ -144,7 +144,7 @@ audit_log_handler                      = SYSLOG
 audit_log_format                       = CSV
 audit_log_policy                       = QUERIES
 audit_log_syslog_ident                 = mysqld
-audit_log_include_commands             = "{{ mysql_audit_log_commands }}"
+audit_log_include_commands             = "{{ ','.join(vars['mysql_audit_log_commands']) }}"
 
 # PLUGIN #
-plugin-load                            = "{{ ','.join(vars['mysql_audit_log_commands']) }}"
+plugin-load                            = "audit_log=audit_log.so;QUERY_RESPONSE_TIME=query_response_time.so;QUERY_RESPONSE_TIME_AUDIT=query_response_time.so;QUERY_RESPONSE_TIME_READ=query_response_time.so;QUERY_RESPONSE_TIME_WRITE=query_response_time.so"
