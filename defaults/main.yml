@@ -7,13 +7,21 @@ mysql_xtrabackup_encryptkey: 'XXXXXXXXXXXXX' # Percona XtraBackup encryption key
 mysql_path: '/data' # Specify the MySQL data directory
 mysql_character_set: 'utf8' # Server's default character set
 mysql_storage_engine: 'InnoDB' # Preferred storage engine, InnoDB or MyISAM
-mysql_connect_timeout: '10' # Specify the number of seconds that the server waits for a connect packet
-mysql_wait_timeout: '3600' # Specify the number of seconds the server waits for activity on a noninteractive connection
-mysql_interactive_timeout: '3600' # Specify the number of seconds the server waits for activity on an interactive connection
-mysql_join_buffer_size: '2M' # Specify size of the buffer that is used for index scans
-mysql_read_rnd_buffer_size: '2M' # Specify size of the buffer that is used for reading rows in sorted order
-mysql_query_cache_type: '0' # Specify the query cache type
-mysql_query_cache_size: '0' # Specify the query cache size
+mysql_connect_timeout: '10' # Server waits for a connect packet in seconds
+mysql_wait_timeout: '3600' # Server waits for activity on a noninteractive connection in seconds
+mysql_interactive_timeout: '3600' # Server waits for activity on an interactive connection in seconds
+mysql_join_buffer_size: '2M' # Size of the buffer that is used for index scans
+mysql_read_rnd_buffer_size: '2M' # Size of the buffer that is used for reading rows in sorted order
+mysql_max_allowed_packet: '16M' # The maximum size of one packet
+mysql_tmp_table_size: '32M' # The maximum size of internal in-memory temporary tables
+mysql_max_heap_table_size: '32M' # The maximum size to which user-created MEMORY tables are permitted to grow
+mysql_query_cache_type: '0' # Query cache type
+mysql_query_cache_size: '0' # Query cache size
+mysql_table_definition_cache: '4096' # The number of table definitions that can be stored in the definition cache
+mysql_table_open_cache: '4096' # The number of open tables for all threads
+mysql_open_files_limit: '65535' # The number of files that the operating system permits MySQL to open
+mysql_fullbackup_life: '604800' # Lifetime of the latest full backup in seconds
+mysql_fullbackup_keep: '2' # The number of full backups (and its incrementals) to keep
 mysql_port: '3306' #  MySQL instance listen port
 mysql_exporter_port: '9104' # Prometheus exporter listen port
 mysql_sql_mode: # Specify value the global SQL mode

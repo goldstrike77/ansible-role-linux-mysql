@@ -5,11 +5,6 @@
 #
 # Every time it runs will generate an incremental backup except for the first time (full backup).
 # FULLBACKUPLIFE variable will define your full backups schedule.
-#
-# (C)2010 Owen Carter @ Mirabeau BV
-# This script is provided as-is; no liability can be accepted for use.
-# You are free to modify and reproduce so long as this attribution is preserved.
-#
 
 CAT=/bin/cat
 FORMAIL=/usr/bin/formail
@@ -27,9 +22,9 @@ XBCRYPT=/usr/bin/xbcrypt
 BACKUPDIR=/data/backup # Backups base directory
 FULLBACKUPDIR=$BACKUPDIR/full # Full backups directory
 INCRBACKUPDIR=$BACKUPDIR/incr # Incremental backups directory
-FULLBACKUPLIFE=604800 # Lifetime of the latest full backup in seconds
+FULLBACKUPLIFE={{ mysql_fullbackup_life }} # Lifetime of the latest full backup in seconds
 UMASK=755
-KEEP=2 # Number of full backups (and its incrementals) to keep
+KEEP={{ mysql_fullbackup_keep }} # Number of full backups (and its incrementals) to keep
 THREADS={{ ansible_processor_vcpus }}
 ENCRYPT=AES256
 ENCRYPTKEY="{{ mysql_xtrabackup_encryptkey }}"
