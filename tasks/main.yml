@@ -60,12 +60,12 @@
   with_items:
     - '{{ mysql_kernel_parameters }}'
 
-- name: Ensure the instance is not configured
-  shell: grep audit_log_syslog_ident /etc/my.cnf
+- name: Check if MySQL tablespace exists
+  stat:
+    path: '{{ item }}'
+  with_items:
+    - '{{ mysql_path }}/mysql/mysql/db.MYD'
   register: result
-  check_mode: no
-  ignore_errors: yes
-  changed_when: no
 
 - name: MySQL Configure & Scripts file transfer
   template:
@@ -77,14 +77,7 @@
   with_items:
     - '{{ mysql_conf_scripts }}'
   when:
-    - result.rc == 1
-
-- name: Check if MySQL tablespace exists
-  stat:
-    path: '{{ item }}'
-  with_items:
-    - '{{ mysql_path }}/mysql/mysql/db.MYD'
-  register: result
+    - not result.results[0].stat.exists
 
 - name: Initializes the MySQL 5.7 system tables
   shell: '/usr/sbin/mysqld --defaults-file=/etc/my.cnf --datadir={{ mysql_path }}/mysql --user=mysql --explicit_defaults_for_timestamp --initialize-insecure --ignore-db-dir=prometheus.cnf --ignore-db-dir=mysql-log-rotate'
