@@ -64,15 +64,15 @@ expire_logs_days                       = 15
 sync_binlog                            = 100
 
 # CACHES AND LIMITS #
-connect_timeout                        = 10
-wait_timeout                           = 3600
-interactive_timeout                    = 3600
+connect_timeout                        = {{ mysql_connect_timeout }}
+wait_timeout                           = {{ mysql_wait_timeout }}
+interactive_timeout                    = {{ mysql_interactive_timeout }}
 tmp_table_size                         = 32M
 max_heap_table_size                    = 32M
-join_buffer_size                       = 2M
-read_rnd_buffer_size                   = 2M
-query_cache_type                       = 0
-query_cache_size                       = 0
+join_buffer_size                       = {{ mysql_join_buffer_size }}
+read_rnd_buffer_size                   = {{ mysql_read_rnd_buffer_size }}
+query_cache_type                       = {{ mysql_query_cache_type }}
+query_cache_size                       = {{ mysql_query_cache_size }}
 {% if ansible_memtotal_mb > 4096 and ansible_memtotal_mb <= 8192 %}
 max-connections                        = 210
 {% elif ansible_memtotal_mb > 8192 and ansible_memtotal_mb <= 16384 %}

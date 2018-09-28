@@ -7,6 +7,13 @@ mysql_xtrabackup_encryptkey: 'XXXXXXXXXXXXX' # Percona XtraBackup encryption key
 mysql_path: '/data' # Specify the MySQL data directory
 mysql_character_set: 'utf8' # Server's default character set
 mysql_storage_engine: 'InnoDB' # Preferred storage engine, InnoDB or MyISAM
+mysql_connect_timeout: '10' # Specify the number of seconds that the server waits for a connect packet
+mysql_wait_timeout: '3600' # Specify the number of seconds the server waits for activity on a noninteractive connection
+mysql_interactive_timeout: '3600' # Specify the number of seconds the server waits for activity on an interactive connection
+mysql_join_buffer_size: '2M' # Specify size of the buffer that is used for index scans
+mysql_read_rnd_buffer_size: '2M' # Specify size of the buffer that is used for reading rows in sorted order
+mysql_query_cache_type: '0' # Specify the query cache type
+mysql_query_cache_size: '0' # Specify the query cache size
 mysql_port: '3306' #  MySQL instance listen port
 mysql_exporter_port: '9104' # Prometheus exporter listen port
 mysql_sql_mode: # Specify value the global SQL mode
