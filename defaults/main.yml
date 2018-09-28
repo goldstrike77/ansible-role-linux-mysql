@@ -1,9 +1,47 @@
 ---
-#mysql_version: '57'
-mysql_mailto: 'somebody@example.com'
-db_sa_pass: 'password'
-mysqld_exporter_user_passwd: 'password'
-mysql_xtrabackup_encryptkey: 'XXXXXXXXXXXXX'
-mysql_path: '/data'
-mysql_port: '3306/tcp'
-mysql_exporter_port: '9104/tcp'
+#mysql_version: '57' # Specify the MySQL version
+mysql_mailto: 'somebody@example.com' # MySQL report mail recipient
+db_sa_pass: 'password' # MySQL root account password
+mysqld_exporter_user_passwd: 'password' # Prometheus exporter account password
+mysql_xtrabackup_encryptkey: 'XXXXXXXXXXXXX' # Percona XtraBackup encryption key
+mysql_path: '/data' # Specify the MySQL data directory
+mysql_character_set: 'utf8' # Server's default character set
+mysql_storage_engine: 'InnoDB' # Preferred storage engine, InnoDB or MyISAM
+mysql_port: '3306' #  MySQL instance listen port
+mysql_exporter_port: '9104' # Prometheus exporter listen port
+mysql_sql_mode: # Specify value the global SQL mode
+  - 'ERROR_FOR_DIVISION_BY_ZERO'
+  - 'NO_AUTO_CREATE_USER'
+  - 'NO_ENGINE_SUBSTITUTION'
+  - 'NO_ZERO_DATE'
+  - 'NO_ZERO_IN_DATE'
+  - 'STRICT_ALL_TABLES'
+  - 'STRICT_TRANS_TABLES'
+mysql_audit_log_commands: # Filtering command for audit process
+  - 'alter_db'
+  - 'alter_event'
+  - 'alter_function'
+  - 'alter_procedure'
+  - 'alter_table'
+  - 'alter_user'
+  - 'create_trigger'
+  - 'create_user'
+  - 'delete'
+  - 'delete_multi'
+  - 'drop_db'
+  - 'drop_event'
+  - 'drop_function'
+  - 'drop_index'
+  - 'drop_procedure'
+  - 'drop_table'
+  - 'drop_trigger'
+  - 'drop_user'
+  - 'drop_view'
+  - 'grant'
+  - 'kill'
+  - 'rename_table'
+  - 'rename_user'
+  - 'revoke'
+  - 'revoke_all'
+  - 'shutdown'
+  - 'truncate'

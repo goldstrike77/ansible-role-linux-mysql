@@ -1,0 +1,8 @@
+---
+- name: MySQL slow query log analyzes job
+  cron:
+    user: mysql
+    name: 'MySQL slow query log analyze'
+    minute: "{{ ( inventory_hostname | hash | list | map('int',0,16) | sum ) % 60 }}"
+    hour: '0'
+    job: '/bin/sh /usr/local/bin/mysqlsla_analyzes.sh'

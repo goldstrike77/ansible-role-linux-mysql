@@ -5,6 +5,25 @@
 - name: Include tasks for specific OS
   include: '{{ ansible_os_family }}.yml'
 
+- name: Ensure MySQL firewall port is allow
+  firewalld:
+    port: '{{ item }}'
+    permanent: 'true'
+    state: 'enabled'
+  with_items:
+    - '{{ mysql_port }}/tcp'
+  when:
+    - ansible_distribution_major_version|int > 6
+  register: result
+
+- name: Reload firewalld service
+  service:
+    name: firewalld
+    state: reloaded
+  when:
+    - result|changed
+    - ansible_distribution_major_version|int > 6
+
 - name: Check if unused configure file exists
   stat: 
     path: '{{ item }}'
@@ -128,27 +147,18 @@
     - result|changed
   no_log: true
 
-- name : MySQL backup job
-  cron:
-    user: mysql
-    name: 'MySQL backup'
-    minute: "{{ ( inventory_hostname | hash | list | map('int',0,16) | sum ) % 60 }}"
-    hour: "{{ (( inventory_hostname | hash | list | map('int',0,16) | sum ) % 2) + 1 }}"
-    job: '/bin/sh /usr/local/bin/innobackupex-runner.sh'
+- name: Include query analyzes tasks
+  include: 'analyzes.yml'
   when:
     - result|changed
 
-- name: MySQL slow query log analyzes job
-  cron:
-    user: mysql
-    name: 'MySQL slow query log analyze'
-    minute: "{{ ( inventory_hostname | hash | list | map('int',0,16) | sum ) % 60 }}"
-    hour: '0'
-    job: '/bin/sh /usr/local/bin/mysqlsla_analyzes.sh'
+- name: Include backup tasks
+  include: 'backup.yml'
   when:
     - result|changed
 
-- include: 'mysqld_exporter.yml'
+- name: Include prometheus exporter tasks
+  include: 'mysqld_exporter.yml'
 
 - name: Ensure MTA service is enabled
   systemd:

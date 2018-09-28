@@ -40,7 +40,7 @@
     - ansible_os_family == "RedHat"
     - ansible_distribution_major_version|int > 6
   firewalld:
-    port: '{{ mysql_exporter_port }}'
+    port: '{{ mysql_exporter_port }}/tcp'
     permanent: 'true'
     state: 'enabled'
   register: result

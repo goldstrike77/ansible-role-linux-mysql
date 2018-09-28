@@ -13,22 +13,3 @@
     state: 'present'
   with_items:
     - '{{ mysql_packages }}'
-
-- name: Ensure MySQL firewall port is allow
-  firewalld:
-    port: '{{ item }}'
-    permanent: 'true'
-    state: 'enabled'
-  with_items:
-    - '{{ mysql_port }}'
-  when:
-    - ansible_distribution_major_version|int > 6
-  register: result
-
-- name: Reload firewalld service
-  service:
-    name: firewalld
-    state: reloaded
-  when:
-    - result|changed
-    - ansible_distribution_major_version|int > 6

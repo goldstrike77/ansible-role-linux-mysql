@@ -1,7 +1,7 @@
 [mysql]
 # CLIENT #
 [client]
-port                                   = 3306
+port                                   = {{ mysql_port }}
 socket                                 = {{ mysql_path }}/mysql/mysql.sock
 
 [mysqld_safe]
@@ -20,20 +20,25 @@ query_response_time_stats              = 1
 # GENERAL #
 server_id                              = {{ 4294967295 | random }}
 user                                   = mysql
-default_storage_engine                 = InnoDB
-character_set_server                   = utf8
+default_storage_engine                 = {{ mysql_storage_engine }}
+character_set_server                   = {{ mysql_character_set }}
 socket                                 = {{ mysql_path }}/mysql/mysql.sock
 explicit_defaults_for_timestamp        = 1
 log_timestamps                         = SYSTEM
 bind-address                           = 0.0.0.0
+port                                   = {{ mysql_port }}
 ignore-db-dir                          = binlog
 ignore-db-dir                          = logs
 ignore-db-dir                          = innodb
 ignore-db-dir                          = mysqlsla_analyzes
-sql_mode                               = ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION,NO_ZERO_DATE,NO_ZERO_IN_DATE,STRICT_ALL_TABLES,STRICT_TRANS_TABLES
+sql_mode                               = {{ ','.join(vars['mysql_sql_mode']) }}
 
 # MyISAM #
+{% if mysql_storage_engine == 'MyISAM' %}
+key_buffer_size                        = {{ (ansible_memtotal_mb * 0.4)|int }}M
+{% else %}
 key_buffer_size                        = 32M
+{% else %}
 myisam-recover-options                 = FORCE,BACKUP
 
 # SAFETY #
@@ -96,20 +101,26 @@ innodb_purge_threads                   = 4
 innodb_page_cleaners                   = 4
 innodb_log_group_home_dir              = {{ mysql_path }}/mysql/innodb
 innodb_log_files_in_group              = 2
-innodb_log_file_size                   = 4G
+{% if mysql_storage_engine == 'MyISAM' %}
+innodb_log_file_size                   = 32M
+{% else %}
+innodb_log_file_size                   = 4096M
+{% endif %}
 innodb_log_buffer_size                 = 16M
 innodb_max_dirty_pages_pct             = 85
 innodb_flush_log_at_trx_commit         = 2
-{% if ansible_memtotal_mb <= 8192 %}
-innodb_buffer_pool_size                = {{ (ansible_memtotal_mb * 0.585)|int * 1024 * 1024 }}
+{% if ansible_memtotal_mb <= 8192 and mysql_storage_engine == 'InnoDB' %}
+innodb_buffer_pool_size                = {{ (ansible_memtotal_mb * 0.585)|int }}M
+{% elif ansible_memtotal_mb > 8192 and mysql_storage_engine == 'InnoDB' %}
+innodb_buffer_pool_size                = {{ (ansible_memtotal_mb * 0.625)|int }}M
 {% else %}
-innodb_buffer_pool_size                = {{ (ansible_memtotal_mb * 0.625)|int * 1024 * 1024 }}
+innodb_buffer_pool_size                = 8M
 {% endif %}
 innodb_read_io_threads                 = 4
 innodb_write_io_threads                = 4
 innodb_doublewrite                     = 1
 innodb_data_file_path                  = ibdata1:256M;ibdata2:256M:autoextend
-innodb_temp_data_file_path             = ibtemp1:128M;ibtemp2:128M:autoextend:max:1G
+innodb_temp_data_file_path             = ibtemp1:128M;ibtemp2:128M:autoextend:max:1024M
 innodb_file_per_table                  = 1
 innodb_autoinc_lock_mode               = 2
 innodb_buffer_pool_dump_at_shutdown    = 1
@@ -119,7 +130,7 @@ innodb_buffer_pool_load_now 	       = 1
 innodb_buffer_pool_dump_pct            = 100
 innodb_undo_directory                  = {{ mysql_path }}/mysql/innodb/undolog
 innodb_undo_tablespaces                = 64
-innodb_max_undo_log_size               = 1G
+innodb_max_undo_log_size               = 1024M
 innodb_undo_log_truncate               = 1
 
 # LOGGING #
@@ -133,7 +144,7 @@ audit_log_handler                      = SYSLOG
 audit_log_format                       = CSV
 audit_log_policy                       = QUERIES
 audit_log_syslog_ident                 = mysqld
-audit_log_include_commands             = "delete,delete_multi,truncate,drop_db,drop_event,drop_function,drop_index,drop_procedure,drop_table,drop_trigger,drop_user,drop_view,alter_db,alter_event,alter_function,alter_procedure,alter_table,alter_user,rename_table,rename_user,create_trigger,grant,shutdown,create_user,revoke,revoke_all,kill"
+audit_log_include_commands             = "{{ mysql_audit_log_commands }}"
 
 # PLUGIN #
-plugin-load                            = "audit_log=audit_log.so;QUERY_RESPONSE_TIME=query_response_time.so;QUERY_RESPONSE_TIME_AUDIT=query_response_time.so;QUERY_RESPONSE_TIME_READ=query_response_time.so;QUERY_RESPONSE_TIME_WRITE=query_response_time.so"
+plugin-load                            = "{{ ','.join(vars['mysql_audit_log_commands']) }}"
