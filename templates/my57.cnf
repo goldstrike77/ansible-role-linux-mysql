@@ -57,7 +57,7 @@ datadir                                = {{ mysql_path }}/mysql
 
 # BINARY LOGGING #
 log_bin                                = {{ mysql_path }}/mysql/binlog/mysql_bin
-binlog_cache_size                      = 1M
+binlog_cache_size                      = {{ mysql_binlog_cache_size }}
 binlog_stmt_cache_size                 = 1048576
 binlog_format                          = MIXED
 expire_logs_days                       = 15
@@ -101,11 +101,7 @@ innodb_purge_threads                   = 4
 innodb_page_cleaners                   = 4
 innodb_log_group_home_dir              = {{ mysql_path }}/mysql/innodb
 innodb_log_files_in_group              = 2
-{% if mysql_storage_engine == 'MyISAM' %}
-innodb_log_file_size                   = 32M
-{% else %}
 innodb_log_file_size                   = 4096M
-{% endif %}
 innodb_log_buffer_size                 = 16M
 innodb_max_dirty_pages_pct             = 85
 innodb_flush_log_at_trx_commit         = 2
@@ -135,10 +131,10 @@ innodb_undo_log_truncate               = 1
 
 # LOGGING #
 log_error                              = {{ mysql_path }}/mysql/logs/mysql_error.log
-log_queries_not_using_indexes          = 1
 slow_query_log                         = 1
 slow_query_log_file                    = {{ mysql_path }}/mysql/logs/mysql_slow.log
-long_query_time                        = 1
+log_queries_not_using_indexes          = {{ mysql_log_queries_not_using_indexes }}
+long_query_time                        = {{ mysql_long_query_time }}
 log_syslog                             = ON
 audit_log_handler                      = SYSLOG
 audit_log_format                       = CSV

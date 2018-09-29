@@ -22,12 +22,12 @@ XBCRYPT=/usr/bin/xbcrypt
 BACKUPDIR=/data/backup # Backups base directory
 FULLBACKUPDIR=$BACKUPDIR/full # Full backups directory
 INCRBACKUPDIR=$BACKUPDIR/incr # Incremental backups directory
-FULLBACKUPLIFE={{ mysql_fullbackup_life }} # Lifetime of the latest full backup in seconds
+FULLBACKUPLIFE={{ mysql_backupset_life }} # Lifetime of the latest full backup in seconds
 UMASK=755
-KEEP={{ mysql_fullbackup_keep }} # Number of full backups (and its incrementals) to keep
+KEEP={{ mysql_backupset_keep }} # Number of full backups (and its incrementals) to keep
 THREADS={{ ansible_processor_vcpus }}
 ENCRYPT=AES256
-ENCRYPTKEY="{{ mysql_xtrabackup_encryptkey }}"
+ENCRYPTKEY="{{ mysql_backupset_encryptkey }}"
 
 # Grab start time
 STARTED_AT=`date +%s`
