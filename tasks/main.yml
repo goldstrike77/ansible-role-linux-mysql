@@ -5,60 +5,8 @@
 - name: Include tasks for specific OS
   include: '{{ ansible_os_family }}.yml'
 
-- name: Ensure MySQL firewall port is allow
-  firewalld:
-    port: '{{ item }}'
-    permanent: 'true'
-    state: 'enabled'
-  with_items:
-    - '{{ mysql_port }}/tcp'
-  when:
-    - ansible_distribution_major_version|int > 6
-  register: result
-
-- name: Reload firewalld service
-  service:
-    name: firewalld
-    state: reloaded
-  when:
-    - result|changed
-    - ansible_distribution_major_version|int > 6
-
-- name: Check if unused configure file exists
-  stat: 
-    path: '{{ item }}'
-  with_items:
-    - '/etc/logrotate.d/mysql'
-  register: result
-
-- name: Remove unused configure file
-  file:
-    path: '{{ item }}'
-    state: absent
-  with_items:
-    - '/etc/logrotate.d/mysql'
-  when: result.results[0].stat.exists
-
-- name: Creating MySQL folder
-  file:
-    dest: '{{ item }}'
-    state: directory
-    owner: mysql
-    group: mysql
-    mode: 0755
-  with_items:
-    - '{{ mysql_folder }}'
-
-- name: Configure kernel parameters
-  sysctl:
-    name: '{{ item.variable }}'
-    value: '{{ item.value }}'
-    state: present
-    reload: yes
-    sysctl_set: yes
-    sysctl_file: /etc/sysctl.d/20-sysctl.conf
-  with_items:
-    - '{{ mysql_kernel_parameters }}'
+- name: Include firewall tasks
+  include: 'firewall.yml'
 
 - name: Check if MySQL tablespace exists
   stat:
@@ -67,88 +15,25 @@
     - '{{ mysql_path }}/mysql/mysql/db.MYD'
   register: result
 
-- name: MySQL Configure & Scripts file transfer
-  template:
-    src: '{{ item.src }}'
-    dest: '{{ item.dest }}'
-    owner: mysql
-    group: mysql
-    mode: 0664
-  with_items:
-    - '{{ mysql_conf_scripts }}'
+- name: Include initialization tasks
+  include: 'initialization.yml'
   when:
     - not result.results[0].stat.exists
 
-- name: Initializes the MySQL 5.7 system tables
-  shell: '/usr/sbin/mysqld --defaults-file=/etc/my.cnf --datadir={{ mysql_path }}/mysql --user=mysql --explicit_defaults_for_timestamp --initialize-insecure --ignore-db-dir=prometheus.cnf --ignore-db-dir=mysql-log-rotate'
-  when: 
-    - mysql_version == '57'
+- name: Include user grants tasks
+  include: 'user.yml'
+  when:
     - not result.results[0].stat.exists
-  register: result
-
-- name: Changing Limits for MySQL services
-  lineinfile:
-    state: present
-    dest: '/lib/systemd/system/mysqld.service'
-    insertafter: '^\[Service\]'
-    regexp: '{{ item.regexp }}'
-    line: '{{ item.line }}'
-  with_items:
-    - '{{ mysql_service_parameter }}'
-  when:
-    - result|changed
-
-- name: Ensure MySQL service is enabled
-  systemd:
-    name: '{{ item }}'
-    enabled: yes
-    state: started
-    daemon_reload: yes
-  with_items:
-    - 'mysqld.service'
-  when:
-    - ansible_distribution_major_version|int > 6
-    - result|changed
-
-- name: Create user prometheus with privileges
-  mysql_user:
-    login_user: 'root'
-    login_password: ''
-    login_unix_socket: '{{ mysql_path }}/mysql/mysql.sock'
-    name: 'prometheus'
-    password: '{{ mysqld_exporter_user_passwd }}'
-    host: '127.0.0.1'
-    priv: '*.*:PROCESS,REPLICATION CLIENT,SELECT'
-    state: present
-  when: 
-    - result|changed
-
-- name: Modify root password
-  mysql_user:
-    login_user: 'root'
-    login_password: ''
-    login_unix_socket: '{{ mysql_path }}/mysql/mysql.sock'
-    name: 'root'
-    host: '{{ item }}'
-    password: '{{ db_sa_pass }}'
-    priv: '*.*:ALL,GRANT'
-    state: present
-  with_items:
-    - '127.0.0.1'
-    - 'localhost'
-  when:
-    - result|changed
-  no_log: true
 
 - name: Include query analyzes tasks
   include: 'analyzes.yml'
   when:
-    - result|changed
+    - not result.results[0].stat.exists
 
 - name: Include backup tasks
   include: 'backup.yml'
   when:
-    - result|changed
+    - not result.results[0].stat.exists
 
 - name: Include prometheus exporter tasks
   include: 'mysqld_exporter.yml'

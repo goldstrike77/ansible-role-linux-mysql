@@ -1,0 +1,26 @@
+---
+- name: Create user prometheus with privileges
+  mysql_user:
+    login_user: 'root'
+    login_password: ''
+    login_unix_socket: '{{ mysql_path }}/mysql/mysql.sock'
+    name: 'prometheus'
+    password: '{{ mysqld_exporter_user_passwd }}'
+    host: '127.0.0.1'
+    priv: '*.*:PROCESS,REPLICATION CLIENT,SELECT'
+    state: present
+
+- name: Modify root password
+  mysql_user:
+    login_user: 'root'
+    login_password: ''
+    login_unix_socket: '{{ mysql_path }}/mysql/mysql.sock'
+    name: 'root'
+    host: '{{ item }}'
+    password: '{{ db_sa_pass }}'
+    priv: '*.*:ALL,GRANT'
+    state: present
+  with_items:
+    - '127.0.0.1'
+    - 'localhost'
+  no_log: true

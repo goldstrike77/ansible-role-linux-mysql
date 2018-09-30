@@ -1,5 +1,5 @@
 ---
-- name: Add mysqld_exporter YUM repositories
+- name: Add Prometheus mysqld_exporter YUM repositories
   yum_repository:
     name: '{{ mysqld_exporter_repo_name }}'
     description: '{{ mysqld_exporter_repo_name }} YUM repository'
@@ -7,14 +7,14 @@
     baseurl: '{{ mysqld_exporter_repo_url }}'
     gpgcheck: no
 
-- name: Install the mysqld_exporter packages
+- name: Install the Prometheus mysqld_exporter packages
   yum:
     name: '{{ item }}'
     state: 'present'
   with_items:
     - '{{ mysqld_exporter_packages }}'
 
-- name: mysqld_exporter configure file transfer
+- name: Prometheus mysqld_exporter configure file transfer
   template:
     src: '{{ item.src }}'
     dest: '{{ item.dest }}'
@@ -24,29 +24,29 @@
   with_items:
     - { src: 'prometheus.cnf', dest: '/etc/' }
     - { src: 'mysqld_exporter', dest: '/etc/default/' }    
-  register: result
+  register: conf_update
 
-- name: mysqld_exporter service is enabled
+- name: Prometheus mysqld_exporter service is enabled
   systemd:
     name: 'mysqld_exporter.service'
     enabled: 'yes'
     state: 'started'
     daemon_reload: yes
   when:
-    - result.changed
+    - conf_update.changed
 
 - name: Ensure Prometheus firewall port is allow
-  when: 
-    - ansible_os_family == "RedHat"
-    - ansible_distribution_major_version|int > 6
   firewalld:
     port: '{{ mysql_exporter_port }}/tcp'
     permanent: 'true'
     state: 'enabled'
-  register: result
+  when: 
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version|int > 6
+  register: firewall_update
 
 - name: Reload firewalld service
-  when: result.changed
   service:
     name: firewalld
     state: reloaded
+  when: firewall_update.changed

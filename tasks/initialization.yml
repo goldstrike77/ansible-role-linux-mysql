@@ -1,0 +1,72 @@
+---
+- name: Check if unused configure file exists
+  stat: 
+    path: '{{ item }}'
+  with_items:
+    - '/etc/logrotate.d/mysql'
+  register: file_exists
+
+- name: Remove unused configure file
+  file:
+    path: '{{ item }}'
+    state: absent
+  with_items:
+    - '/etc/logrotate.d/mysql'
+  when: file_exists.results[0].stat.exists
+
+- name: Creating MySQL folder
+  file:
+    dest: '{{ item }}'
+    state: directory
+    owner: mysql
+    group: mysql
+    mode: 0755
+  with_items:
+    - '{{ mysql_folder }}'
+
+- name: Configure kernel parameters
+  sysctl:
+    name: '{{ item.variable }}'
+    value: '{{ item.value }}'
+    state: present
+    reload: yes
+    sysctl_set: yes
+    sysctl_file: /etc/sysctl.d/20-sysctl.conf
+  with_items:
+    - '{{ mysql_kernel_parameters }}'
+
+- name: MySQL Configure & Scripts file transfer
+  template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: mysql
+    group: mysql
+    mode: 0664
+  with_items:
+    - '{{ mysql_conf_scripts }}'
+
+- name: Initializes the MySQL 5.7 system tables
+  shell: '/usr/sbin/mysqld --defaults-file=/etc/my.cnf --datadir={{ mysql_path }}/mysql --user=mysql --explicit_defaults_for_timestamp --initialize-insecure --ignore-db-dir=prometheus.cnf --ignore-db-dir=mysql-log-rotate'
+  when: 
+    - mysql_version == '57'
+
+- name: Changing Limits for MySQL services
+  lineinfile:
+    state: present
+    dest: '/lib/systemd/system/mysqld.service'
+    insertafter: '^\[Service\]'
+    regexp: '{{ item.regexp }}'
+    line: '{{ item.line }}'
+  with_items:
+    - '{{ mysql_service_parameter }}'
+
+- name: Ensure MySQL service is enabled
+  systemd:
+    name: '{{ item }}'
+    enabled: yes
+    state: started
+    daemon_reload: yes
+  with_items:
+    - 'mysqld.service'
+  when:
+    - ansible_distribution_major_version|int > 6
