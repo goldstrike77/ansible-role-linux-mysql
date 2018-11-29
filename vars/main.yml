@@ -30,6 +30,8 @@ mysqld_exporter_collector:
   - 'binlog_size'
   - 'engine_innodb_status'
   - 'info_schema.clientstats'
+  - 'info_schema.innodb_cmp'
+  - 'info_schema.innodb_cmpmem'
   - 'info_schema.innodb_metrics'
   - 'info_schema.processlist'
   - 'info_schema.query_response_time'
