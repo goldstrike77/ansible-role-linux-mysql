@@ -8,7 +8,7 @@ mysqld_exporter_user_passwd: 'password' # Prometheus exporter account password
 # Backup parameters #
 mysql_backupset_life: '604800' # Lifetime of the latest full backup in seconds
 mysql_backupset_keep: '2' # The number of full backups (and its incrementals) to keep
-mysql_backupset_encryptkey: 'XXXXXXXXXXXXX' # BackupSet encryption key
+mysql_backupset_encryptkey: 'Un9FA+CgxM5Yr/MpwTh5s6NXSQE0brp8' # BackupSet encryption key, Generate by [openssl rand -base64 24]
 
 # Listen port #
 mysql_port: '3306' #  MySQL instance
