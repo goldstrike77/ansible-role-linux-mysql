@@ -1,3 +1,5 @@
+<p><img src="https://raw.githubusercontent.com/goldstrike77/goldstrike77.github.io/master/img/logo/logo_mysql.png" align="right" /></p>
+
 ansible-role-linux-mysql
 ========================
 
