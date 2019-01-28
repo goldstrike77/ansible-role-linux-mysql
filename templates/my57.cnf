@@ -50,7 +50,7 @@ skip-name-resolve
 local-infile                           = 0
 default_password_lifetime              = 0
 log-raw                                = OFF
-max_prepared_stmt_count                = 65536
+max_prepared_stmt_count                = 262144
 max_allowed_packet                     = {{ mysql_max_allowed_packet }}
 max_connect_errors                     = 100
 
