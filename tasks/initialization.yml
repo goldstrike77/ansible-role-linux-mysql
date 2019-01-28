@@ -59,6 +59,8 @@
     line: '{{ item.line }}'
   with_items:
     - '{{ mysql_service_parameter }}'
+  when:
+    - ansible_distribution_major_version|int > 6
 
 - name: Ensure MySQL service is enabled
   systemd:
@@ -70,3 +72,13 @@
     - 'mysqld.service'
   when:
     - ansible_distribution_major_version|int > 6
+
+- name: Ensure MySQL service is enabled
+  service:
+    name: '{{ item }}'
+    enabled: yes
+    state: started
+  with_items:
+    - 'mysql'
+  when:
+    - ansible_distribution_major_version|int < 7

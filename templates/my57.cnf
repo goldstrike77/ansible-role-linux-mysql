@@ -42,6 +42,8 @@ key_buffer_size                        = 32M
 myisam-recover-options                 = FORCE,BACKUP
 
 # SAFETY #
+#memlock
+#large_pages                            = 1
 skip_ssl
 core-file
 skip-name-resolve
