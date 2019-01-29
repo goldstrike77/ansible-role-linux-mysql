@@ -94,6 +94,7 @@ open_files_limit                       = {{ mysql_open_files_limit }}
 performance_schema_max_table_instances = 512
 table_definition_cache                 = {{ mysql_table_definition_cache }}
 table_open_cache                       = {{ mysql_table_open_cache }}
+table_open_cache_instances             = {{ mysql_table_open_cache_instances }}
 
 # INNODB #
 innodb_autoinc_lock_mode               = 2
