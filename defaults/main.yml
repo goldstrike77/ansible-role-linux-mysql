@@ -24,7 +24,7 @@ mysql_interactive_timeout: '3600' # Server waits for activity on an interactive 
 mysql_binlog_cache_size: '1M' # Size of the cache to hold changes to the binary log during a transaction
 mysql_join_buffer_size: '2M' # Size of the buffer that is used for index scans
 mysql_read_rnd_buffer_size: '2M' # Size of the buffer that is used for reading rows in sorted order
-mysql_max_allowed_packet: '16M' # The maximum size of one packet
+mysql_max_allowed_packet: '32M' # The maximum size of one packet
 mysql_tmp_table_size: '32M' # The maximum size of internal in-memory temporary tables
 mysql_max_heap_table_size: '32M' # The maximum size to which user-created MEMORY tables are permitted to grow
 mysql_query_cache_type: '0' # Query cache type
