@@ -1,19 +1,29 @@
 ---
-- name: Ensure MySQL firewall port is allow
+- name: Allow MySQL service port
   firewalld:
-    port: '{{ item }}'
+    port: '{{ item.value }}/tcp'
+    zone: 'public'
     permanent: 'true'
+    immediate: 'true'
     state: 'enabled'
-  with_items:
-    - '{{ mysql_port }}/tcp'
+  with_dict: '{{ mysql_port_arg }}'
   when:
     - ansible_distribution_major_version|int > 6
-  register: firewall_update
 
-- name: Reload firewalld service
+- name: Allow MySQL service port
+  lineinfile:
+    dest: '/etc/sysconfig/iptables'
+    regexp: '^-A INPUT -p tcp -m tcp --dport {{ item.value }} -j ACCEPT$'
+    line: '-A INPUT -p tcp -m tcp --dport {{ item.value }} -j ACCEPT'
+    insertafter: '^:OUTPUT ACCEPT \[\d*:\d*\]$'
+  with_dict: '{{ mysql_port_arg }}'
+  register: firewalld_update
+  when: ansible_distribution_major_version|int < 7
+
+- name: Reload the firewalld
   service:
-    name: firewalld
-    state: reloaded
+    name: 'iptables'
+    state: 'restarted'
   when:
-    - firewall_update|changed
-    - ansible_distribution_major_version|int > 6
+    - ansible_distribution_major_version|int < 7
+    - firewalld_update|changed

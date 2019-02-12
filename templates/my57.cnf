@@ -1,7 +1,7 @@
 [mysql]
 # CLIENT #
 [client]
-port                                   = {{ mysql_port }}
+port                                   = {{ mysql_port_arg.mysqld }}
 socket                                 = {{ mysql_path }}/mysql/mysql.sock
 
 [mysqld_safe]
@@ -19,14 +19,14 @@ query_response_time_stats              = 1
 
 # GENERAL #
 server_id                              = {{ 4294967295 | random }}
-user                                   = mysql
+user                                   = {{ mysql_user }}
 default_storage_engine                 = {{ mysql_storage_engine }}
 character_set_server                   = {{ mysql_character_set }}
 socket                                 = {{ mysql_path }}/mysql/mysql.sock
 explicit_defaults_for_timestamp        = 1
 log_timestamps                         = SYSTEM
 bind-address                           = 0.0.0.0
-port                                   = {{ mysql_port }}
+port                                   = {{ mysql_port_arg.mysqld }}
 ignore-db-dir                          = binlog
 ignore-db-dir                          = logs
 ignore-db-dir                          = innodb
@@ -75,17 +75,7 @@ join_buffer_size                       = {{ mysql_join_buffer_size }}
 read_rnd_buffer_size                   = {{ mysql_read_rnd_buffer_size }}
 query_cache_type                       = {{ mysql_query_cache_type }}
 query_cache_size                       = {{ mysql_query_cache_size }}
-{% if ansible_memtotal_mb > 4096 and ansible_memtotal_mb <= 8192 %}
-max-connections                        = 210
-{% elif ansible_memtotal_mb > 8192 and ansible_memtotal_mb <= 16384 %}
-max-connections                        = 310
-{% elif ansible_memtotal_mb > 16384 and ansible_memtotal_mb <= 32768 %}
-max-connections                        = 510
-{% elif ansible_memtotal_mb > 32768 %}
-max-connections                        = 610
-{% else %}
-max-connections                        = 50
-{% endif %}
+max-connections                        = {{ (ansible_memtotal_mb / 40)|int }}
 thread_cache_size                      = 50
 thread_handling                        = pool-of-threads
 thread_pool_max_threads                = 1000
@@ -107,7 +97,7 @@ innodb_buffer_pool_load_now 	       = 1
 {% if ansible_memtotal_mb <= 8192 and mysql_storage_engine == 'InnoDB' %}
 innodb_buffer_pool_size                = {{ (ansible_memtotal_mb * 0.585)|int }}M
 {% elif ansible_memtotal_mb > 8192 and mysql_storage_engine == 'InnoDB' %}
-innodb_buffer_pool_size                = {{ (ansible_memtotal_mb * 0.625)|int }}M
+innodb_buffer_pool_size                = {{ (ansible_memtotal_mb * 0.725)|int }}M
 {% else %}
 innodb_buffer_pool_size                = 8M
 {% endif %}

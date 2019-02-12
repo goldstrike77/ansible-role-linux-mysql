@@ -1,13 +1,4 @@
 ---
-- name: Include OS-specific variables
-  include_vars: '{{ ansible_os_family }}.yml'
-
-- name: Include tasks for specific OS
-  include: '{{ ansible_os_family }}.yml'
-
-- name: Include firewall tasks
-  include: 'firewall.yml'
-
 - name: Check if MySQL tablespace exists
   stat:
     path: '{{ item }}'
@@ -15,41 +6,39 @@
     - '{{ mysql_path }}/mysql/mysql/db.MYD'
   register: result
 
-- name: Include initialization tasks
-  include: 'initialization.yml'
+- name: MySQL operation
+  block:
+    - name: Include OS-specific variables
+      include_vars: '{{ ansible_os_family }}.yml'
+    - name: Include tasks for specific OS
+      include: '{{ ansible_os_family }}.yml'
+    - name: Straight to getenforce selinux status
+      include: 'selinux.yml' 
+    - name: Include firewall tasks
+      include: 'firewall.yml'
+    - name: Include initialization tasks
+      include: 'initialization.yml'
+    - name: Include user grants tasks
+      include: 'user.yml'
+    - name: Include query analyzes tasks
+      include: 'analyzes.yml'
+    - name: Include backup tasks
+      include: 'backup.yml'
+    - name: Include prometheus exporter tasks
+      include: 'mysqld_exporter.yml'
+    - name: Ensure MTA service is enabled
+      systemd:
+        name: 'postfix.service'
+        enabled: 'yes'
+        state: 'started'
+      when:
+        - ansible_distribution_major_version|int > 6
+    - name: Ensure MTA service is enabled
+      service:
+        name: 'postfix'
+        enabled: 'yes'
+        state: 'started'
+      when:
+        - ansible_distribution_major_version|int < 7
   when:
     - not result.results[0].stat.exists
-
-- name: Include user grants tasks
-  include: 'user.yml'
-  when:
-    - not result.results[0].stat.exists
-
-- name: Include query analyzes tasks
-  include: 'analyzes.yml'
-  when:
-    - not result.results[0].stat.exists
-
-- name: Include backup tasks
-  include: 'backup.yml'
-  when:
-    - not result.results[0].stat.exists
-
-- name: Include prometheus exporter tasks
-  include: 'mysqld_exporter.yml'
-
-- name: Ensure MTA service is enabled
-  systemd:
-    name: 'postfix.service'
-    enabled: 'yes'
-    state: 'started'
-  when:
-    - ansible_distribution_major_version|int > 6
-
-- name: Ensure MTA service is enabled
-  service:
-    name: 'postfix'
-    enabled: 'yes'
-    state: 'started'
-  when:
-    - ansible_distribution_major_version|int < 7

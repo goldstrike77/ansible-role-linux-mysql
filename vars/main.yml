@@ -22,8 +22,8 @@ mysql_conf_scripts:
 mysql_service_parameter:
   - { regexp: '^LimitMEMLOCK', line: 'LimitMEMLOCK = infinity' }
   - { regexp: '^LimitCORE', line: 'LimitCORE = infinity' }
-  - { regexp: '^LimitNPROC', line: 'LimitNPROC = 65535' }
-  - { regexp: '^LimitNOFILE', line: 'LimitNOFILE = 65535' }
+  - { regexp: '^LimitNPROC', line: 'LimitNPROC = {{ mysql_open_nproc_limit }}' }
+  - { regexp: '^LimitNOFILE', line: 'LimitNOFILE = {{ mysql_open_files_limit }}' }
 
 mysqld_exporter_collector:
   - 'auto_increment.columns'
@@ -43,3 +43,41 @@ mysqld_exporter_collector:
   - 'perf_schema.indexiowaits'
   - 'perf_schema.tableiowaits'
   - 'perf_schema.tablelocks'
+
+mysql_sql_mode: # Specify value the global SQL mode
+  - 'ERROR_FOR_DIVISION_BY_ZERO'
+  - 'NO_AUTO_CREATE_USER'
+  - 'NO_ENGINE_SUBSTITUTION'
+  - 'NO_ZERO_DATE'
+  - 'NO_ZERO_IN_DATE'
+  - 'STRICT_ALL_TABLES'
+  - 'STRICT_TRANS_TABLES'
+
+mysql_audit_log_commands: # Filtering command for audit process
+  - 'alter_db'
+  - 'alter_event'
+  - 'alter_function'
+  - 'alter_procedure'
+  - 'alter_table'
+  - 'alter_user'
+  - 'create_trigger'
+  - 'create_user'
+  - 'delete'
+  - 'delete_multi'
+  - 'drop_db'
+  - 'drop_event'
+  - 'drop_function'
+  - 'drop_index'
+  - 'drop_procedure'
+  - 'drop_table'
+  - 'drop_trigger'
+  - 'drop_user'
+  - 'drop_view'
+  - 'grant'
+  - 'kill'
+  - 'rename_table'
+  - 'rename_user'
+  - 'revoke'
+  - 'revoke_all'
+  - 'shutdown'
+  - 'truncate'

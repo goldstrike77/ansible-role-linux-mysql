@@ -1,4 +1,9 @@
 ---
+- name: Prometheus user password generator
+  set_fact:
+    mysqld_exporter_user_passwd: "{{ lookup('password', '' + group_names[-1] + ':prometheus length=12 chars=ascii_letters,digits') }}"
+  no_log: true
+
 - name: Create user prometheus with privileges
   mysql_user:
     login_user: 'root'
@@ -9,6 +14,7 @@
     host: '127.0.0.1'
     priv: '*.*:PROCESS,REPLICATION CLIENT,SELECT'
     state: present
+  no_log: true
 
 - name: Modify root password
   mysql_user:
