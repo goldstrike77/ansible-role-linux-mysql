@@ -130,7 +130,7 @@ You can also use the group_vars or the host_vars files for setting the variables
       encryptkey: 'Un9FA+CgxM5Yr/MpwTh5s6NXSQE0brp8'
     mysql_port_arg:
       mysqld: '3306'
-      mysql_exporter_port:
+      mysql_exporter_port: '9104'
     mysql_arg:
       binlog_cache_size: '1M'
       character_set: 'utf8'
