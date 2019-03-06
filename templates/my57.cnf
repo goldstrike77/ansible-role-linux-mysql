@@ -34,7 +34,7 @@ ignore-db-dir                          = mysqlsla_analyzes
 sql_mode                               = {{ ','.join(vars['mysql_sql_mode']) }}
 
 # MyISAM #
-{% if mysql_storage_engine == 'MyISAM' %}
+{% if mysql_arg.storage_engine == 'MyISAM' %}
 key_buffer_size                        = {{ (ansible_memtotal_mb * 0.4)|int }}M
 {% else %}
 key_buffer_size                        = 32M
@@ -94,9 +94,9 @@ innodb_buffer_pool_dump_pct            = 100
 innodb_buffer_pool_instances           = 8
 innodb_buffer_pool_load_at_startup     = 1
 innodb_buffer_pool_load_now 	       = 1
-{% if ansible_memtotal_mb <= 8192 and mysql_storage_engine == 'InnoDB' %}
+{% if ansible_memtotal_mb <= 8192 and mysql_arg.storage_engine == 'InnoDB' %}
 innodb_buffer_pool_size                = {{ (ansible_memtotal_mb * 0.585)|int }}M
-{% elif ansible_memtotal_mb > 8192 and mysql_storage_engine == 'InnoDB' %}
+{% elif ansible_memtotal_mb > 8192 and mysql_arg.storage_engine == 'InnoDB' %}
 innodb_buffer_pool_size                = {{ (ansible_memtotal_mb * 0.725)|int }}M
 {% else %}
 innodb_buffer_pool_size                = 8M
