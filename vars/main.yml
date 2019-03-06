@@ -25,7 +25,6 @@ mysql_service_parameter:
   - { regexp: '^LimitNPROC', line: 'LimitNPROC = {{ mysql_arg.open_nproc_limit }}' }
   - { regexp: '^LimitNOFILE', line: 'LimitNOFILE = {{ mysql_arg.open_files_limit }}' }
 
-
 mysqld_exporter_collector: # Prometheus mysqld exporter collector flags
   - 'auto_increment.columns'
   - 'binlog_size'
