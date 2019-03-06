@@ -55,10 +55,10 @@
     dest: /etc/security/limits.conf
     line: "{{ item.line }}"
   with_items:
-    - { line: '{{ mysql_user }} soft nofile {{ mysql_open_files_limit }}' }
-    - { line: '{{ mysql_user }} hard nofile {{ mysql_open_files_limit }}' }
-    - { line: '{{ mysql_user }} soft nproc {{ mysql_open_nproc_limit }}' }
-    - { line: '{{ mysql_user }} hard nproc {{ mysql_open_nproc_limit }}' }
+    - { line: '{{ mysql_user }} soft nofile {{ mysql_arg.open_files_limit }}' }
+    - { line: '{{ mysql_user }} hard nofile {{ mysql_arg.pen_files_limit }}' }
+    - { line: '{{ mysql_user }} soft nproc {{ mysql_arg.open_nproc_limit }}' }
+    - { line: '{{ mysql_user }} hard nproc {{ mysql_arg.open_nproc_limit }}' }
     - { line: '{{ mysql_user }} hard memlock unlimited' }
     - { line: '{{ mysql_user }} soft memlock unlimited' }
 

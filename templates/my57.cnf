@@ -20,8 +20,8 @@ query_response_time_stats              = 1
 # GENERAL #
 server_id                              = {{ 4294967295 | random }}
 user                                   = {{ mysql_user }}
-default_storage_engine                 = {{ mysql_storage_engine }}
-character_set_server                   = {{ mysql_character_set }}
+default_storage_engine                 = {{ mysql_arg.storage_engine }}
+character_set_server                   = {{ mysql_arg.character_set }}
 socket                                 = {{ mysql_path }}/mysql/mysql.sock
 explicit_defaults_for_timestamp        = 1
 log_timestamps                         = SYSTEM
@@ -51,7 +51,7 @@ local-infile                           = 0
 default_password_lifetime              = 0
 log-raw                                = OFF
 max_prepared_stmt_count                = 262144
-max_allowed_packet                     = {{ mysql_max_allowed_packet }}
+max_allowed_packet                     = {{ mysql_arg.max_allowed_packet }}
 max_connect_errors                     = 100
 
 # DATA STORAGE #
@@ -59,32 +59,32 @@ datadir                                = {{ mysql_path }}/mysql
 
 # BINARY LOGGING #
 log_bin                                = {{ mysql_path }}/mysql/binlog/mysql_bin
-binlog_cache_size                      = {{ mysql_binlog_cache_size }}
+binlog_cache_size                      = {{ mysql_arg.binlog_cache_size }}
 binlog_stmt_cache_size                 = 1048576
 binlog_format                          = MIXED
 expire_logs_days                       = 15
 sync_binlog                            = 100
 
 # CACHES AND LIMITS #
-connect_timeout                        = {{ mysql_connect_timeout }}
-wait_timeout                           = {{ mysql_wait_timeout }}
-interactive_timeout                    = {{ mysql_interactive_timeout }}
-tmp_table_size                         = {{ mysql_tmp_table_size }}
-max_heap_table_size                    = {{ mysql_max_heap_table_size }}
-join_buffer_size                       = {{ mysql_join_buffer_size }}
-read_rnd_buffer_size                   = {{ mysql_read_rnd_buffer_size }}
-query_cache_type                       = {{ mysql_query_cache_type }}
-query_cache_size                       = {{ mysql_query_cache_size }}
+connect_timeout                        = {{ mysql_arg.connect_timeout }}
+wait_timeout                           = {{ mysql_arg.wait_timeout }}
+interactive_timeout                    = {{ mysql_arg.interactive_timeout }}
+tmp_table_size                         = {{ mysql_arg.tmp_table_size }}
+max_heap_table_size                    = {{ mysql_arg.max_heap_table_size }}
+join_buffer_size                       = {{ mysql_arg.join_buffer_size }}
+read_rnd_buffer_size                   = {{ mysql_arg.read_rnd_buffer_size }}
+query_cache_type                       = {{ mysql_arg.query_cache_type }}
+query_cache_size                       = {{ mysql_arg.query_cache_size }}
 max-connections                        = {{ (ansible_memtotal_mb / 40)|int }}
 thread_cache_size                      = 50
 thread_handling                        = pool-of-threads
 thread_pool_max_threads                = 1000
 thread_pool_oversubscribe              = 10
-open_files_limit                       = {{ mysql_open_files_limit }}
+open_files_limit                       = {{ mysql_arg.open_files_limit }}
 performance_schema_max_table_instances = 512
-table_definition_cache                 = {{ mysql_table_definition_cache }}
-table_open_cache                       = {{ mysql_table_open_cache }}
-table_open_cache_instances             = {{ mysql_table_open_cache_instances }}
+table_definition_cache                 = {{ mysql_arg.table_definition_cache }}
+table_open_cache                       = {{ mysql_arg.table_open_cache }}
+table_open_cache_instances             = {{ mysql_arg.table_open_cache_instances }}
 
 # INNODB #
 innodb_autoinc_lock_mode               = 2
@@ -127,8 +127,8 @@ innodb_write_io_threads                = 4
 log_error                              = {{ mysql_path }}/mysql/logs/mysql_error.log
 slow_query_log                         = 1
 slow_query_log_file                    = {{ mysql_path }}/mysql/logs/mysql_slow.log
-log_queries_not_using_indexes          = {{ mysql_log_queries_not_using_indexes }}
-long_query_time                        = {{ mysql_long_query_time }}
+log_queries_not_using_indexes          = {{ mysql_arg.log_queries_not_using_indexes }}
+long_query_time                        = {{ mysql_arg.long_query_time }}
 log_syslog                             = ON
 audit_log_handler                      = SYSLOG
 audit_log_format                       = CSV

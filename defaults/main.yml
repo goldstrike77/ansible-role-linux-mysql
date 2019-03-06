@@ -1,40 +1,42 @@
 ---
 # General parameters #
 #mysql_version: '57' # Specify the MySQL version
-mysql_selinux: 'false'
-mysql_user: 'mysql'
+mysql_path: '/data' # Specify the MySQL data directory
+mysql_selinux: 'false' # SELinux mysqld policy
+mysql_user: 'mysql' # System user name for running mysqld services
 mysql_mailto: 'somebody@example.com' # MySQL report mail recipient
 db_sa_pass: 'password' # MySQL root account password
 
 # Backup parameters #
-mysql_backupset_life: '604800' # Lifetime of the latest full backup in seconds
-mysql_backupset_keep: '2' # The number of full backups (and its incrementals) to keep
-mysql_backupset_encryptkey: 'Un9FA+CgxM5Yr/MpwTh5s6NXSQE0brp8' # BackupSet encryption key, Generate by [openssl rand -base64 24]
+mysql_backupset_arg:
+  life: '604800' # Lifetime of the latest full backup in seconds
+  keep: '2' # The number of full backups (and its incrementals) to keep
+  encryptkey: 'Un9FA+CgxM5Yr/MpwTh5s6NXSQE0brp8' # BackupSet encryption key, Generate by [openssl rand -base64 24]
 
 # Listen port #
 mysql_port_arg:
-  mysqld: '3306' #  MySQL instance
-  mysql_exporter_port: '9104' # Prometheus exporter
+  mysqld: '3306' # MySQL instance listen port
+  mysql_exporter_port: '9104' # Prometheus MySQL Exporter listen port
 
 # Server System Variables #
-mysql_binlog_cache_size: '1M' # Size of the cache to hold changes to the binary log during a transaction
-mysql_character_set: 'utf8' # Server's default character set
-mysql_connect_timeout: '10' # Server waits for a connect packet in seconds
-mysql_interactive_timeout: '3600' # Server waits for activity on an interactive connection in seconds
-mysql_join_buffer_size: '1M' # Size of the buffer that is used for index scans
-mysql_log_queries_not_using_indexes: '1' # Logs whether queries that do not use indexes
-mysql_long_query_time: '1' # Logs query that executes longer than in seconds
-mysql_max_allowed_packet: '32M' # The maximum size of one packet
-mysql_max_heap_table_size: '32M' # The maximum size to which user-created MEMORY tables are permitted to grow
-mysql_open_files_limit: '131072' # The number of files that the operating system permits MySQL to open
-mysql_open_nproc_limit: '131072' # The number of processes launched by systemd
-mysql_path: '/data' # Specify the MySQL data directory
-mysql_query_cache_size: '0' # Query cache size
-mysql_query_cache_type: '0' # Query cache type
-mysql_read_rnd_buffer_size: '1M' # Size of the buffer that is used for reading rows in sorted order
-mysql_storage_engine: 'InnoDB' # Preferred storage engine, InnoDB or MyISAM
-mysql_table_definition_cache: '4096' # The number of table definitions that can be stored in the definition cache
-mysql_table_open_cache: '4096' # The number of open tables for all threads
-mysql_table_open_cache_instances: '64' # The number of open tables cache instances 
-mysql_tmp_table_size: '32M' # The maximum size of internal in-memory temporary tables
-mysql_wait_timeout: '3600' # Server waits for activity on a noninteractive connection in seconds
+mysql_arg:
+  binlog_cache_size: '1M' # Size of the cache to hold changes to the binary log during a transaction
+  character_set: 'utf8' # Server's default character set
+  connect_timeout: '10' # Server waits for a connect packet in seconds
+  interactive_timeout: '3600' # Server waits for activity on an interactive connection in seconds
+  join_buffer_size: '1M' # Size of the buffer that is used for index scans
+  log_queries_not_using_indexes: '1' # Logs whether queries that do not use indexes
+  long_query_time: '1' # Logs query that executes longer than in seconds
+  max_allowed_packet: '32M' # The maximum size of one packet
+  max_heap_table_size: '32M' # The maximum size to which user-created MEMORY tables are permitted to grow
+  open_files_limit: '131072' # The number of files that the operating system permits MySQL to open
+  open_nproc_limit: '131072' # The number of processes launched by systemd
+  query_cache_size: '0' # Query cache size
+  query_cache_type: '0' # Query cache type
+  read_rnd_buffer_size: '1M' # Size of the buffer that is used for reading rows in sorted order
+  storage_engine: 'InnoDB' # Preferred storage engine, InnoDB or MyISAM
+  table_definition_cache: '4096' # The number of table definitions that can be stored in the definition cache
+  table_open_cache: '4096' # The number of open tables for all threads
+  table_open_cache_instances: '64' # The number of open tables cache instances 
+  tmp_table_size: '32M' # The maximum size of internal in-memory temporary tables
+  wait_timeout: '3600' # Server waits for activity on a noninteractive connection in seconds
