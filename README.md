@@ -57,6 +57,11 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_user`: System user name for running mysqld services.
 * `mysql_mailto`: MySQL report mail recipient.
 * `db_sa_pass`: MySQL root account password.
+* `environments`: Define the object environment.
+* `consul_is_register`: a boolean value, whether register a client service with consul.
+* `consul_clients`: Consul client addresses list.
+* `consul_http_port`: Consul client listen port.
+* `consul_exporter_token`: Consul client ACL token.
 
 #### Backup parameters
 * `mysql_backupset_arg.life`: Lifetime of the latest full backup in seconds.
