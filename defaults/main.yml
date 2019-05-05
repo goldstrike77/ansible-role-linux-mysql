@@ -29,7 +29,7 @@ mysql_port_arg:
 mysql_arg:
   binlog_cache_size: '1M' # Size of the cache to hold changes to the binary log during a transaction
   character_set: 'utf8' # Server's default character set
-  connect_timeout: '10' # Server waits for a connect packet in seconds
+  connect_timeout: '30' # Server waits for a connect packet in seconds
   interactive_timeout: '3600' # Server waits for activity on an interactive connection in seconds
   join_buffer_size: '1M' # Size of the buffer that is used for index scans
   log_queries_not_using_indexes: '1' # Logs whether queries that do not use indexes
