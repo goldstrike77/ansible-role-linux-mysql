@@ -1,18 +1,19 @@
 ---
 # General parameters #
-#mysql_version: '57' # Specify the MySQL version
+mysql_is_install: false # A boolean value, whether install the MySQL.
+mysql_version: '57' # Specify the MySQL version
 mysql_path: '/data' # Specify the MySQL data directory
-mysql_selinux: 'false' # SELinux mysqld policy
+mysql_selinux: false # SELinux mysqld policy
 mysql_user: 'mysql' # System user name for running mysqld services
 mysql_mailto: 'somebody@example.com' # MySQL report mail recipient
-db_sa_pass: 'password' # MySQL root account password
-environments: 'SIT'
-consul_is_register: false
-consul_exporter_token: '00000000-0000-0000-0000-000000000000'
-consul_clients:
-  - '1.1.1.1'
-  - '1.1.1.2'
-consul_http_port: '8500'
+mysql_sa_pass: 'password' # MySQL root account password
+
+# Service Mesh #
+environments: 'SIT' # Define the service environment.
+consul_public_register: false # Whether register a exporter service with public consul client.
+consul_public_exporter_token: '00000000-0000-0000-0000-000000000000' # Public Consul client ACL token.
+consul_public_clients: 'localhost' # List of public consul clients.
+consul_public_http_port: '8500' # The consul HTTP API port.
 
 # Backup parameters #
 mysql_backupset_arg:
@@ -30,6 +31,7 @@ mysql_arg:
   binlog_cache_size: '1M' # Size of the cache to hold changes to the binary log during a transaction
   character_set: 'utf8' # Server's default character set
   connect_timeout: '30' # Server waits for a connect packet in seconds
+  innodb_flush_log_at_trx_commit: '2' # Controls the balance between strict ACID compliance for commit operations and higher performance.
   interactive_timeout: '3600' # Server waits for activity on an interactive connection in seconds
   join_buffer_size: '1M' # Size of the buffer that is used for index scans
   log_queries_not_using_indexes: '1' # Logs whether queries that do not use indexes
@@ -42,6 +44,7 @@ mysql_arg:
   query_cache_type: '0' # Query cache type
   read_rnd_buffer_size: '1M' # Size of the buffer that is used for reading rows in sorted order
   storage_engine: 'InnoDB' # Preferred storage engine, InnoDB or MyISAM
+  sync_binlog: '1000' # Controls how often the MySQL server synchronizes the binary log to disk
   table_definition_cache: '4096' # The number of table definitions that can be stored in the definition cache
   table_open_cache: '4096' # The number of open tables for all threads
   table_open_cache_instances: '64' # The number of open tables cache instances 

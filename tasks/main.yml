@@ -25,7 +25,9 @@
     - name: Include backup tasks
       include: 'backup.yml'
     - name: Include prometheus exporter tasks
-      include: 'mysqld_exporter.yml'
+      include: 'exporter.yml'
+    - include_tasks: 'register.yml'
+      when: consul_public_register
     - name: Ensure MTA service is enabled
       systemd:
         name: 'postfix.service'

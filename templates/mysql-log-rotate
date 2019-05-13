@@ -30,9 +30,9 @@
   delaycompress
   postrotate
     if test -x /usr/bin/mysqladmin && \
-      /usr/bin/mysqladmin -u root -p{{ db_sa_pass }} ping &>/dev/null
+      /usr/bin/mysqladmin -u root -p{{ mysql_sa_pass }} ping &>/dev/null
     then
-      /usr/bin/mysqladmin -u root -p{{ db_sa_pass }} flush-logs
+      /usr/bin/mysqladmin -u root -p{{ mysql_sa_pass }} flush-logs
     fi
   endscript
 }

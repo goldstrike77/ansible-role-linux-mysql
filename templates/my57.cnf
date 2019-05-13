@@ -63,7 +63,7 @@ binlog_cache_size                      = {{ mysql_arg.binlog_cache_size }}
 binlog_stmt_cache_size                 = 1048576
 binlog_format                          = MIXED
 expire_logs_days                       = 15
-sync_binlog                            = 100
+sync_binlog                            = {{ mysql_arg.sync_binlog }}
 
 # CACHES AND LIMITS #
 connect_timeout                        = {{ mysql_arg.connect_timeout }}
@@ -105,7 +105,7 @@ innodb_data_file_path                  = ibdata1:256M;ibdata2:256M:autoextend
 innodb_data_home_dir                   = {{ mysql_path }}/mysql/innodb
 innodb_doublewrite                     = 1
 innodb_file_per_table                  = 1
-innodb_flush_log_at_trx_commit         = 2
+innodb_flush_log_at_trx_commit         = {{ mysql_arg.innodb_flush_log_at_trx_commit }}
 innodb_flush_method                    = O_DIRECT
 innodb_io_capacity                     = 1000
 innodb_log_buffer_size                 = 16M

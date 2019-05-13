@@ -42,28 +42,23 @@ The following list of supported the MySQL releases:
 * Percona Server for MySQL 5.7
 
 ## Role variables
-### Minimal configuration
-
-In order to get the MySQL running, you'll have to define the following properties before executing the role:
-
-* mysql_version
-
-The `mysql_version` should contain the MySQL releases version.
-
 ### Main parameters #
 There are some variables in defaults/main.yml which can (Or needs to) be overridden:
 ---
 #### General parameters
+* `mysql_version`: should contain the MySQL releases version.
 * `mysql_path`: Specify the MySQL data directory.
 * `mysql_selinux`: SELinux mysqld policy.
 * `mysql_user`: System user name for running mysqld services.
 * `mysql_mailto`: MySQL report mail recipient.
-* `db_sa_pass`: MySQL root account password.
-* `environments`: Define the object environment.
-* `consul_is_register`: a boolean value, whether register a client service with consul.
-* `consul_clients`: Consul client addresses list.
-* `consul_http_port`: Consul client listen port.
-* `consul_exporter_token`: Consul client ACL token.
+* `mysql_sa_pass`: MySQL root account password.
+
+#### Service Mesh
+* `environments`: Define the service environment.
+* `consul_public_register`: Whether register a exporter service with public consul client.
+* `consul_public_exporter_token`: Public Consul client ACL token.
+* `consul_public_clients`: List of public consul clients.
+* `consul_public_http_port`: The consul HTTP API port.
 
 #### Backup parameters
 * `mysql_backupset_arg.life`: Lifetime of the latest full backup in seconds.
@@ -78,6 +73,7 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_arg.binlog_cache_size`: Size of the cache to hold changes to the binary log during a transaction.
 * `mysql_arg.character_set`: Server's default character set.
 * `mysql_arg.connect_timeout`: Server waits for a connect packet in seconds.
+* `mysql_arg.innodb_flush_log_at_trx_commit`: Controls the balance between strict ACID compliance for commit operations and higher performance.
 * `mysql_arg.interactive_timeout`: Server waits for activity on an interactive connection in seconds.
 * `mysql_arg.join_buffer_size`: Size of the buffer that is used for index scans.
 * `mysql_arg.log_queries_not_using_indexes`: Logs whether queries that do not use indexes.
@@ -89,6 +85,7 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_arg.query_cache_size`: Query cache size.
 * `mysql_arg.query_cache_type`: Query cache type.
 * `mysql_arg.read_rnd_buffer_size`: Size of the buffer that is used for reading rows in sorted order.
+* `mysql_arg.sync_binlog`: Controls how often the MySQL server synchronizes the binary log to disk.
 * `mysql_arg.storage_engine`: Preferred storage engine, InnoDB or MyISAM.
 * `mysql_arg.table_definition_cache`: The number of table definitions that can be stored in the definition cache.
 * `mysql_arg.table_open_cache`: The number of open tables for all threads.
@@ -126,11 +123,12 @@ Including an example of how to use your role (for instance, with variables passe
 ### Combination of group vars and playbook
 You can also use the group_vars or the host_vars files for setting the variables needed for this role. File you should change: group_vars/all or host_vars/`group_name`
 
+    mysql_version: '57'
     mysql_path: '/data'
-    mysql_selinux: 'false'
+    mysql_selinux: false
     mysql_user: 'mysql'
     mysql_mailto: 'somebody@example.com'
-    db_sa_pass: 'password'
+    mysql_sa_pass: 'password'
     mysql_backupset_arg:
       life: '604800'
       keep: '2'
@@ -142,6 +140,7 @@ You can also use the group_vars or the host_vars files for setting the variables
       binlog_cache_size: '1M'
       character_set: 'utf8'
       connect_timeout: '10'
+      innodb_flush_log_at_trx_commit: '2'
       interactive_timeout: '3600'
       join_buffer_size: '1M'
       log_queries_not_using_indexes: '1'
@@ -154,11 +153,17 @@ You can also use the group_vars or the host_vars files for setting the variables
       query_cache_type: '0'
       read_rnd_buffer_size: '1M'
       storage_engine: 'InnoDB'
+      sync_binlog: '1000'
       table_definition_cache: '4096'
       table_open_cache: '4096'
       table_open_cache_instances: '64' 
       tmp_table_size: '32M'
       wait_timeout: '3600'
+    environments: 'SIT'
+    consul_public_register: false
+    consul_public_exporter_token: '00000000-0000-0000-0000-000000000000'
+    consul_public_clients: 'localhost'
+    consul_public_http_port: '8500'
 
 ## License
 ![](https://img.shields.io/badge/MIT-purple.svg?style=for-the-badge)

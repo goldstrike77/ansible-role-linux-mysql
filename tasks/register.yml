@@ -1,0 +1,23 @@
+---
+- name: Register exporter service with an http health check
+  uri:
+    url: 'http://{{ item }}:{{ consul_public_http_port }}/v1/agent/service/register'
+    method: 'PUT'
+    body: '{"tags":["prometheus","exporter"],"ID":"{{ inventory_hostname | upper }}_mysqld_exporter","name":"mysqld_exporter","address":"{{ ansible_default_ipv4.address }}","port":{{ mysql_port_arg.mysql_exporter_port }},"meta":{"instance":"{{ inventory_hostname | upper }}","group":"{{ group_names[0] | upper }}","environment":"{{ environments | upper }}"},"checks":[{"http":"http://{{ ansible_default_ipv4.address }}:{{ mysql_port_arg.mysql_exporter_port }}/metrics","interval":"60s","tls_skip_verify":true,"method":"HEAD","timeout":"5s"}]}'
+    body_format: 'json'
+    status_code: '200'
+    headers:
+      X-Consul-Token: '{{ consul_public_exporter_token }}'
+      X-Requested-By: '{{ ansible_default_ipv4.address }}'
+      cache-control: 'no-cache'
+  environment:
+    no_proxy: '{{ item }}'
+  loop: '{{ consul_public_clients|flatten(levels=1) }}'
+  when: consul_public_register
+  register: register_status
+  until: register_status.status == 200
+  retries: 3
+  delay: 3
+  no_log: true
+  changed_when: false
+  failed_when: false

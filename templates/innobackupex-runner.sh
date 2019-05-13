@@ -12,7 +12,7 @@ SENDMAIL=/usr/sbin/sendmail
 CHMOD=/bin/chmod
 INNOBACKUPEX=innobackupex
 INNOBACKUPEXFULL=/usr/bin/$INNOBACKUPEX
-USEROPTIONS="--user=root --password={{ db_sa_pass }} --host=127.0.0.1"
+USEROPTIONS="--user=root --password={{ mysql_sa_pass }} --host=127.0.0.1"
 TMPFILE="/tmp/innobackupex-runner.$$.tmp"
 MAILTO={{ mysql_mailto }}
 MYCNF=/etc/my.cnf
