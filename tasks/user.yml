@@ -23,7 +23,7 @@
     login_unix_socket: '{{ mysql_path }}/mysql/mysql.sock'
     name: 'root'
     host: '{{ item }}'
-    password: '{{ db_sa_pass }}'
+    password: '{{ mysql_sa_pass }}'
     priv: '*.*:ALL,GRANT'
     state: present
   with_items:
