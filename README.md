@@ -14,7 +14,6 @@ __Table of Contents__
   * [Operating systems](#operating-systems)
   * [MySQL Versions](#MySQL-versions)
 - [ Role variables](#Role-variables)
-  * [Minimal Configuration](#minimal-configuration)
   * [Main Configuration](#Main-parameters)
   * [Other Configuration](#Other-parameters)
 - [Dependencies](#dependencies)
