@@ -29,7 +29,7 @@ mysql_port_arg:
 # Server System Variables #
 mysql_arg:
   binlog_cache_size: '1M' # Size of the cache to hold changes to the binary log during a transaction
-  character_set: 'utf8' # Server's default character set
+  character_set: 'utf8mb4' # Server's default character set
   connect_timeout: '30' # Server waits for a connect packet in seconds
   innodb_flush_log_at_trx_commit: '2' # Controls the balance between strict ACID compliance for commit operations and higher performance.
   interactive_timeout: '3600' # Server waits for activity on an interactive connection in seconds
