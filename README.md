@@ -44,7 +44,6 @@ The following list of supported the MySQL releases:
 ### Main parameters #
 There are some variables in defaults/main.yml which can (Or needs to) be overridden:
 #### General parameters
-* `mysql_is_install`:A boolean value, whether install the MySQL.
 * `mysql_version`: Specify the MySQL version.
 * `mysql_path`: Specify the MySQL data directory.
 * `mysql_selinux`: SELinux mysqld policy.
