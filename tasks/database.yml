@@ -1,0 +1,26 @@
+---
+- name: Create business database
+  mysql_db:
+    login_host: '127.0.0.1'
+    login_user: 'root'
+    login_password: '{{ mysql_sa_pass }}'
+    login_port: '{{ mysql_port_mysqld }}'
+    name: '{{ item.dbs }}'
+    encoding: '{{ mysql_arg.character_set }}'
+    state: 'present'
+  loop: '{{ mysql_bu_dbs_arg }}'
+  no_log: true
+
+- name: Create business user with privileges
+  mysql_user:
+    login_host: '127.0.0.1'
+    login_user: 'root'
+    login_password: '{{ mysql_sa_pass }}'
+    login_port: '{{ mysql_port_mysqld }}'
+    name: '{{ item.user }}'
+    password: '{{ item.pass }}'
+    host: '0.0.0.0'
+    priv: '{{ item.dbs }}.*:{{ item.priv }}'
+    state: present
+  loop: '{{ mysql_bu_dbs_arg }}'
+  no_log: true

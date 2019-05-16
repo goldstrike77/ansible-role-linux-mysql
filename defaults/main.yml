@@ -83,3 +83,10 @@ mysql_arg:
   thread_pool_oversubscribe: '10' # How many worker threads in a thread group can remain active at the same time once a thread group is oversubscribed due to stalls.
   tmp_table_size: '32M' # The maximum size of internal in-memory temporary tables.
   wait_timeout: '3600' # Server waits for activity on a noninteractive connection in seconds.
+
+# Business Database Variables #
+#mysql_bu_dbs_arg: # example only
+#  - dbs: 'd_example'
+#    user: 'u_example'
+#    pass: 'password'
+#    priv: 'ALL'
