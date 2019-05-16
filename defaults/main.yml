@@ -11,17 +11,17 @@ mysql_storage_engine: 'InnoDB' # Preferred storage engine, InnoDB or MyISAM
 mysql_innodb_buffer_pool_size: '{% if ansible_memtotal_mb <= 8192 and mysql_storage_engine == "InnoDB" and mysql_system_type == "autopilot" %}{{ (ansible_memtotal_mb * 0.585)|int }}{% elif ansible_memtotal_mb > 8192 and mysql_storage_engine == "InnoDB" and mysql_system_type == "autopilot" %}{{ (ansible_memtotal_mb * 0.725)|int }}{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "small" %}1024{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "medium" %}4096{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "large" %}10240{% else %}8{% endif %}' # The size in MB of the buffer pool.
 mysql_max_connections: '{% if mysql_system_type == "small" %}110{% elif mysql_system_type == "medium" %}310{% elif mysql_system_type == "large" %}510{% else %}{{ (ansible_memtotal_mb / 40)|int }}{% endif %}' # The maximum permitted number of simultaneous client connections.
 mysql_system_type: 'autopilot' # Define instance parameters.
-#┌───────────┬────────┬─────────────┬─────────────────┐
-#│   type    │ memory │  connection │  innodb buffer  │
-#├───────────┼────────┼─────────────┼─────────────────┤
-#│ small     │    4G  │       110   │         1024M   │
-#├───────────┼────────┼─────────────┼─────────────────┤
-#│ medium    │    8G  │       310   │         4096M   │
-#├───────────┼────────┼─────────────┼─────────────────┤
-#│ large     │   16G  │       510   │        10240M   │
-#├───────────┼────────┴─────────────┴─────────────────┤
-#│ autopilot │ Automatic calculation based on memory. │
-#└───────────┴────────────────────────────────────────┘
+# ┌───────────┬────────┬─────────────┬─────────────────┐
+# │   type    │ memory │  connection │  innodb buffer  │
+# ├───────────┼────────┼─────────────┼─────────────────┤
+# │ small     │    4G  │       110   │         1024M   │
+# ├───────────┼────────┼─────────────┼─────────────────┤
+# │ medium    │    8G  │       310   │         4096M   │
+# ├───────────┼────────┼─────────────┼─────────────────┤
+# │ large     │   16G  │       510   │        10240M   │
+# ├───────────┼────────┴─────────────┴─────────────────┤
+# │ autopilot │ Automatic calculation based on memory. │
+# └───────────┴────────────────────────────────────────┘
 
 # Service Mesh #
 environments: 'SIT' # Define the service environment.
@@ -88,6 +88,6 @@ mysql_arg:
 #mysql_bu_dbs_arg: # example only
 #  - dbs: 'd_example'
 #    user: 'u_example'
-#    host: '0.0.0.0'
+#    host: '%'
 #    pass: 'password'
 #    priv: 'ALL'
