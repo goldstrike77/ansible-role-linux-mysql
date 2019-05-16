@@ -18,7 +18,7 @@ thread_statistics                      = 1
 query_response_time_stats              = 1
 
 # GENERAL #
-server_id                              = {{ 2 ** 32 - 1 | random }}
+server_id                              = {{ (2 ** 32 - 1) | random }}
 user                                   = {{ mysql_user }}
 default_storage_engine                 = {{ mysql_storage_engine }}
 character_set_server                   = {{ mysql_arg.character_set }}
@@ -34,7 +34,7 @@ ignore-db-dir                          = mysqlsla_analyzes
 sql_mode                               = {{ ','.join(vars['mysql_sql_mode']) }}
 
 # MyISAM #
-key_buffer_size                        = {{ key_buffer_size }}M
+key_buffer_size                        = {{ mysql_arg.key_buffer_size }}M
 myisam-recover-options                 = FORCE,BACKUP
 
 # SAFETY #
