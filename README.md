@@ -52,6 +52,8 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_mailto`: MySQL report mail recipient.
 * `mysql_sa_pass`: MySQL root account password.
 
+* `mysql_storage_engine`: Preferred storage engine, InnoDB or MyISAM
+
 #### Service Mesh
 * `environments`: Define the service environment.
 * `consul_public_register`: Whether register a exporter service with public consul client.
@@ -75,6 +77,7 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_arg.innodb_flush_log_at_trx_commit`: Controls the balance between strict ACID compliance for commit operations and higher performance.
 * `mysql_arg.interactive_timeout`: Server waits for activity on an interactive connection in seconds.
 * `mysql_arg.join_buffer_size`: Size of the buffer that is used for index scans.
+* `mysql_arg.key_buffer_size`: Size of the buffer used for MyISAM tables index blocks in MB.
 * `mysql_arg.log_queries_not_using_indexes`: Logs whether queries that do not use indexes.
 * `mysql_arg.long_query_time`: Logs query that executes longer than in seconds.
 * `mysql_arg.max_allowed_packet`: The maximum size of one packet.
@@ -128,6 +131,7 @@ You can also use the group_vars or the host_vars files for setting the variables
     mysql_user: 'mysql'
     mysql_mailto: 'somebody@example.com'
     mysql_sa_pass: 'password'
+    mysql_storage_engine: 'InnoDB'
     mysql_backupset_arg:
       life: '604800'
       keep: '2'
@@ -142,6 +146,7 @@ You can also use the group_vars or the host_vars files for setting the variables
       innodb_flush_log_at_trx_commit: '2'
       interactive_timeout: '3600'
       join_buffer_size: '1M'
+      key_buffer_size: '32'
       log_queries_not_using_indexes: '1'
       long_query_time: '1'
       max_allowed_packet: '32M'
@@ -151,7 +156,6 @@ You can also use the group_vars or the host_vars files for setting the variables
       query_cache_size: '0'
       query_cache_type: '0'
       read_rnd_buffer_size: '1M'
-      storage_engine: 'InnoDB'
       sync_binlog: '1000'
       table_definition_cache: '4096'
       table_open_cache: '4096'

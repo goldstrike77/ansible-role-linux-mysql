@@ -24,5 +24,4 @@
   become: yes
   async: 35
   poll: 0
-  when:
-    - mysql_selinux
+  when: mysql_selinux
