@@ -88,5 +88,6 @@ mysql_arg:
 #mysql_bu_dbs_arg: # example only
 #  - dbs: 'd_example'
 #    user: 'u_example'
+#    host: '0.0.0.0'
 #    pass: 'password'
 #    priv: 'ALL'

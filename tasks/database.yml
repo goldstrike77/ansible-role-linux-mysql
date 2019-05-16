@@ -19,7 +19,7 @@
     login_port: '{{ mysql_port_mysqld }}'
     name: '{{ item.user }}'
     password: '{{ item.pass }}'
-    host: '0.0.0.0'
+    host: '{{ item.host }}'
     priv: '{{ item.dbs }}.*:{{ item.priv }}'
     state: present
   loop: '{{ mysql_bu_dbs_arg }}'
