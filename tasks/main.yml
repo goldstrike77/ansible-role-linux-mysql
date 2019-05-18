@@ -2,7 +2,7 @@
 - name: Check if MySQL tablespace exists
   stat:
     path: '{{ item }}'
-  with_items:
+  loop:
     - '{{ mysql_path }}/mysql/mysql/db.MYD'
   register: result
 

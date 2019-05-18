@@ -1,6 +1,7 @@
 ---
 # General parameters #
 mysql_is_install: false # A boolean value, whether install the MySQL.
+mysql_releases: 'Percona' # Define MySQL distribution, Community or Percona.
 mysql_version: '57' # Specify the MySQL version.
 mysql_path: '/data' # Specify the MySQL data directory.
 mysql_selinux: false # SELinux mysqld policy.
@@ -8,20 +9,20 @@ mysql_user: 'mysql' # System user name for running mysqld services.
 mysql_mailto: 'somebody@example.com' # MySQL report mail recipient.
 mysql_sa_pass: 'password' # MySQL root account password.
 mysql_storage_engine: 'InnoDB' # Preferred storage engine, InnoDB or MyISAM
-mysql_innodb_buffer_pool_size: '{% if ansible_memtotal_mb <= 8192 and mysql_storage_engine == "InnoDB" and mysql_system_type == "autopilot" %}{{ (ansible_memtotal_mb * 0.585)|int }}{% elif ansible_memtotal_mb > 8192 and mysql_storage_engine == "InnoDB" and mysql_system_type == "autopilot" %}{{ (ansible_memtotal_mb * 0.725)|int }}{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "small" %}1024{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "medium" %}4096{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "large" %}10240{% else %}8{% endif %}' # The size in MB of the buffer pool.
+mysql_innodb_buffer_pool_size: '{% if ansible_memtotal_mb <= 8192 and mysql_storage_engine == "InnoDB" and mysql_system_type == "autopilot" %}{{ (ansible_memtotal_mb * 0.585)|int }}{% elif ansible_memtotal_mb > 8192 and mysql_storage_engine == "InnoDB" and mysql_system_type == "autopilot" %}{{ (ansible_memtotal_mb * 0.725)|int }}{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "small" %}1536{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "medium" %}4096{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "large" %}10240{% else %}8{% endif %}' # The size in MB of the buffer pool.
 mysql_max_connections: '{% if mysql_system_type == "small" %}110{% elif mysql_system_type == "medium" %}310{% elif mysql_system_type == "large" %}510{% else %}{{ (ansible_memtotal_mb / 40)|int }}{% endif %}' # The maximum permitted number of simultaneous client connections.
 mysql_system_type: 'autopilot' # Define instance parameters.
-# ┌───────────┬────────┬─────────────┬─────────────────┐
-# │   type    │ memory │  connection │  innodb buffer  │
-# ├───────────┼────────┼─────────────┼─────────────────┤
-# │ small     │    4G  │       110   │         1024M   │
-# ├───────────┼────────┼─────────────┼─────────────────┤
-# │ medium    │    8G  │       310   │         4096M   │
-# ├───────────┼────────┼─────────────┼─────────────────┤
-# │ large     │   16G  │       510   │        10240M   │
-# ├───────────┼────────┴─────────────┴─────────────────┤
-# │ autopilot │ Automatic calculation based on memory. │
-# └───────────┴────────────────────────────────────────┘
+# ┌───────────┬────────┬─────────────┬──────────────┬───────────────┐
+# │   type    │ memory │  connection │ binlog cache │ innodb buffer │
+# ├───────────┼────────┼─────────────┼──────────────┼───────────────┤
+# │ small     │    4G  │       110   │       512K   │        1536M  │
+# ├───────────┼────────┼─────────────┼──────────────┼───────────────┤
+# │ medium    │    8G  │       310   │      1024K   │        4096M  │
+# ├───────────┼────────┼─────────────┼──────────────┼───────────────┤
+# │ large     │   16G  │       510   │      1024K   │       10240M  │
+# ├───────────┼────────┴─────────────┴──────────────┴───────────────┤
+# │ autopilot │  Automatic calculation based on memory.             │
+# └───────────┴─────────────────────────────────────────────────────┘
 
 # Service Mesh #
 environments: 'SIT' # Define the service environment.
@@ -42,9 +43,9 @@ mysql_port_exporter: '9104' # Prometheus MySQL Exporter listen port.
 
 # Server System Variables #
 mysql_arg:
-  binlog_cache_size: '1M' # Size of the cache to hold changes to the binary log during a transaction.
+  binlog_cache_size: '{% if mysql_system_type == "small" %}524288{% else %}1048576{% endif %}' # Size of the cache to hold changes to the binary log during a transaction.
   binlog_format: 'MIXED' # The binary logging format.
-  binlog_stmt_cache_size: '1048576' # Size of the cache for the binary log to hold nontransactional statements issued during a transaction.
+  binlog_stmt_cache_size: '{% if mysql_system_type == "small" %}524288{% else %}1048576{% endif %}' # Size of the cache for the binary log to hold nontransactional statements issued during a transaction.
   character_set: 'utf8mb4' # Server's default character set.
   connect_timeout: '30' # Server waits for a connect packet in seconds.
   expire_logs_days: '15' # The number of days for automatic binary log file removal.
@@ -73,7 +74,7 @@ mysql_arg:
   query_cache_size: '0' # Query cache size.
   query_cache_type: '0' # Query cache type.
   read_rnd_buffer_size: '1M' # Size of the buffer that is used for reading rows in sorted order.
-  sync_binlog: '1000' # Controls how often the MySQL server synchronizes the binary log to disk.
+  sync_binlog: '500' # Controls how often the MySQL server synchronizes the binary log to disk.
   table_definition_cache: '4096' # The number of table definitions that can be stored in the definition cache.
   table_open_cache: '4096' # The number of open tables for all threads.
   table_open_cache_instances: '64' # The number of open tables cache instances.

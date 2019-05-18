@@ -5,14 +5,16 @@
     description: '{{ mysqld_exporter_repo_name }} YUM repository'
     file: '{{ mysqld_exporter_repo_name }}'
     baseurl: '{{ mysqld_exporter_repo_url }}'
-    gpgcheck: no
+    gpgcheck: 'no'
+    timeout: '60'
 
 - name: Install the Prometheus mysqld_exporter packages
   yum:
     name: '{{ item }}'
     state: 'present'
-  with_items:
-    - '{{ mysqld_exporter_packages }}'
+    validate_certs: 'no'
+    disable_gpg_check: 'yes'
+  loop: '{{ mysqld_exporter_packages }}'
 
 - name: Prometheus mysqld_exporter configure file transfer
   template:
@@ -21,7 +23,7 @@
     owner: 'root'
     group: 'root'
     mode: 0644
-  with_items:
+  loop:
     - { src: 'prometheus.cnf', dest: '/etc/' }
     - { src: 'mysqld_exporter', dest: '/etc/default/' }    
   no_log: true

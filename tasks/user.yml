@@ -26,7 +26,7 @@
     password: '{{ mysql_sa_pass }}'
     priv: '*.*:ALL,GRANT'
     state: present
-  with_items:
+  loop:
     - '127.0.0.1'
     - 'localhost'
   no_log: true

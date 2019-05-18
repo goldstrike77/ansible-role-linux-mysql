@@ -2,7 +2,7 @@
 - name: Check if unused configure file exists
   stat: 
     path: '{{ item }}'
-  with_items:
+  loop:
     - '/etc/logrotate.d/mysql'
   register: file_exists
 
@@ -10,7 +10,7 @@
   file:
     path: '{{ item }}'
     state: absent
-  with_items:
+  loop:
     - '/etc/logrotate.d/mysql'
   when: file_exists.results[0].stat.exists
 
@@ -21,8 +21,7 @@
     owner: mysql
     group: mysql
     mode: 0755
-  with_items:
-    - '{{ mysql_folder }}'
+  loop: '{{ mysql_folder }}'
 
 - name: Configure kernel parameters
   sysctl:
@@ -32,8 +31,7 @@
     reload: yes
     sysctl_set: yes
     sysctl_file: /etc/sysctl.d/20-sysctl.conf
-  with_items:
-    - '{{ mysql_kernel_parameters }}'
+  loop: '{{ mysql_kernel_parameters }}'
 
 - name: MySQL Configure & Scripts file transfer
   template:
@@ -42,19 +40,17 @@
     owner: mysql
     group: mysql
     mode: 0664
-  with_items:
-    - '{{ mysql_conf_scripts }}'
+  loop: '{{ mysql_conf_scripts }}'
 
 - name: Initializes the MySQL 5.7 system tables
   shell: '/usr/sbin/mysqld --defaults-file=/etc/my.cnf --datadir={{ mysql_path }}/mysql --user=mysql --explicit_defaults_for_timestamp --initialize-insecure --ignore-db-dir=prometheus.cnf --ignore-db-dir=mysql-log-rotate'
-  when: 
-    - mysql_version == '57'
+  when: mysql_version == '57'
 
 - name: Changing Limits for MySQL services
   lineinfile:
     dest: /etc/security/limits.conf
     line: "{{ item.line }}"
-  with_items:
+  loop:
     - { line: '{{ mysql_user }} soft nofile {{ mysql_arg.open_files_limit }}' }
     - { line: '{{ mysql_user }} hard nofile {{ mysql_arg.open_files_limit }}' }
     - { line: '{{ mysql_user }} soft nproc {{ mysql_arg.open_nproc_limit }}' }
@@ -69,28 +65,20 @@
     insertafter: '^\[Service\]'
     regexp: '{{ item.regexp }}'
     line: '{{ item.line }}'
-  with_items:
-    - '{{ mysql_service_parameter }}'
-  when:
-    - ansible_distribution_major_version|int > 6
+  loop: '{{ mysql_service_parameter }}'
+  when: ansible_distribution_major_version|int > 6
 
 - name: Ensure MySQL service is enabled
   systemd:
-    name: '{{ item }}'
+    name: 'mysqld.service'
     enabled: yes
     state: started
     daemon_reload: yes
-  with_items:
-    - 'mysqld.service'
-  when:
-    - ansible_distribution_major_version|int > 6
+  when: ansible_distribution_major_version|int > 6
 
 - name: Ensure MySQL service is enabled
   service:
-    name: '{{ item }}'
+    name: 'mysql'
     enabled: yes
     state: started
-  with_items:
-    - 'mysql'
-  when:
-    - ansible_distribution_major_version|int < 7
+  when: ansible_distribution_major_version|int < 7

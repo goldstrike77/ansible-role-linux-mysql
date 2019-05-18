@@ -1,17 +1,23 @@
 ---
-mysql_repo_name: "percona"
-mysql_repo_url: "http://repo.percona.com/release/{{ansible_distribution_version.split('.')[0]}}/RPMS/{{ansible_architecture}}"
-disable_gpg_check: yes
+mysql_percona_repo_name: "percona"
+mysql_percona_repo_url: "http://repo.percona.com/release/{{ ansible_distribution_version.split('.')[0] }}/RPMS/{{ ansible_architecture }}"
 
-mysql_packages:
-  - 'Percona-Server-server-{{ mysql_version }}'
+mysql_community_repo_name: "mysql"
+mysql_community_repo_url: "http://mirrors.tuna.tsinghua.edu.cn/mysql/yum/mysql{{ mysql_version }}-community-el{{ ansible_distribution_version.split('.')[0] }}/"
+
+mysql_dependent_packages:
   - 'percona-xtrabackup-24'
   - 'percona-toolkit'
-#  - 'pmm-client'
   - 'qpress'
   - 'jemalloc'
   - 'MySQL-python'
   - 'procmail'
+
+mysql_percona_packages:
+  - "Percona-Server-server-{{ mysql_version }}"
+
+mysql_community_packages:
+  - 'mysql-community-server'
 
 mysqld_exporter_repo_name: "prometheus"
 mysqld_exporter_repo_url: "http://cache.omygods.com/prometheus-rpm/release/el/{{ansible_distribution_version.split('.')[0]}}/$basearch"

@@ -38,12 +38,14 @@ This role will work on the following operating systems:
 
 The following list of supported the MySQL releases:
 
+* MySQL Community Server 5.7
 * Percona Server for MySQL 5.7
 
 ## Role variables
 ### Main parameters #
 There are some variables in defaults/main.yml which can (Or needs to) be overridden:
 #### General parameters
+* `mysql_releases`: Define MySQL distribution.
 * `mysql_version`: Specify the MySQL version.
 * `mysql_path`: Specify the MySQL data directory.
 * `mysql_selinux`: SELinux mysqld policy.
@@ -144,6 +146,7 @@ Including an example of how to use your role (for instance, with variables passe
 ### Combination of group vars and playbook
 You can also use the group_vars or the host_vars files for setting the variables needed for this role. File you should change: group_vars/all or host_vars/`group_name`
 
+    mysql_releases: 'Percona'
     mysql_version: '57'
     mysql_path: '/data'
     mysql_selinux: false
@@ -161,7 +164,7 @@ You can also use the group_vars or the host_vars files for setting the variables
     mysql_port_mysqld: '3306'
     mysql_port_exporter: '9104'
     mysql_arg:
-      binlog_cache_size: '1M'
+      binlog_cache_size: '1048576'
       binlog_format: 'MIXED'
       binlog_stmt_cache_size: '1048576'
       character_set: 'utf8mb4'

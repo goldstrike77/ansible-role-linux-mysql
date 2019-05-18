@@ -1,15 +1,50 @@
 ---
-- name: Add MySQL YUM repositories
+- name: Add Percona MySQL YUM repositories
   yum_repository:
-    name: '{{ mysql_repo_name }}'
-    description: '{{ mysql_repo_name }} YUM repository'
-    file: '{{ mysql_repo_name }}'
-    baseurl: '{{ mysql_repo_url }}'
-    gpgcheck: no
+    name: '{{ mysql_percona_repo_name }}'
+    description: '{{ mysql_percona_repo_name }} YUM repository'
+    file: '{{ mysql_percona_repo_name }}'
+    baseurl: '{{ mysql_percona_repo_url }}'
+    gpgcheck: 'no'
+    timeout: '60'
 
-- name: Install the MySQL packages
+- name: Add Community MySQL YUM repositories
+  yum_repository:
+    name: '{{ mysql_community_repo_name }}'
+    description: '{{ mysql_community_repo_name }} YUM repository'
+    file: '{{ mysql_community_repo_name }}'
+    baseurl: '{{ mysql_community_repo_url }}'
+    gpgcheck: 'no'
+    timeout: '60'
+  when: mysql_releases | lower == 'community' 
+
+- name: Install the MySQL dependencies packages
   yum:
     name: '{{ item }}'
     state: 'present'
-  with_items:
-    - '{{ mysql_packages }}'
+    validate_certs: 'no'
+    disable_gpg_check: 'yes'
+    update_cache: 'yes'
+  loop: '{{ mysql_dependent_packages }}'
+
+- name: Install the Percona MySQL packages
+  yum:
+    name: '{{ item }}'
+    state: 'present'
+    enablerepo: 'percona'
+    validate_certs: 'no'
+    disable_gpg_check: 'yes'
+    update_cache: 'yes'
+  loop: '{{ mysql_percona_packages }}'
+  when: mysql_releases | lower == 'percona'
+
+- name: Install the Community MySQL packages
+  yum:
+    name: '{{ item }}'
+    state: 'present'
+    enablerepo: 'percona'
+    validate_certs: 'no'
+    disable_gpg_check: 'yes'
+    update_cache: 'yes'
+  loop: '{{ mysql_community_packages }}'
+  when: mysql_releases | lower == 'community'

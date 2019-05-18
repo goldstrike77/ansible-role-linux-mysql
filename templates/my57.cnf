@@ -13,9 +13,11 @@ thp-setting                            = never
 # PERFORMANCE #
 #performance-schema-instrument          = 'memory/%=ON' # https://jira.percona.com/browse/PS-3734
 performance_schema                     = 0
+{% if mysql_releases | lower == 'percona' %}
 userstat                               = 1
 thread_statistics                      = 1
 query_response_time_stats              = 1
+{% endif %}
 
 # GENERAL #
 server_id                              = {{ (2 ** 32 - 1) | random }}
@@ -73,9 +75,11 @@ query_cache_type                       = {{ mysql_arg.query_cache_type }}
 query_cache_size                       = {{ mysql_arg.query_cache_size }}
 max_connections                        = {{ mysql_max_connections }}
 thread_cache_size                      = {{ mysql_arg.thread_cache_size }}
+{% if mysql_releases | lower == 'percona' %}
 thread_handling                        = {{ mysql_arg.thread_handling }}
 thread_pool_max_threads                = {{ mysql_arg.thread_pool_max_threads }}
 thread_pool_oversubscribe              = {{ mysql_arg.thread_pool_oversubscribe }}
+{% endif %}
 open_files_limit                       = {{ mysql_arg.open_files_limit }}
 performance_schema_max_table_instances = {{ mysql_arg.performance_schema_max_table_instances }}
 table_definition_cache                 = {{ mysql_arg.table_definition_cache }}
@@ -120,11 +124,15 @@ slow_query_log_file                    = {{ mysql_path }}/mysql/logs/mysql_slow.
 log_queries_not_using_indexes          = {{ mysql_arg.log_queries_not_using_indexes }}
 long_query_time                        = {{ mysql_arg.long_query_time }}
 log_syslog                             = ON
+{% if mysql_releases | lower == 'percona' %}
 audit_log_handler                      = SYSLOG
 audit_log_format                       = CSV
 audit_log_policy                       = QUERIES
 audit_log_syslog_ident                 = mysqld
 audit_log_include_commands             = "{{ ','.join(vars['mysql_audit_log_commands']) }}"
+{% endif %}
 
 # PLUGIN #
+{% if mysql_releases | lower == 'percona' %}
 plugin-load                            = "audit_log=audit_log.so;QUERY_RESPONSE_TIME=query_response_time.so;QUERY_RESPONSE_TIME_AUDIT=query_response_time.so;QUERY_RESPONSE_TIME_READ=query_response_time.so;QUERY_RESPONSE_TIME_WRITE=query_response_time.so"
+{% endif %}
