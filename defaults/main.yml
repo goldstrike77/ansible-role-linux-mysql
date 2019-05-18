@@ -12,17 +12,17 @@ mysql_storage_engine: 'InnoDB' # Preferred storage engine, InnoDB or MyISAM
 mysql_innodb_buffer_pool_size: '{% if ansible_memtotal_mb <= 8192 and mysql_storage_engine == "InnoDB" and mysql_system_type == "autopilot" %}{{ (ansible_memtotal_mb * 0.585)|int }}{% elif ansible_memtotal_mb > 8192 and mysql_storage_engine == "InnoDB" and mysql_system_type == "autopilot" %}{{ (ansible_memtotal_mb * 0.725)|int }}{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "small" %}1536{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "medium" %}4096{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "large" %}10240{% else %}8{% endif %}' # The size in MB of the buffer pool.
 mysql_max_connections: '{% if mysql_system_type == "small" %}110{% elif mysql_system_type == "medium" %}310{% elif mysql_system_type == "large" %}510{% else %}{{ (ansible_memtotal_mb / 40)|int }}{% endif %}' # The maximum permitted number of simultaneous client connections.
 mysql_system_type: 'autopilot' # Define instance parameters.
-# ┌───────────┬────────┬─────────────┬──────────────┬───────────────┐
-# │   type    │ memory │  connection │ binlog cache │ innodb buffer │
-# ├───────────┼────────┼─────────────┼──────────────┼───────────────┤
-# │ small     │    4G  │       110   │       512K   │        1536M  │
-# ├───────────┼────────┼─────────────┼──────────────┼───────────────┤
-# │ medium    │    8G  │       310   │      1024K   │        4096M  │
-# ├───────────┼────────┼─────────────┼──────────────┼───────────────┤
-# │ large     │   16G  │       510   │      1024K   │       10240M  │
-# ├───────────┼────────┴─────────────┴──────────────┴───────────────┤
-# │ autopilot │  Automatic calculation based on memory.             │
-# └───────────┴─────────────────────────────────────────────────────┘
+# ┌───────────┬────────┬────────────┬───────────────┬────────────┬──────────────┐
+# │   type    │ memory │ connection │ InnoDB buffer │ InnoDB log │ binlog cache │
+# ├───────────┼────────┼────────────┼───────────────┼────────────┼──────────────┤
+# │ small     │    4G  │      110   │       1536M   │    1024M   │      512K    │
+# ├───────────┼────────┼────────────┼───────────────┼────────────┼──────────────┤
+# │ medium    │    8G  │      310   │       4096M   │            │              │
+# ├───────────┼────────┼────────────┼───────────────┤            │              │
+# │ large     │   16G  │      510   │      10240M   │    4096M   │     1024K    │
+# ├───────────┼────────┴────────────┴───────────────┤            │              │
+# │ autopilot │Automatic calculation based on memory│            │              │
+# └───────────┴─────────────────────────────────────┴────────────┴──────────────┘
 
 # Service Mesh #
 environments: 'SIT' # Define the service environment.
