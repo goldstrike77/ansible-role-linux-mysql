@@ -1,6 +1,7 @@
 ---
 mysql_percona_repo_name: "percona"
-mysql_percona_repo_url: "http://repo.percona.com/release/{{ ansible_distribution_version.split('.')[0] }}/RPMS/{{ ansible_architecture }}"
+#mysql_percona_repo_url: "http://repo.percona.com/release/{{ ansible_distribution_version.split('.')[0] }}/RPMS/{{ ansible_architecture }}"
+mysql_percona_repo_url: "http://mirrors.tuna.tsinghua.edu.cn/percona/release/{{ ansible_distribution_version.split('.')[0] }}/RPMS/{{ ansible_architecture }}"
 
 mysql_community_repo_name: "mysql"
 mysql_community_repo_url: "http://mirrors.tuna.tsinghua.edu.cn/mysql/yum/mysql{{ mysql_version }}-community-el{{ ansible_distribution_version.split('.')[0] }}/"
