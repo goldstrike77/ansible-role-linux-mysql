@@ -12,7 +12,7 @@ thp-setting                            = never
 [mysqld]
 # PERFORMANCE #
 #performance-schema-instrument          = 'memory/%=ON' # https://jira.percona.com/browse/PS-3734
-performance_schema                     = 0
+performance_schema                     = 1
 {% if mysql_releases | lower == 'percona' %}
 userstat                               = 1
 thread_statistics                      = 1

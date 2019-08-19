@@ -12,7 +12,7 @@
     name: 'prometheus'
     password: '{{ mysqld_exporter_user_passwd }}'
     host: '127.0.0.1'
-    priv: '*.*:PROCESS,REPLICATION CLIENT,SELECT'
+    priv: '*.*:PROCESS,REPLICATION CLIENT,REPLICATION SLAVE,SELECT'
     state: 'present'
   no_log: true
 
