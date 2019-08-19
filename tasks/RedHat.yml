@@ -1,4 +1,7 @@
 ---
+- name: Include OS-specific variables
+  include_vars: '{{ ansible_os_family }}.yml'
+
 - name: Add Percona MySQL YUM repositories
   yum_repository:
     name: '{{ mysql_percona_repo_name }}'
@@ -20,31 +23,40 @@
 
 - name: Install the MySQL dependencies packages
   yum:
-    name: '{{ item }}'
+    name: '{{ mysql_dependent_packages }}'
     state: 'present'
     validate_certs: 'no'
     disable_gpg_check: 'yes'
     update_cache: 'yes'
-  loop: '{{ mysql_dependent_packages }}'
+  register: yum_status
+  until: yum_status is succeeded
+  retries: 3
+  delay: 5
 
 - name: Install the Percona MySQL packages
   yum:
-    name: '{{ item }}'
+    name: '{{ mysql_percona_packages }}'
     state: 'present'
     enablerepo: 'percona'
     validate_certs: 'no'
     disable_gpg_check: 'yes'
     update_cache: 'yes'
-  loop: '{{ mysql_percona_packages }}'
+  register: yum_status
+  until: yum_status is succeeded
+  retries: 3
+  delay: 5
   when: mysql_releases | lower == 'percona'
 
 - name: Install the Community MySQL packages
   yum:
-    name: '{{ item }}'
+    name: '{{ mysql_community_packages }}'
     state: 'present'
     enablerepo: 'percona'
     validate_certs: 'no'
     disable_gpg_check: 'yes'
     update_cache: 'yes'
-  loop: '{{ mysql_community_packages }}'
+  register: yum_status
+  until: yum_status is succeeded
+  retries: 3
+  delay: 5
   when: mysql_releases | lower == 'community'

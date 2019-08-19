@@ -13,7 +13,7 @@
     password: '{{ mysqld_exporter_user_passwd }}'
     host: '127.0.0.1'
     priv: '*.*:PROCESS,REPLICATION CLIENT,SELECT'
-    state: present
+    state: 'present'
   no_log: true
 
 - name: Modify root password
@@ -25,7 +25,7 @@
     host: '{{ item }}'
     password: '{{ mysql_sa_pass }}'
     priv: '*.*:ALL,GRANT'
-    state: present
+    state: 'present'
   loop:
     - '127.0.0.1'
     - 'localhost'

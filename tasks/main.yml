@@ -8,8 +8,6 @@
 
 - name: MySQL operation
   block:
-    - name: Include OS-specific variables
-      include_vars: '{{ ansible_os_family }}.yml'
     - name: Include tasks for specific OS
       include: '{{ ansible_os_family }}.yml'
     - name: Straight to getenforce selinux status
@@ -30,8 +28,11 @@
       include: 'backup.yml'
     - name: Include prometheus exporter tasks
       include: 'exporter.yml'
+      when: exporter_is_install | bool
     - include_tasks: 'register.yml'
-      when: consul_public_register
+      when:
+        - exporter_is_install | bool
+        - consul_public_register | bool
     - name: Ensure MTA service is enabled
       systemd:
         name: 'postfix.service'

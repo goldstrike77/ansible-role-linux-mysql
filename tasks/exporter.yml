@@ -10,11 +10,14 @@
 
 - name: Install the Prometheus mysqld_exporter packages
   yum:
-    name: '{{ item }}'
+    name: '{{ mysqld_exporter_packages }}'
     state: 'present'
     validate_certs: 'no'
     disable_gpg_check: 'yes'
-  loop: '{{ mysqld_exporter_packages }}'
+  register: yum_status
+  until: yum_status is succeeded
+  retries: 3
+  delay: 5
 
 - name: Prometheus mysqld_exporter configure file transfer
   template:
@@ -22,7 +25,7 @@
     dest: '{{ item.dest }}'
     owner: 'root'
     group: 'root'
-    mode: 0644
+    mode: '0644'
   loop:
     - { src: 'prometheus.cnf', dest: '/etc/' }
     - { src: 'mysqld_exporter', dest: '/etc/default/' }    
@@ -39,7 +42,7 @@
     name: 'mysqld_exporter.service'
     enabled: 'yes'
     state: 'started'
-    daemon_reload: yes
+    daemon_reload: 'yes'
   when: ansible_distribution_major_version|int > 6
 
 - name: Prometheus mysqld_exporter service is enabled
