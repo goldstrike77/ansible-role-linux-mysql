@@ -1,4 +1,8 @@
 ---
+- name: Gathering service facts
+  service_facts:
+  register: services_state
+
 - name: Allow MySQL service port
   firewalld:
     port: '{{ item }}/tcp'
@@ -11,6 +15,7 @@
     - '{{ mysql_port_exporter }}'
   when:
     - ansible_distribution_major_version|int > 6
+    - services_state.ansible_facts.services["firewalld.service"].state == 'running'
 
 - name: Allow MySQL service port
   lineinfile:
@@ -30,4 +35,4 @@
     state: 'restarted'
   when:
     - ansible_distribution_major_version|int < 7
-    - firewalld_update|changed
+    - firewalld_update is changed
