@@ -4,7 +4,7 @@ mysql_folder:
   - '{{ mysql_path }}/mysql/innodb'
   - '{{ mysql_path }}/mysql/binlog'
   - '{{ mysql_path }}/mysql/mysqlsla_analyzes'
-  - '{{ mysql_path }}/mysql_backup'
+  - '{{ mysql_path }}/backup/mysql'
 
 mysql_kernel_parameters:
   - { variable: 'fs.aio-max-nr', value: '1048576' }

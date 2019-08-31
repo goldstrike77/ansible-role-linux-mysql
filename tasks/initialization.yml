@@ -9,7 +9,7 @@
 - name: Remove unused configure file
   file:
     path: '{{ item }}'
-    state: absent
+    state: 'absent'
   loop:
     - '/etc/logrotate.d/mysql'
   when: file_exists.results[0].stat.exists
@@ -17,19 +17,19 @@
 - name: Creating MySQL folder
   file:
     dest: '{{ item }}'
-    state: directory
-    owner: mysql
-    group: mysql
-    mode: 0755
+    state: 'directory'
+    owner: 'mysql'
+    group: 'mysql'
+    mode: '0755'
   loop: '{{ mysql_folder }}'
 
 - name: Configure kernel parameters
   sysctl:
     name: '{{ item.variable }}'
     value: '{{ item.value }}'
-    state: present
-    reload: yes
-    sysctl_set: yes
+    state: 'present'
+    reload: 'yes'
+    sysctl_set: 'yes'
     sysctl_file: /etc/sysctl.d/20-sysctl.conf
   loop: '{{ mysql_kernel_parameters }}'
 
@@ -37,9 +37,9 @@
   template:
     src: '{{ item.src }}'
     dest: '{{ item.dest }}'
-    owner: mysql
-    group: mysql
-    mode: 0664
+    owner: 'mysql'
+    group: 'mysql'
+    mode: '0664'
   loop: '{{ mysql_conf_scripts }}'
 
 - name: Initializes the MySQL 5.7 system tables
@@ -71,14 +71,14 @@
 - name: Ensure MySQL service is enabled
   systemd:
     name: 'mysqld.service'
-    enabled: yes
-    state: started
-    daemon_reload: yes
+    enabled: 'yes'
+    state: 'started'
+    daemon_reload: 'yes'
   when: ansible_distribution_major_version|int > 6
 
 - name: Ensure MySQL service is enabled
   service:
     name: 'mysql'
-    enabled: yes
-    state: started
+    enabled: 'yes'
+    state: 'started'
   when: ansible_distribution_major_version|int < 7
