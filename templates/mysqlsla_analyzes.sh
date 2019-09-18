@@ -24,6 +24,6 @@ $MYSQLSLA --report-format 'rusage,date,header,profile,query_report,prepared' --f
 
 $CAT $RESULT_FILE | $FORMAIL -I "From: do-not-reply@somebody.com" -I "Subject:"`hostname`" MySQL queries analyzes on "`date '+%Y%m%d'` | $SENDMAIL -oi $MAILTO
 
-$LOGROTATE -f /data/mysql/mysql-log-rotate
+$LOGROTATE -f {{ mysql_path }}/mysql/mysql-log-rotate
 
 exit 0
