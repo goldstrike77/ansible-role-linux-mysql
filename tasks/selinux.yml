@@ -1,4 +1,8 @@
 ---
+- name: "Set mysql_selinux to false for default"
+  set_fact:
+    mysql_selinux: "{{ false }}"
+
 - name: "Get getenforce binary"
   stat:
     path: '/usr/sbin/getenforce'
@@ -24,4 +28,15 @@
   become: yes
   async: 35
   poll: 0
-  when: mysql_selinux
+  when: mysql_selinux | bool
+
+- name: Allow MySQL to listen on service port
+  seport:
+    ports: '{{ item }}'
+    proto: 'tcp'
+    setype: 'http_port_t'
+    state: 'present'
+  loop:
+    - '{{ mysql_port_mysqld }}'
+    - '{{ mysql_port_exporter }}'
+  when: mysql_selinux | bool

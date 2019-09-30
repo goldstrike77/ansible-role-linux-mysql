@@ -48,7 +48,6 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_releases`: Define MySQL distribution.
 * `mysql_version`: Specify the MySQL version.
 * `mysql_path`: Specify the MySQL data directory.
-* `mysql_selinux`: SELinux mysqld policy.
 * `mysql_user`: System user name for running mysqld services.
 * `mysql_mailto`: MySQL report mail recipient.
 * `mysql_sa_pass`: MySQL root account password.
@@ -151,7 +150,6 @@ You can also use the group_vars or the host_vars files for setting the variables
     mysql_releases: 'Percona'
     mysql_version: '57'
     mysql_path: '/data'
-    mysql_selinux: false
     mysql_user: 'mysql'
     mysql_mailto: 'somebody@example.com'
     mysql_sa_pass: 'password'

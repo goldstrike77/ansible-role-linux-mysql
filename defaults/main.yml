@@ -4,7 +4,6 @@ mysql_is_install: false # A boolean value, whether install the MySQL.
 mysql_releases: 'Percona' # Define MySQL distribution, Community or Percona.
 mysql_version: '57' # Specify the MySQL version.
 mysql_path: '/data' # Specify the MySQL data directory.
-mysql_selinux: false # SELinux mysqld policy.
 mysql_user: 'mysql' # System user name for running mysqld services.
 mysql_mailto: 'somebody@example.com' # MySQL report mail recipient.
 mysql_sa_pass: 'password' # MySQL root account password.

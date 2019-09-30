@@ -13,6 +13,8 @@ mysql_dependent_packages:
   - 'jemalloc'
   - 'MySQL-python'
   - 'procmail'
+  - 'libselinux-utils'
+  - 'policycoreutils-python'
 
 mysql_percona_packages:
   - "Percona-Server-server-{{ mysql_version }}"
