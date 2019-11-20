@@ -3,6 +3,6 @@
   cron:
     user: 'mysql'
     name: 'MySQL backup'
-    minute: "{{ ( inventory_hostname | hash | list | map('int',0,16) | sum ) % 60 }}"
-    hour: "{{ (( inventory_hostname | hash | list | map('int',0,16) | sum ) % 2) + 1 }}"
+    minute: "{{ ( ansible_hostname | hash | list | map('int',0,16) | sum ) % 60 }}"
+    hour: "{{ (( ansible_hostname | hash | list | map('int',0,16) | sum ) % 2) + 1 }}"
     job: '/bin/sh /usr/local/bin/innobackupex-runner.sh'
