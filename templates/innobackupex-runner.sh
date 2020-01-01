@@ -14,7 +14,7 @@ INNOBACKUPEX=innobackupex
 INNOBACKUPEXFULL=/usr/bin/$INNOBACKUPEX
 USEROPTIONS="--user=root --password={{ mysql_sa_pass }} --host=127.0.0.1"
 TMPFILE="/tmp/innobackupex-runner.$$.tmp"
-MAILTO={{ mysql_mailto }}
+MAILTO={{ mysql_mailto | default('') }}
 MYCNF=/etc/my.cnf
 MYSQL=/usr/bin/mysql
 MYSQLADMIN=/usr/bin/mysqladmin
@@ -101,6 +101,7 @@ fi
 echo "Decrypting Encrypted LSN." >> $TMPFILE 2>&1
 for i in `find $BACKUPDIR -iname "xtrabackup_checkpoints.xbcrypt"`; do $XBCRYPT -d --encrypt-key=$ENCRYPTKEY --encrypt-algo=$ENCRYPT < $i > $(dirname $i)/$(basename $i .xbcrypt); done
 
+{% if mysql_mailto is defined %}
 if [ -z "`tail -2 $TMPFILE | grep 'completed OK!'`" ] ; then
   echo "$INNOBACKUPEX failed:"; echo
   echo "---------- ERROR OUTPUT from $INNOBACKUPEX ----------"
@@ -109,6 +110,7 @@ if [ -z "`tail -2 $TMPFILE | grep 'completed OK!'`" ] ; then
 else
   $CAT $TMPFILE | $FORMAIL -I "From: do-not-reply@somebody.com" -I "Subject:"`hostname`" MySQL backup succeed on "`date '+%Y%m%d'` | $SENDMAIL -oi $MAILTO
 fi
+{% endif %}
 
 THISBACKUP=`awk -- "/Backup created in directory/ { split( \\\$0, p, \"'\" ) ; print p[2] }" $TMPFILE`
 

@@ -21,6 +21,6 @@
     password: '{{ item.pass }}'
     host: '{{ item.host }}'
     priv: '{{ item.dbs }}.*:{{ item.priv }}'
-    state: present
+    state: 'present'
   loop: '{{ mysql_bu_dbs_arg }}'
   no_log: true

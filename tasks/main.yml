@@ -1,4 +1,19 @@
 ---
+- name: Gather MySQL node variables for cluster.
+  set_fact:
+    mysql_servers: "\
+      {% set _mysql_servers = [] %}\
+      {% for host in groups[group_names[-1]] %}\
+        {% if mysql_cluster_name is defined %}\
+          {% set _mysql_cluster_name = mysql_cluster_name | default('') %}\
+          {% if ( _mysql_cluster_name == mysql_cluster_name ) %}\
+            {% if _mysql_servers.append(hostvars[host]['ansible_host']) %}{% endif %}\
+          {% endif %}\
+        {% endif %}\
+      {% endfor %}\
+      {{ _mysql_servers }}"
+  when: mysql_cluster_mode != 'standalone'
+
 - name: Check if MySQL tablespace exists
   stat:
     path: '{{ item }}'
@@ -22,6 +37,11 @@
       include: 'database.yml'
       when:
         - mysql_bu_dbs_arg is defined
+    - name: Include replication tasks
+      include: 'replication.yml'
+      when:
+        - mysql_cluster_mode == 'replication'
+        - mysql_servers | length > 1
     - name: Include query analyzes tasks
       include: 'analyzes.yml'
     - name: Include backup tasks
@@ -40,6 +60,7 @@
         state: 'started'
       when:
         - ansible_distribution_major_version|int > 6
+        - mysql_mailto is defined
     - name: Ensure MTA service is enabled
       service:
         name: 'postfix'
@@ -47,5 +68,6 @@
         state: 'started'
       when:
         - ansible_distribution_major_version|int < 7
+        - mysql_mailto is defined
   when:
     - not result.results[0].stat.exists

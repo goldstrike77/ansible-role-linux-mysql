@@ -44,7 +44,7 @@ The following list of supported the MySQL releases:
 ## Role variables
 ### Main parameters #
 There are some variables in defaults/main.yml which can (Or needs to) be overridden:
-#### General parameters
+###### General parameters
 * `mysql_releases`: Define MySQL distribution.
 * `mysql_version`: Specify the MySQL version.
 * `mysql_path`: Specify the MySQL data directory.
@@ -56,7 +56,11 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_max_connections`: The maximum permitted number of simultaneous client connections.
 * `mysql_system_type`: Define instance parameters.
 
-#### Service Mesh
+##### Cluster parameters
+* `mysql_cluster_name`: Cluster name of servers that implements distribution performance.
+* `mysql_cluster_mode`: Defines type of cluster type: standalone / replication.
+
+##### Service Mesh
 * `environments`: Define the service environment.
 * `tags`: Define the service custom label.
 * `exporter_is_install`: Whether to install prometheus exporter.
@@ -65,16 +69,16 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `consul_public_clients`: List of public consul clients.
 * `consul_public_http_port`: The consul HTTP API port.
 
-#### Backup parameters
+##### Backup parameters
 * `mysql_backupset_arg.life`: Lifetime of the latest full backup in seconds.
 * `mysql_backupset_arg.keep`: The number of full backups (and its incrementals) to keep.
 * `mysql_backupset_arg.encryptkey`: BackupSet encryption key, Generate by [openssl rand -base64 24].
 
-#### Listen port
+##### Listen port
 * `mysql_port_mysqld`: MySQL instance listen port.
 * `mysql_port_exporter`: Prometheus MySQL Exporter listen port.
 
-#### Server System Variables
+##### Server System Variables
 * `mysql_arg.binlog_cache_size`: Size of the cache to hold changes to the binary log during a transaction.
 * `mysql_arg.binlog_format`: The binary logging format.
 * `mysql_arg.binlog_stmt_cache_size`: Size of the cache for the binary log to hold nontransactional statements issued during a transaction.
@@ -83,7 +87,6 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_arg.expire_logs_days`: The number of days for automatic binary log file removal.
 * `mysql_arg.enforce_gtid_consistency`: Enforces GTID consistency by allowing execution of only statements that can be safely logged using a GTID.
 * `mysql_arg.gtid_mode`: Controls whether GTID based logging is enabled and what type of transactions the logs can contain.
-
 * `mysql_arg.innodb_buffer_pool_instances`: The number of regions that the InnoDB buffer pool is divided into.
 * `mysql_arg.innodb_flush_log_at_trx_commit`: Controls the balance between strict ACID compliance for commit operations and higher performance.
 * `mysql_arg.innodb_log_buffer_size`: Size in MB of the buffer that InnoDB uses to write to the log files on disk.
@@ -160,6 +163,8 @@ You can also use the group_vars or the host_vars files for setting the variables
     mysql_innodb_buffer_pool_size: '1024'
     mysql_max_connections: '100'
     mysql_system_type: 'autopilot'
+    mysql_cluster_name: 'cluster01'
+    mysql_cluster_mode: 'standalone'
     mysql_backupset_arg:
       life: '604800'
       keep: '2'

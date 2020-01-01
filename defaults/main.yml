@@ -5,8 +5,8 @@ mysql_releases: 'Percona' # Define MySQL distribution, Community or Percona.
 mysql_version: '57' # Specify the MySQL version.
 mysql_path: '/data' # Specify the MySQL data directory.
 mysql_user: 'mysql' # System user name for running mysqld services.
-mysql_mailto: 'somebody@example.com' # MySQL report mail recipient.
-mysql_sa_pass: 'password' # MySQL root account password.
+#mysql_mailto: 'somebody@example.com' # MySQL report mail recipient.
+mysql_sa_pass: 'changeme' # MySQL root account password.
 mysql_storage_engine: 'InnoDB' # Preferred storage engine, InnoDB or MyISAM
 mysql_innodb_buffer_pool_size: '{% if ansible_memtotal_mb <= 8192 and mysql_storage_engine == "InnoDB" and mysql_system_type == "autopilot" %}{{ (ansible_memtotal_mb * 0.585)|int }}{% elif ansible_memtotal_mb > 8192 and mysql_storage_engine == "InnoDB" and mysql_system_type == "autopilot" %}{{ (ansible_memtotal_mb * 0.725)|int }}{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "small" %}1536{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "medium" %}4096{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "large" %}10240{% else %}8{% endif %}' # The size in MB of the buffer pool.
 mysql_max_connections: '{% if mysql_system_type == "small" %}110{% elif mysql_system_type == "medium" %}310{% elif mysql_system_type == "large" %}510{% else %}{{ (ansible_memtotal_mb / 40)|int }}{% endif %}' # The maximum permitted number of simultaneous client connections.
@@ -23,19 +23,9 @@ mysql_system_type: 'autopilot' # Define instance parameters.
 # │ autopilot │Automatic calculation based on memory│            │              │
 # └───────────┴─────────────────────────────────────┴────────────┴──────────────┘
 
-# Service Mesh #
-environments: 'SIT' # Define the service environment.
-#tags: # Define the service custom label.
-#  subscription: 'default'
-#  owner: 'nobody'
-#  department: 'Infrastructure'
-#  organization: 'The Company'
-#  region: 'IDC01'
-exporter_is_install: false # Whether to install prometheus exporter.
-consul_public_register: false # Whether register a exporter service with public consul client.
-consul_public_exporter_token: '00000000-0000-0000-0000-000000000000' # Public Consul client ACL token.
-consul_public_clients: 'localhost' # List of public consul clients.
-consul_public_http_port: '8500' # The consul HTTP API port.
+# Cluster parameters #
+mysql_cluster_name: 'cluster01' # Cluster name of servers that implements distribution performance.
+mysql_cluster_mode: 'standalone' # Defines type of cluster type: standalone / replication.
 
 # Backup parameters #
 mysql_backupset_arg:
@@ -98,5 +88,19 @@ mysql_arg:
 #  - dbs: 'd_example'
 #    user: 'u_example'
 #    host: '%'
-#    pass: 'password'
+#    pass: 'changeme'
 #    priv: 'ALL'
+
+# Service Mesh #
+environments: 'SIT' # Define the service environment.
+#tags: # Define the service custom label.
+#  subscription: 'default'
+#  owner: 'nobody'
+#  department: 'Infrastructure'
+#  organization: 'The Company'
+#  region: 'IDC01'
+exporter_is_install: false # Whether to install prometheus exporter.
+consul_public_register: false # Whether register a exporter service with public consul client.
+consul_public_exporter_token: '00000000-0000-0000-0000-000000000000' # Public Consul client ACL token.
+consul_public_clients: 'localhost' # List of public consul clients.
+consul_public_http_port: '8500' # The consul HTTP API port.

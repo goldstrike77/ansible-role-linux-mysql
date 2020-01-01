@@ -8,7 +8,7 @@ SENDMAIL=/usr/sbin/sendmail
 MYSQLSLA=/usr/bin/pt-query-digest
 LOGROTATE=/usr/sbin/logrotate
 MKDIR=/bin/mkdir
-MAILTO="{{ mysql_mailto }}"
+MAILTO="{{ mysql_mailto | default ('') }}"
 SYS_DATE=`$DATE '+%Y%m%d'`
 SYS_YEAR=`$DATE '+%Y'`
 SYS_MONTH=`$DATE '+%m'`
@@ -22,7 +22,9 @@ fi
 
 $MYSQLSLA --report-format 'rusage,date,header,profile,query_report,prepared' --filter '$event->{user} !~ m/prometheus|root/' $SLOW_LOG > $RESULT_FILE
 
+{% if mysql_mailto is defined %}
 $CAT $RESULT_FILE | $FORMAIL -I "From: do-not-reply@somebody.com" -I "Subject:"`hostname`" MySQL queries analyzes on "`date '+%Y%m%d'` | $SENDMAIL -oi $MAILTO
+{% endif %}
 
 $LOGROTATE -f {{ mysql_path }}/mysql/mysql-log-rotate
 
