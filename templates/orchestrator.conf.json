@@ -1,4 +1,5 @@
 {
+  "AutoPseudoGTID": true,
   "RaftEnabled": true,
   "RaftDataDir": "{{ mysql_path }}/orchestrator",
   "RaftBind": "{{ ansible_default_ipv4.address }}",
@@ -29,8 +30,8 @@
   "UnseenInstanceForgetHours": 240,
   "SnapshotTopologiesIntervalHours": 0,
   "InstanceBulkOperationsWaitTimeoutSeconds": 10,
-  "HostnameResolveMethod": "default",
-  "MySQLHostnameResolveMethod": "@@report_host",
+  "HostnameResolveMethod": "none",
+  "MySQLHostnameResolveMethod": "",
   "SkipBinlogServerUnresolveCheck": true,
   "ExpiryHostnameResolvesMinutes": 60,
   "RejectHostnameResolvePattern": "",
@@ -51,7 +52,9 @@
     "*"
   ],
   "ClusterNameToAlias": {
-    "127.0.0.1": "test suite"
+{% for host in mysql_servers %}
+    "{{ host }}": "{{ mysql_cluster_name | default('test') }}"
+{% endfor %}
   },
   "SlaveLagQuery": "",
   "DetectClusterAliasQuery": "SELECT SUBSTRING_INDEX(@@hostname, '.', 1)",
@@ -97,10 +100,10 @@
   "RecoveryPeriodBlockSeconds": 3600,
   "RecoveryIgnoreHostnameFilters": [],
   "RecoverMasterClusterFilters": [
-    "_master_pattern_"
+    "*"
   ],
   "RecoverIntermediateMasterClusterFilters": [
-    "_intermediate_master_pattern_"
+    "*"
   ],
   "OnFailureDetectionProcesses": [
     "echo 'Detected {failureType} on {failureCluster}. Affected replicas: {countSlaves}' >> /tmp/recovery.log"
