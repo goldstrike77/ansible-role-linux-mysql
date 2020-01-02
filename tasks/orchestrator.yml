@@ -1,0 +1,58 @@
+---
+- name: Creating Orchestrator folder.
+  file:
+    dest: '{{ mysql_path }}/orchestrator'
+    state: 'directory'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+
+- name: Ensure orchestrator user exists on cluster.
+  mysql_user:
+    login_host: '127.0.0.1'
+    login_user: 'root'
+    login_password: '{{ mysql_sa_pass }}'
+    login_port: '{{ mysql_port_mysqld }}'
+    name: 'orchestrator'
+    host: '%'
+    password: "{{ lookup('password', '' + group_names[-1] + ':orchestrator length=12 chars=ascii_letters,digits') }}"
+    priv: '*.*:SUPER,PROCESS,REPLICATION SLAVE,REPLICATION CLIENT,RELOAD/meta.*:SELECT/mysql.slave_master_info:SELECT'
+    state: 'present'
+  when: mysql_servers[0] in ansible_default_ipv4.address
+
+- name: Add Orchestrator YUM repositories.
+  yum_repository:
+    name: '{{ mysql_orchestrator_repo_name }}'
+    description: '{{ mysql_orchestrator_repo_name }} YUM repository'
+    file: '{{ mysql_orchestrator_repo_name }}'
+    baseurl: '{{ mysql_orchestrator_repo_url }}'
+    gpgcheck: 'no'
+    timeout: '60'
+
+- name: Install the Orchestrator packages.
+  yum:
+    name: '{{ mysql_orchestrator_packages }}'
+    state: 'present'
+    validate_certs: 'no'
+    disable_gpg_check: 'yes'
+  register: mysql_orchestrator_update
+  until: mysql_orchestrator_update is succeeded
+  retries: 3
+  delay: 5
+
+- name: Orchestrator configure file transfer.
+  template:
+    src: 'orchestrator.conf.json'
+    dest: '/usr/local/orchestrator/orchestrator.conf.json'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  register: mysql_orchestrator_conf
+
+- name: Enable Orchestrator service.
+  systemd:
+    name: 'orchestrator.service'
+    enabled: 'yes'
+    state: 'restarted'
+    daemon_reload: 'yes'
+  when: mysql_orchestrator_update is changed or mysql_orchestrator_conf is changed 

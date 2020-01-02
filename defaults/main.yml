@@ -26,6 +26,9 @@ mysql_system_type: 'autopilot' # Define instance parameters.
 # Cluster parameters #
 mysql_cluster_name: 'cluster01' # Cluster name of servers that implements distribution performance.
 mysql_cluster_mode: 'standalone' # Defines type of cluster type: standalone / replication.
+#mysql_cluster_mgmt: 'orchestrator' # MySQL high availability and replication management tool.
+mysql_cluster_mgmt_user: 'admin' # Management console authentication user.
+mysql_cluster_mgmt_pass: 'changeme' # Management console authentication password.
 
 # Backup parameters #
 mysql_backupset_arg:
@@ -36,6 +39,8 @@ mysql_backupset_arg:
 # Listen port #
 mysql_port_mysqld: '3306' # MySQL instance listen port.
 mysql_port_exporter: '9104' # Prometheus MySQL Exporter listen port.
+mysql_port_orchestrator_web: '3002' # Orchestrator Web UI listen port.
+mysql_port_orchestrator_raft: '10008' # Orchestrator Raft listen port.
 
 # Server System Variables #
 mysql_arg:
@@ -72,6 +77,7 @@ mysql_arg:
   query_cache_size: '0' # Query cache size.
   query_cache_type: '0' # Query cache type.
   read_rnd_buffer_size: '1M' # Size of the buffer that is used for reading rows in sorted order.
+  slave_net_timeout: '10' # The number of seconds to wait for more data from the master before the slave.
   sync_binlog: '500' # Controls how often the MySQL server synchronizes the binary log to disk.
   table_definition_cache: '4096' # The number of table definitions that can be stored in the definition cache.
   table_open_cache: '4096' # The number of open tables for all threads.

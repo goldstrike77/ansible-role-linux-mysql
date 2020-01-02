@@ -26,3 +26,8 @@ mysqld_exporter_repo_name: "prometheus"
 mysqld_exporter_repo_url: "http://cache.omygods.com/prometheus-rpm/release/el/{{ansible_distribution_version.split('.')[0]}}/$basearch"
 mysqld_exporter_packages:
   - 'mysqld_exporter'
+
+mysql_orchestrator_repo_name: 'orchestrator'
+mysql_orchestrator_repo_url: 'http://cache.omygods.com/orchestrator/{{ ansible_distribution_major_version }}'
+mysql_orchestrator_packages:
+  - 'orchestrator'

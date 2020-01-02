@@ -20,7 +20,8 @@ query_response_time_stats              = 1
 {% endif %}
 
 # GENERAL #
-server_id                              = {{ (2 ** 32 - 1) | random }}
+report_host                            = {{ ansible_default_ipv4.address }}
+server_id                              = {{ ( 2 ** 32 - 1 ) | random }}
 user                                   = {{ mysql_user }}
 default_storage_engine                 = {{ mysql_storage_engine }}
 character_set_server                   = {{ mysql_arg.character_set }}
@@ -30,12 +31,14 @@ log_timestamps                         = SYSTEM
 bind-address                           = 0.0.0.0
 port                                   = {{ mysql_port_mysqld }}
 ignore-db-dir                          = binlog
+ignore-db-dir                          = relaylog
 ignore-db-dir                          = logs
 ignore-db-dir                          = innodb
 ignore-db-dir                          = mysqlsla_analyzes
 sql_mode                               = {{ ','.join(vars['mysql_sql_mode']) }}
 enforce_gtid_consistency               = {{ mysql_arg.enforce_gtid_consistency }}
 gtid_mode                              = {{ mysql_arg.gtid_mode }}
+slave_net_timeout                      = {{ mysql_arg.slave_net_timeout }}
 
 # MyISAM #
 key_buffer_size                        = {{ mysql_arg.key_buffer_size }}M
@@ -59,6 +62,7 @@ datadir                                = {{ mysql_path }}/mysql
 
 # BINARY LOGGING #
 log_bin                                = {{ mysql_path }}/mysql/binlog/mysql_bin
+relay_log                              = {{ mysql_path }}/mysql/relaylog/relay_bin
 binlog_cache_size                      = {{ mysql_arg.binlog_cache_size }}
 binlog_stmt_cache_size                 = {{ mysql_arg.binlog_stmt_cache_size }}
 binlog_format                          = {{ mysql_arg.binlog_format }}

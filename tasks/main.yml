@@ -33,15 +33,21 @@
       include: 'initialization.yml'
     - name: Include user grants tasks
       include: 'user.yml'
-    - name: Include business database tasks
-      include: 'database.yml'
-      when:
-        - mysql_bu_dbs_arg is defined
     - name: Include replication tasks
       include: 'replication.yml'
       when:
         - mysql_cluster_mode == 'replication'
         - mysql_servers | length > 1
+    - name: Include business database tasks
+      include: 'database.yml'
+      when:
+        - mysql_bu_dbs_arg is defined
+    - name: Include cluster management tasks
+      include: '{{ mysql_cluster_mgmt }}.yml'
+      when:
+        - mysql_cluster_mode == 'replication'
+        - mysql_servers | length > 1
+        - mysql_cluster_mgmt is defined
     - name: Include query analyzes tasks
       include: 'analyzes.yml'
     - name: Include backup tasks

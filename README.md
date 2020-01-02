@@ -44,7 +44,7 @@ The following list of supported the MySQL releases:
 ## Role variables
 ### Main parameters #
 There are some variables in defaults/main.yml which can (Or needs to) be overridden:
-###### General parameters
+##### General parameters
 * `mysql_releases`: Define MySQL distribution.
 * `mysql_version`: Specify the MySQL version.
 * `mysql_path`: Specify the MySQL data directory.
@@ -59,6 +59,9 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 ##### Cluster parameters
 * `mysql_cluster_name`: Cluster name of servers that implements distribution performance.
 * `mysql_cluster_mode`: Defines type of cluster type: standalone / replication.
+* `mysql_cluster_mgmt`: High availability and replication management tool.
+* `mysql_cluster_mgmt_user`: Management console authentication user.
+* `mysql_cluster_mgmt_pass`: Management console authentication password.
 
 ##### Service Mesh
 * `environments`: Define the service environment.
@@ -77,6 +80,8 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 ##### Listen port
 * `mysql_port_mysqld`: MySQL instance listen port.
 * `mysql_port_exporter`: Prometheus MySQL Exporter listen port.
+* `mysql_port_orchestrator_web`: Orchestrator Web UI listen port.
+* `mysql_port_orchestrator_raft`: Orchestrator Raft listen port.
 
 ##### Server System Variables
 * `mysql_arg.binlog_cache_size`: Size of the cache to hold changes to the binary log during a transaction.
@@ -112,6 +117,7 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_arg.query_cache_size`: Query cache size.
 * `mysql_arg.query_cache_type`: Query cache type.
 * `mysql_arg.read_rnd_buffer_size`: Size of the buffer that is used for reading rows in sorted order.
+* `mysql_arg.slave_net_timeout`: The number of seconds to wait for more data from the master before the slave.
 * `mysql_arg.sync_binlog`: Controls how often the MySQL server synchronizes the binary log to disk.
 * `mysql_arg.table_definition_cache`: The number of table definitions that can be stored in the definition cache.
 * `mysql_arg.table_open_cache`: The number of open tables for all threads.
@@ -158,19 +164,24 @@ You can also use the group_vars or the host_vars files for setting the variables
     mysql_path: '/data'
     mysql_user: 'mysql'
     mysql_mailto: 'somebody@example.com'
-    mysql_sa_pass: 'password'
+    mysql_sa_pass: 'changeme'
     mysql_storage_engine: 'InnoDB'
     mysql_innodb_buffer_pool_size: '1024'
     mysql_max_connections: '100'
     mysql_system_type: 'autopilot'
     mysql_cluster_name: 'cluster01'
     mysql_cluster_mode: 'standalone'
+    mysql_cluster_mgmt: 'orchestrator'
+    mysql_cluster_mgmt_user: 'admin'
+    mysql_cluster_mgmt_pass: 'changeme'
     mysql_backupset_arg:
       life: '604800'
       keep: '2'
       encryptkey: 'Un9FA+CgxM5Yr/MpwTh5s6NXSQE0brp8'
     mysql_port_mysqld: '3306'
     mysql_port_exporter: '9104'
+    mysql_port_orchestrator_web: '3002'
+    mysql_port_orchestrator_raft: '10008'
     mysql_arg:
       binlog_cache_size: '1048576'
       binlog_format: 'ROW'
@@ -205,6 +216,7 @@ You can also use the group_vars or the host_vars files for setting the variables
       query_cache_size: '0'
       query_cache_type: '0'
       read_rnd_buffer_size: '1M'
+      slave_net_timeout: '10'
       sync_binlog: '1000'
       table_definition_cache: '4096'
       table_open_cache: '4096'

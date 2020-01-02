@@ -10,6 +10,7 @@
     password: "{{ lookup('password', '' + group_names[-1] + ':replication length=12 chars=ascii_letters,digits') }}"
     priv: '*.*:REPLICATION SLAVE,REPLICATION CLIENT'
     state: 'present'
+  no_log: true
 
 - name: Check master replication status.
   mysql_replication:
@@ -20,6 +21,7 @@
     mode: 'getmaster'
   when: mysql_servers[0] in ansible_default_ipv4.address
   register: mysql_master_status
+  no_log: true
 
 - name: Set the replication position.
   set_fact:
@@ -43,6 +45,7 @@
     master_log_file: '{{ mysql_master_log_file }}'
     master_log_pos: '{{ mysql_master_log_pos }}'
   when: mysql_servers[0] not in ansible_default_ipv4.address
+  no_log: true
 
 - name: Start replication.
   mysql_replication:
@@ -52,3 +55,4 @@
     login_port: '{{ mysql_port_mysqld }}'
     mode: 'startslave'
   when: mysql_servers[0] not in ansible_default_ipv4.address
+  no_log: true
