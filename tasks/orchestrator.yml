@@ -49,10 +49,19 @@
     mode: '0644'
   register: mysql_orchestrator_conf
 
+- name: Orchestrator systemd file transfer.
+  copy:
+    src: 'orchestrator.service'
+    dest: '/etc/systemd/system/orchestrator.service'
+    owner: 'root'
+    group: 'root'
+    mode: '644'
+  register: mysql_orchestrator_systemd
+
 - name: Enable Orchestrator service.
   systemd:
     name: 'orchestrator.service'
     enabled: 'yes'
     state: 'restarted'
     daemon_reload: 'yes'
-  when: mysql_orchestrator_update is changed or mysql_orchestrator_conf is changed 
+  when: mysql_orchestrator_update is changed or mysql_orchestrator_conf is changed or mysql_orchestrator_systemd is changed

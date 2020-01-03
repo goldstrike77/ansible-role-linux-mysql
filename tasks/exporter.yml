@@ -12,8 +12,8 @@
     state: 'present'
   no_log: true
   when:
-    - mysql_servers[0] in ansible_default_ipv4.address
     - mysql_cluster_mode == 'replication'
+    - mysql_servers[0] in ansible_default_ipv4.address
     - mysql_servers | length > 1
 
 - name: Create user prometheus with privileges for standalone

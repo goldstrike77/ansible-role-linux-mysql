@@ -12,25 +12,25 @@
     state: 'present'
   no_log: true
 
-- name: Check master replication status.
-  mysql_replication:
-    login_host: '127.0.0.1'
-    login_user: 'root'
-    login_password: '{{ mysql_sa_pass }}'
-    login_port: '{{ mysql_port_mysqld }}'
-    mode: 'getmaster'
-  when: mysql_servers[0] in ansible_default_ipv4.address
-  register: mysql_master_status
-  no_log: true
+#- name: Check master replication status.
+#  mysql_replication:
+#    login_host: '127.0.0.1'
+#    login_user: 'root'
+#    login_password: '{{ mysql_sa_pass }}'
+#    login_port: '{{ mysql_port_mysqld }}'
+#    mode: 'getmaster'
+#  when: mysql_servers[0] in ansible_default_ipv4.address
+#  register: mysql_master_status
+#  no_log: true
 
-- name: Set the replication position.
-  set_fact:
-    mysql_master_log_file: '{{ mysql_master_status.File }}'
-    mysql_master_log_pos: '{{ mysql_master_status.Position }}'
-  when: mysql_master_status.File is defined
-  delegate_to: '{{ item }}'
-  delegate_facts: true
-  loop: '{{ groups[group_names[-1]] }}'
+#- name: Set the replication position.
+#  set_fact:
+#    mysql_master_log_file: '{{ mysql_master_status.File }}'
+#    mysql_master_log_pos: '{{ mysql_master_status.Position }}'
+#  when: mysql_master_status.File is defined
+#  delegate_to: '{{ item }}'
+#  delegate_facts: true
+#  loop: '{{ groups[group_names[-1]] }}'
 
 - name: Configure replication on the slave.
   mysql_replication:
@@ -42,8 +42,9 @@
     master_host: '{{ mysql_servers[0] }}'
     master_user: 'replication'
     master_password: "{{ lookup('password', '' + group_names[-1] + ':replication length=12 chars=ascii_letters,digits') }}"
-    master_log_file: '{{ mysql_master_log_file }}'
-    master_log_pos: '{{ mysql_master_log_pos }}'
+    master_auto_position: 'yes'
+#    master_log_file: '{{ mysql_master_log_file }}'
+#    master_log_pos: '{{ mysql_master_log_pos }}'
   when: mysql_servers[0] not in ansible_default_ipv4.address
   no_log: true
 

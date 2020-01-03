@@ -1,5 +1,4 @@
 {
-  "AutoPseudoGTID": true,
   "RaftEnabled": true,
   "RaftDataDir": "{{ mysql_path }}/orchestrator",
   "RaftBind": "{{ ansible_default_ipv4.address }}",
@@ -52,9 +51,7 @@
     "*"
   ],
   "ClusterNameToAlias": {
-{% for host in mysql_servers %}
-    "{{ host }}": "{{ mysql_cluster_name | default('test') }}"
-{% endfor %}
+    "127.0.0.1": "test suite"
   },
   "SlaveLagQuery": "",
   "DetectClusterAliasQuery": "SELECT SUBSTRING_INDEX(@@hostname, '.', 1)",
