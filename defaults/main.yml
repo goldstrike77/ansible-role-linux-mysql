@@ -26,6 +26,7 @@ mysql_system_type: 'autopilot' # Define instance parameters.
 # Cluster parameters #
 mysql_cluster_name: 'cluster01' # Cluster name of servers that implements distribution performance.
 mysql_cluster_mode: 'standalone' # Defines type of cluster type: standalone / replication.
+# Attention, The mysqld service must be disabled and can only be started manually if orchestrator replication management is used. see https://github.com/github/orchestrator/issues/891.
 #mysql_cluster_mgmt: 'orchestrator' # MySQL high availability and replication management tool.
 mysql_cluster_mgmt_user: 'admin' # Management console authentication user.
 mysql_cluster_mgmt_pass: 'changeme' # Management console authentication password.
