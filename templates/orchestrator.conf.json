@@ -50,11 +50,7 @@
   "PowerAuthUsers": [
     "*"
   ],
-  "ClusterNameToAlias": {
-    "10.101.4.40": "{{ mysql_cluster_name }}",
-    "10.101.4.41": "{{ mysql_cluster_name }}",
-    "10.101.4.42": "{{ mysql_cluster_name }}"
-  },
+  "ClusterNameToAlias": { "{{ mysql_servers | list | join('": "' + mysql_cluster_name + '", "') }}": "{{ mysql_cluster_name }}" },
   "SlaveLagQuery": "",
   "DetectClusterAliasQuery": "{{ mysql_cluster_name }}",
   "DetectClusterDomainQuery": "",
