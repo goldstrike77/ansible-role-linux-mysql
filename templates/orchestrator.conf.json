@@ -51,10 +51,12 @@
     "*"
   ],
   "ClusterNameToAlias": {
-    "127.0.0.1": "test suite"
+    "10.101.4.40": "{{ mysql_cluster_name }}",
+    "10.101.4.41": "{{ mysql_cluster_name }}",
+    "10.101.4.42": "{{ mysql_cluster_name }}"
   },
   "SlaveLagQuery": "",
-  "DetectClusterAliasQuery": "SELECT SUBSTRING_INDEX(@@hostname, '.', 1)",
+  "DetectClusterAliasQuery": "{{ mysql_cluster_name }}",
   "DetectClusterDomainQuery": "",
   "DetectInstanceAliasQuery": "",
   "DetectPromotionRuleQuery": "",
