@@ -233,7 +233,7 @@ You can also use the group_vars or the host_vars files for setting the variables
       thread_pool_oversubscribe: '10'
       tmp_table_size: '32M'
       wait_timeout: '3600'
-    environments: 'SIT'
+    environments: 'Development'
     tags:
       subscription: 'default'
       owner: 'nobody'
@@ -243,7 +243,10 @@ You can also use the group_vars or the host_vars files for setting the variables
     exporter_is_install: false
     consul_public_register: false
     consul_public_exporter_token: '00000000-0000-0000-0000-000000000000'
-    consul_public_clients: 'localhost'
+    consul_public_clients:
+      - '172.16.0.10'
+      - '172.16.0.11'
+      - '172.16.0.12'
     consul_public_http_port: '8500'
 
 ## License
