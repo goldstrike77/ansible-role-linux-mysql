@@ -52,7 +52,7 @@
   ],
   "ClusterNameToAlias": { "{{ mysql_servers | list | join('": "' + mysql_cluster_name + '", "') }}": "{{ mysql_cluster_name }}" },
   "SlaveLagQuery": "",
-  "DetectClusterAliasQuery": "{{ mysql_cluster_name }}",
+  "DetectClusterAliasQuery": "SELECT '{{ mysql_cluster_name }}'",
   "DetectClusterDomainQuery": "",
   "DetectInstanceAliasQuery": "",
   "DetectPromotionRuleQuery": "",
