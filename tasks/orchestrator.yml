@@ -65,3 +65,8 @@
     state: 'restarted'
     daemon_reload: 'yes'
   when: mysql_orchestrator_update is changed or mysql_orchestrator_conf is changed or mysql_orchestrator_systemd is changed
+
+- name: Ensure MySQL service is disabled
+  systemd:
+    name: 'mysqld.service'
+    enabled: 'no'

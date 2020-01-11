@@ -65,15 +65,6 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_cluster_mgmt_user`: Management console authentication user.
 * `mysql_cluster_mgmt_pass`: Management console authentication password.
 
-##### Service Mesh
-* `environments`: Define the service environment.
-* `tags`: Define the service custom label.
-* `exporter_is_install`: Whether to install prometheus exporter.
-* `consul_public_register`: false Whether register a exporter service with public consul client.
-* `consul_public_exporter_token`: Public Consul client ACL token.
-* `consul_public_clients`: List of public consul clients.
-* `consul_public_http_port`: The consul HTTP API port.
-
 ##### Backup parameters
 * `mysql_backupset_arg.life`: Lifetime of the latest full backup in seconds.
 * `mysql_backupset_arg.keep`: The number of full backups (and its incrementals) to keep.
@@ -91,9 +82,11 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_arg.binlog_stmt_cache_size`: Size of the cache for the binary log to hold nontransactional statements issued during a transaction.
 * `mysql_arg.character_set`: Server's default character set.
 * `mysql_arg.connect_timeout`: Server waits for a connect packet in seconds.
+* `mysql_arg.default_time_zone`: Default server time zone.
 * `mysql_arg.expire_logs_days`: The number of days for automatic binary log file removal.
 * `mysql_arg.enforce_gtid_consistency`: Enforces GTID consistency by allowing execution of only statements that can be safely logged using a GTID.
 * `mysql_arg.gtid_mode`: Controls whether GTID based logging is enabled and what type of transactions the logs can contain.
+* `mysql_arg.lower_case_table_names`: Affects how the server handles identifier case sensitivity.
 * `mysql_arg.innodb_buffer_pool_instances`: The number of regions that the InnoDB buffer pool is divided into.
 * `mysql_arg.innodb_flush_log_at_trx_commit`: Controls the balance between strict ACID compliance for commit operations and higher performance.
 * `mysql_arg.innodb_log_buffer_size`: Size in MB of the buffer that InnoDB uses to write to the log files on disk.
@@ -130,6 +123,15 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_arg.thread_pool_oversubscribe`: How many worker threads in a thread group can remain active at the same time once a thread group is oversubscribed due to stalls.
 * `mysql_arg.tmp_table_size`: The maximum size of internal in-memory temporary tables.
 * `mysql_arg.wait_timeout`: Server waits for activity on a noninteractive connection in seconds.
+
+##### Service Mesh
+* `environments`: Define the service environment.
+* `tags`: Define the service custom label.
+* `exporter_is_install`: Whether to install prometheus exporter.
+* `consul_public_register`: false Whether register a exporter service with public consul client.
+* `consul_public_exporter_token`: Public Consul client ACL token.
+* `consul_public_clients`: List of public consul clients.
+* `consul_public_http_port`: The consul HTTP API port.
 
 ### Other parameters
 There are some variables in vars/main.yml:
@@ -190,9 +192,11 @@ You can also use the group_vars or the host_vars files for setting the variables
       binlog_stmt_cache_size: '1048576'
       character_set: 'utf8mb4'
       connect_timeout: '30'
+      default_time_zone: '+8:00'
       expire_logs_days: '15'
       enforce_gtid_consistency: 'on'
       gtid_mode: 'on'
+      lower_case_table_names: '0'
       innodb_buffer_pool_instances: '8'
       innodb_flush_log_at_trx_commit: '2'
       innodb_log_buffer_size: '16'
