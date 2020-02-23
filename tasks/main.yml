@@ -55,10 +55,6 @@
     - name: Include prometheus exporter tasks
       include: 'exporter.yml'
       when: exporter_is_install | bool
-    - include_tasks: 'register.yml'
-      when:
-        - exporter_is_install | bool
-        - consul_public_register | bool
     - name: Ensure MTA service is enabled
       systemd:
         name: 'postfix.service'
@@ -77,3 +73,8 @@
         - mysql_mailto is defined
   when:
     - not result.results[0].stat.exists
+- name: Registered with HashiCorp Consul
+  include: 'register.yml'
+  when:
+    - exporter_is_install | bool
+    - consul_public_register | bool
