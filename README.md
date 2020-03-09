@@ -82,12 +82,14 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_arg.binlog_stmt_cache_size`: Size of the cache for the binary log to hold nontransactional statements issued during a transaction.
 * `mysql_arg.character_set`: Server's default character set.
 * `mysql_arg.connect_timeout`: Server waits for a connect packet in seconds.
+* `mysql_arg.data_encryption`: A boolean value, whether enabled the MySQL Data at Rest Encryption.
 * `mysql_arg.default_time_zone`: Default server time zone.
 * `mysql_arg.expire_logs_days`: The number of days for automatic binary log file removal.
 * `mysql_arg.enforce_gtid_consistency`: Enforces GTID consistency by allowing execution of only statements that can be safely logged using a GTID.
 * `mysql_arg.gtid_mode`: Controls whether GTID based logging is enabled and what type of transactions the logs can contain.
 * `mysql_arg.lower_case_table_names`: Affects how the server handles identifier case sensitivity.
 * `mysql_arg.innodb_buffer_pool_instances`: The number of regions that the InnoDB buffer pool is divided into.
+* `mysql_arg.innodb_default_encryption_key_id`: An unsigned 32-bit integer of the default encryption key.
 * `mysql_arg.innodb_flush_log_at_trx_commit`: Controls the balance between strict ACID compliance for commit operations and higher performance.
 * `mysql_arg.innodb_log_buffer_size`: Size in MB of the buffer that InnoDB uses to write to the log files on disk.
 * `mysql_arg.innodb_log_file_size`: The size in MB of each log file in a log group.
@@ -193,12 +195,14 @@ You can also use the group_vars or the host_vars files for setting the variables
       binlog_stmt_cache_size: '1048576'
       character_set: 'utf8mb4'
       connect_timeout: '30'
+      data_encryption: false
       default_time_zone: '+8:00'
       expire_logs_days: '15'
       enforce_gtid_consistency: 'on'
       gtid_mode: 'on'
       lower_case_table_names: '0'
       innodb_buffer_pool_instances: '8'
+      innodb_default_encryption_key_id: '2292937293'
       innodb_flush_log_at_trx_commit: '2'
       innodb_log_buffer_size: '16'
       innodb_log_file_size: '1024'

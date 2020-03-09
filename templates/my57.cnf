@@ -154,3 +154,9 @@ audit_log_include_commands             = "{{ ','.join(vars['mysql_audit_log_comm
 {% if mysql_releases | lower == 'percona' %}
 plugin-load                            = "audit_log=audit_log.so;QUERY_RESPONSE_TIME=query_response_time.so;QUERY_RESPONSE_TIME_AUDIT=query_response_time.so;QUERY_RESPONSE_TIME_READ=query_response_time.so;QUERY_RESPONSE_TIME_WRITE=query_response_time.so"
 {% endif %}
+{% if mysql_arg.data_encryption | bool %}
+early_plugin_load                      = keyring_file.so
+innodb_default_encryption_key_id       = {{ mysql_arg.innodb_default_encryption_key_id }}
+innodb_parallel_dblwr_encrypt          = ON
+innodb_temp_tablespace_encrypt         = ON
+{% endif %}
