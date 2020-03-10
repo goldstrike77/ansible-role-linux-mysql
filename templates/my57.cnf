@@ -36,6 +36,7 @@ ignore-db-dir                          = binlog
 ignore-db-dir                          = relaylog
 ignore-db-dir                          = logs
 ignore-db-dir                          = innodb
+ignore-db-dir                          = mysql-keyring
 ignore-db-dir                          = mysqlsla_analyzes
 replicate-ignore-db                    = information_schema
 replicate-ignore-db                    = performance_schema
@@ -48,7 +49,6 @@ master_info_repository                 = TABLE
 relay_log_info_repository              = TABLE
 slave-skip-errors                      = 1062,1053,1146,1213,1264,1205,1396
 read_only                              = {% if mysql_cluster_mode == 'replication' and mysql_servers[0] not in ansible_default_ipv4.address and mysql_servers | length > 1 %}1{% else %}0{% endif %}
-
 
 # MyISAM #
 key_buffer_size                        = {{ mysql_arg.key_buffer_size }}M
@@ -74,9 +74,11 @@ datadir                                = {{ mysql_path }}/mysql
 log_bin                                = {{ mysql_path }}/mysql/binlog/mysql_bin
 relay_log                              = {{ mysql_path }}/mysql/relaylog/relay_bin
 binlog_cache_size                      = {{ mysql_arg.binlog_cache_size }}
+binlog_checksum                        = CRC32
 binlog_stmt_cache_size                 = {{ mysql_arg.binlog_stmt_cache_size }}
 binlog_format                          = {{ mysql_arg.binlog_format }}
 expire_logs_days                       = {{ mysql_arg.expire_logs_days }}
+master_verify_checksum                 = ON
 sync_binlog                            = {{ mysql_arg.sync_binlog }}
 log_slave_updates                      = 1
 skip_slave_start                       = 1
@@ -156,7 +158,6 @@ plugin-load                            = "audit_log=audit_log.so;QUERY_RESPONSE_
 {% endif %}
 {% if mysql_arg.data_encryption | bool %}
 early_plugin_load                      = keyring_file.so
-innodb_default_encryption_key_id       = {{ mysql_arg.innodb_default_encryption_key_id }}
+keyring_file_data                      = {{ mysql_path }}/mysql/mysql-keyring/keyring
 innodb_parallel_dblwr_encrypt          = ON
-innodb_temp_tablespace_encrypt         = ON
 {% endif %}

@@ -89,7 +89,6 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_arg.gtid_mode`: Controls whether GTID based logging is enabled and what type of transactions the logs can contain.
 * `mysql_arg.lower_case_table_names`: Affects how the server handles identifier case sensitivity.
 * `mysql_arg.innodb_buffer_pool_instances`: The number of regions that the InnoDB buffer pool is divided into.
-* `mysql_arg.innodb_default_encryption_key_id`: An unsigned 32-bit integer of the default encryption key.
 * `mysql_arg.innodb_flush_log_at_trx_commit`: Controls the balance between strict ACID compliance for commit operations and higher performance.
 * `mysql_arg.innodb_log_buffer_size`: Size in MB of the buffer that InnoDB uses to write to the log files on disk.
 * `mysql_arg.innodb_log_file_size`: The size in MB of each log file in a log group.
@@ -202,7 +201,6 @@ You can also use the group_vars or the host_vars files for setting the variables
       gtid_mode: 'on'
       lower_case_table_names: '0'
       innodb_buffer_pool_instances: '8'
-      innodb_default_encryption_key_id: '2292937293'
       innodb_flush_log_at_trx_commit: '2'
       innodb_log_buffer_size: '16'
       innodb_log_file_size: '1024'

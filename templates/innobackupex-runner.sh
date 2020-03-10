@@ -10,6 +10,8 @@ CAT=/bin/cat
 FORMAIL=/usr/bin/formail
 SENDMAIL=/usr/sbin/sendmail
 CHMOD=/bin/chmod
+CP=/bin/cp
+MKDIR=/bin/mkdir
 INNOBACKUPEX=innobackupex
 INNOBACKUPEXFULL=/usr/bin/$INNOBACKUPEX
 USEROPTIONS="--user=root --password={{ mysql_sa_pass }} --host=127.0.0.1"
@@ -20,8 +22,10 @@ MYSQL=/usr/bin/mysql
 MYSQLADMIN=/usr/bin/mysqladmin
 XBCRYPT=/usr/bin/xbcrypt
 BACKUPDIR={{ mysql_path }}/backup/mysql # Backups base directory
+KEYRINGFILEDIR={{ mysql_path }}/mysql/mysql-keyring
 FULLBACKUPDIR=$BACKUPDIR/full # Full backups directory
 INCRBACKUPDIR=$BACKUPDIR/incr # Incremental backups directory
+KEYRINGBACKUPDIR=$BACKUPDIR/mysql-keyring
 FULLBACKUPLIFE={{ mysql_backupset_arg.life }} # Lifetime of the latest full backup in seconds
 UMASK=755
 KEEP={{ mysql_backupset_arg.keep }} # Number of full backups (and its incrementals) to keep
@@ -92,11 +96,18 @@ if [ "$LATEST_FULL" -a `expr $LATEST_FULL_CREATED_AT + $FULLBACKUPLIFE + 5` -ge 
   fi
   
   echo "Running new incremental backup using $INCRBASEDIR as base."
-  $INNOBACKUPEXFULL --defaults-file=$MYCNF --compress --compress-threads=$THREADS --encrypt-threads=$THREADS --encrypt-chunk-size=256K --encrypt=$ENCRYPT --encrypt-key=$ENCRYPTKEY --parallel=$THREADS $USEROPTIONS --incremental $TMPINCRDIR --incremental-basedir $INCRBASEDIR > $TMPFILE 2>&1
+  $INNOBACKUPEXFULL --defaults-file=$MYCNF --compress --compress-threads=$THREADS --encrypt-threads=$THREADS --encrypt-chunk-size=256K --encrypt=$ENCRYPT --encrypt-key=$ENCRYPTKEY{% if mysql_arg.data_encryption | bool %} --keyring-file-data=$KEYRINGFILEDIR/keyring{% endif %} --parallel=$THREADS $USEROPTIONS --incremental $TMPINCRDIR --incremental-basedir $INCRBASEDIR > $TMPFILE 2>&1
 else
   echo "Running new full backup."
-  $INNOBACKUPEXFULL --defaults-file=$MYCNF --compress --compress-threads=$THREADS --encrypt-threads=$THREADS --encrypt-chunk-size=256K --encrypt=$ENCRYPT --encrypt-key=$ENCRYPTKEY --parallel=$THREADS $USEROPTIONS $FULLBACKUPDIR > $TMPFILE 2>&1
+  $INNOBACKUPEXFULL --defaults-file=$MYCNF --compress --compress-threads=$THREADS --encrypt-threads=$THREADS --encrypt-chunk-size=256K --encrypt=$ENCRYPT --encrypt-key=$ENCRYPTKEY{% if mysql_arg.data_encryption | bool %} --keyring-file-data=$KEYRINGFILEDIR/keyring{% endif %} --parallel=$THREADS $USEROPTIONS $FULLBACKUPDIR > $TMPFILE 2>&1
 fi
+
+{% if mysql_arg.data_encryption | bool %}
+if [ ! -d $KEYRINGBACKUPDIR ]; then
+  $MKDIR $KEYRINGBACKUPDIR
+fi
+$CP $KEYRINGFILEDIR/* $KEYRINGBACKUPDIR
+{% endif %}
 
 echo "Decrypting Encrypted LSN." >> $TMPFILE 2>&1
 for i in `find $BACKUPDIR -iname "xtrabackup_checkpoints.xbcrypt"`; do $XBCRYPT -d --encrypt-key=$ENCRYPTKEY --encrypt-algo=$ENCRYPT < $i > $(dirname $i)/$(basename $i .xbcrypt); done
