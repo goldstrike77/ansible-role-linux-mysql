@@ -39,6 +39,7 @@ mysql_backupset_arg:
   cloud_rsync: false # Whether rsync for cloud storage.
   cloud_drive: 'azureblob' # Specify the cloud storage providers.
   cloud_bwlimit: '10M' # Controls the bandwidth limit.
+  cloud_event: 'sync' # Define transfer events.
   cloud_config: # Specify the cloud storage configuration.
     account: 'blobuser' # Storage Account Name.
     key: 'base64encodedkey==' # Storage Account Key.

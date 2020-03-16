@@ -141,8 +141,8 @@ $CHMOD -R $UMASK $BACKUPDIR
 
 {% if mysql_backupset_arg.cloud_rsync | bool and mysql_backupset_arg.cloud_drive is defined %}
 # Rsync for cloud storage
-$RCLONE --verbose --config="/etc/rclone_mysql.conf" mkdir mysql:{{ ansible_hostname | lower }} >> $TMPFILE
-$RCLONE --bwlimit="{{ mysql_backupset_arg.cloud_bwlimit | default('10M') }}" --verbose --config="/etc/rclone_mysql.conf" sync {{ mysql_path }}/backup/mysql mysql:{{ ansible_hostname | lower }} >> $TMPFILE
+$RCLONE --verbose --config="/etc/rclone/mysql.conf" mkdir mysql:{{ ansible_hostname | lower }} >> $TMPFILE
+$RCLONE --bwlimit="{{ mysql_backupset_arg.cloud_bwlimit | default('10M') }}" --verbose --config="/etc/rclone/mysql.conf" {{ mysql_backupset_arg.cloud_event | default('sync') }} {{ mysql_path }}/backup/mysql mysql:{{ ansible_hostname | lower }}/mysql >> $TMPFILE
 {% endif %}
 
 #rm -f $TMPFILE

@@ -72,6 +72,7 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_backupset_arg.cloud_rsync`: Whether rsync for cloud storage.
 * `mysql_backupset_arg.cloud_drive`: Specify the cloud storage providers.
 * `mysql_backupset_arg.cloud_bwlimit`: Controls the bandwidth limit.
+* `mysql_backupset_arg.cloud_event`: Define transfer events.
 * `mysql_backupset_arg.cloud_config`: Specify the cloud storage configuration.
 
 ##### Listen port
@@ -191,6 +192,7 @@ You can also use the group_vars or the host_vars files for setting the variables
       cloud_rsync: true
       cloud_drive: 'azureblob'
       cloud_bwlimit: '10M'
+      cloud_event: 'sync'
       cloud_config:
         account: 'blobuser'
         key: 'base64encodedkey=='
