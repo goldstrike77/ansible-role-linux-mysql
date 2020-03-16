@@ -1,8 +1,35 @@
 ---
-- name: Include OS-specific variables
+- name: Include OS-specific variables.
   include_vars: '{{ ansible_os_family }}.yml'
 
-- name: Add Percona MySQL YUM repositories
+- name: Add EPEL YUM repositories.
+  yum_repository:
+    name: '{{ mysql_epel_repo_name }}'
+    description: '{{ mysql_epel_repo_name }} YUM repo'
+    file: '{{ mysql_epel_repo_name }}'
+    baseurl: '{{ mysql_epel_repo_url }}'
+    gpgcheck: 'no'
+    timeout: '60'
+  when:
+    - mysql_backupset_arg.cloud_rsync | bool
+    - mysql_backupset_arg.cloud_drive is defined
+
+- name: Install the Rclone command line program packages.
+  yum:
+    name: 'rclone'
+    state: 'present'
+    validate_certs: 'no'
+    disable_gpg_check: 'yes'
+    update_cache: 'yes'
+  register: yum_status
+  until: yum_status is succeeded
+  retries: 3
+  delay: 5
+  when:
+    - mysql_backupset_arg.cloud_rsync | bool
+    - mysql_backupset_arg.cloud_drive is defined
+
+- name: Add Percona MySQL YUM repositories.
   yum_repository:
     name: '{{ mysql_percona_repo_name }}'
     description: '{{ mysql_percona_repo_name }} YUM repository'
@@ -11,7 +38,7 @@
     gpgcheck: 'no'
     timeout: '60'
 
-- name: Add Community MySQL YUM repositories
+- name: Add Community MySQL YUM repositories.
   yum_repository:
     name: '{{ mysql_community_repo_name }}'
     description: '{{ mysql_community_repo_name }} YUM repository'
@@ -21,7 +48,7 @@
     timeout: '60'
   when: mysql_releases | lower == 'community' 
 
-- name: Install the MySQL dependencies packages
+- name: Install the MySQL dependencies packages.
   yum:
     name: '{{ mysql_dependent_packages }}'
     state: 'present'
@@ -33,7 +60,7 @@
   retries: 3
   delay: 5
 
-- name: Install the Percona MySQL packages
+- name: Install the Percona MySQL packages.
   yum:
     name: '{{ mysql_percona_packages }}'
     state: 'present'
@@ -47,7 +74,7 @@
   delay: 5
   when: mysql_releases | lower == 'percona'
 
-- name: Install the Community MySQL packages
+- name: Install the Community MySQL packages.
   yum:
     name: '{{ mysql_community_packages }}'
     state: 'present'

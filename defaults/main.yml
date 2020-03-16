@@ -36,6 +36,13 @@ mysql_backupset_arg:
   life: '604800' # Lifetime of the latest full backup in seconds.
   keep: '2' # The number of full backups (and its incrementals) to keep.
   encryptkey: 'Un9FA+CgxM5Yr/MpwTh5s6NXSQE0brp8' # BackupSet encryption key, Generate by [openssl rand -base64 24].
+  cloud_rsync: false # Whether rsync for cloud storage.
+  cloud_drive: 'azureblob' # Specify the cloud storage providers.
+  cloud_bwlimit: '10M' # Controls the bandwidth limit.
+  cloud_config: # Specify the cloud storage configuration.
+    account: 'blobuser' # Storage Account Name.
+    key: 'base64encodedkey==' # Storage Account Key.
+    endpoint: 'blob.core.chinacloudapi.cn' # Endpoint for the service.
 
 # Listen port #
 mysql_port_mysqld: '3306' # MySQL instance listen port.

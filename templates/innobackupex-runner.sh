@@ -14,6 +14,7 @@ CP=/bin/cp
 MKDIR=/bin/mkdir
 INNOBACKUPEX=innobackupex
 INNOBACKUPEXFULL=/usr/bin/$INNOBACKUPEX
+RCLONE=/bin/rclone
 USEROPTIONS="--user=root --password={{ mysql_sa_pass }} --host=127.0.0.1"
 TMPFILE="/tmp/innobackupex-runner.$$.tmp"
 MAILTO={{ mysql_mailto | default('') }}
@@ -137,6 +138,12 @@ find $INCRBACKUPDIR -maxdepth 1 -type d -mmin +$AGE -exec echo "removing: "$INCR
 
 # Changing default umask
 $CHMOD -R $UMASK $BACKUPDIR
+
+{% if mysql_backupset_arg.cloud_rsync | bool and mysql_backupset_arg.cloud_drive is defined %}
+# Rsync for cloud storage
+$RCLONE --verbose --config="/etc/rclone_mysql.conf" mkdir mysql:{{ ansible_hostname | lower }} >> $TMPFILE
+$RCLONE --bwlimit="{{ mysql_backupset_arg.cloud_bwlimit | default('10M') }}" --verbose --config="/etc/rclone_mysql.conf" sync {{ mysql_path }}/backup/mysql mysql:{{ ansible_hostname | lower }} >> $TMPFILE
+{% endif %}
 
 #rm -f $TMPFILE
 echo

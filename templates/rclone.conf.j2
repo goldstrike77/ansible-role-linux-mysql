@@ -1,0 +1,7 @@
+[mysql]
+type = {{ mysql_backupset_arg.cloud_drive }}
+{% if mysql_backupset_arg.cloud_drive == 'azureblob' %}
+account = {{ mysql_backupset_arg.cloud_config.account }}
+key = {{ mysql_backupset_arg.cloud_config.key }}
+endpoint = {{ mysql_backupset_arg.cloud_config.endpoint }}
+{% endif %}

@@ -1,5 +1,16 @@
 ---
-- name : MySQL backup job
+- name: Rclone configuration file transfer.
+  template:
+    src: 'rclone.conf.j2'
+    dest: '/etc/rclone_mysql.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  when:
+    - mysql_backupset_arg.cloud_rsync | bool
+    - mysql_backupset_arg.cloud_drive is defined
+
+- name : MySQL backup job.
   cron:
     user: 'mysql'
     name: 'MySQL backup'

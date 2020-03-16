@@ -69,6 +69,10 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_backupset_arg.life`: Lifetime of the latest full backup in seconds.
 * `mysql_backupset_arg.keep`: The number of full backups (and its incrementals) to keep.
 * `mysql_backupset_arg.encryptkey`: BackupSet encryption key, Generate by [openssl rand -base64 24].
+* `mysql_backupset_arg.cloud_rsync`: Whether rsync for cloud storage.
+* `mysql_backupset_arg.cloud_drive`: Specify the cloud storage providers.
+* `mysql_backupset_arg.cloud_bwlimit`: Controls the bandwidth limit.
+* `mysql_backupset_arg.cloud_config`: Specify the cloud storage configuration.
 
 ##### Listen port
 * `mysql_port_mysqld`: MySQL instance listen port.
@@ -184,6 +188,13 @@ You can also use the group_vars or the host_vars files for setting the variables
       life: '604800'
       keep: '2'
       encryptkey: 'Un9FA+CgxM5Yr/MpwTh5s6NXSQE0brp8'
+      cloud_rsync: true
+      cloud_drive: 'azureblob'
+      cloud_bwlimit: '10M'
+      cloud_config:
+        account: 'blobuser'
+        key: 'base64encodedkey=='
+        endpoint: 'blob.core.chinacloudapi.cn'
     mysql_port_mysqld: '3306'
     mysql_port_exporter: '9104'
     mysql_port_orchestrator_web: '3002'
