@@ -25,6 +25,6 @@
   cron:
     user: 'mysql'
     name: 'MySQL backup'
-    minute: "{{ ( ansible_hostname | hash | list | map('int',0,16) | sum ) % 60 }}"
-    hour: "{{ (( ansible_hostname | hash | list | map('int',0,16) | sum ) % 2) + 1 }}"
+    minute: "{{ 60 | random(seed=inventory_hostname) }}"
+    hour: "{{ 6 | random(seed=inventory_hostname,step=1) }}"
     job: '/bin/sh /usr/local/bin/innobackupex-runner.sh'
