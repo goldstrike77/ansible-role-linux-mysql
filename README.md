@@ -30,6 +30,41 @@ This Ansible role installs Percona Server for MySQL on linux operating system, i
 
 >__<span style="color:red">The mysqld service must be disabled and can only be started manually if orchestrator replication management is used. see https://github.com/github/orchestrator/issues/891.</span>__
 
+- Installation type
+  - Standalone.
+  - Replication with orchestrator management.
+- Configuration
+  - Buffer Pool Size, Connections, Character set and other general parameters.
+  - Networking and Firewall.
+  - Resource limiting.
+  - Cluster member relationship.
+  - Customized database.
+  - Privilege management.
+- Backup
+  - Scheduled full and incremental backups.
+  - Compressed backups.
+  - Uninterrupted transaction processing during backups.
+  - Cloud storage backups.
+- Monitoring
+  - Status.
+  - Variables.
+  - Databases.
+  - Table.
+  - Query.
+  - Replication.
+- Analyzing
+  - Query execution logging.
+  - Grouped by fingerprint and reported in descending order of query.    
+- Secure Benchmark
+  - Data at Rest Encryption.
+  - Encrypted backups.
+  - Audit logging.
+  - Streaming the logs to syslog.
+  - File System Permissions.
+  - SQL Mode.
+  - Authentication managerment.
+  - Ensure test database is not installed.     
+
 ## Requirements
 ### Operating systems
 This role will work on the following operating systems:
@@ -150,7 +185,8 @@ There are some variables in vars/main.yml:
 * `mysql_audit_log_commands`: Filtering command for audit process.
 
 ## Dependencies
-There are no dependencies on other roles.
+- Ansible versions >= 2.8
+- Python >= 2.7.5
 
 ## Example
 
