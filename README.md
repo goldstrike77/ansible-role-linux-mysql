@@ -53,7 +53,7 @@ This Ansible role installs Percona Server for MySQL on linux operating system, i
   - Replication.
 - Analyzing
   - Query execution logging.
-  - Grouped by fingerprint and reported in descending order of query.    
+  - Grouped by fingerprint and reported in descending order of query.
 - Security Safeguard Benchmark
   - Data at Rest Encryption.
   - Encrypted backups.
@@ -62,7 +62,7 @@ This Ansible role installs Percona Server for MySQL on linux operating system, i
   - File System Permissions.
   - SQL Mode.
   - Authentication managerment.
-  - Ensure test database is not installed.     
+  - Ensure test database is not installed.
 
 ## Requirements
 ### Operating systems
@@ -192,7 +192,15 @@ There are some variables in vars/main.yml:
 ### Hosts inventory file
 See tests/inventory for an example.
 
-    node01 ansible_host='192.168.1.10' mysql_version='57'
+    [MySQL]
+    node01 ansible_host='192.168.1.10'
+    node02 ansible_host='192.168.1.11'
+    node03 ansible_host='192.168.1.12'
+
+    [MySQL:vars]
+    mysql_version='57'
+    mysql_cluster_name='cluster01'
+    mysql_cluster_mode='replication'
 
 ### Vars in role configuration
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
