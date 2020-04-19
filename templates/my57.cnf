@@ -2,7 +2,7 @@
 # CLIENT #
 [client]
 port                                   = {{ mysql_port_mysqld }}
-socket                                 = {{ mysql_path }}/mysql/mysql.sock
+socket                                 = /tmp/mysql.sock
 
 [mysqld_safe]
 # GENERAL #
@@ -26,7 +26,7 @@ user                                   = {{ mysql_user }}
 default_storage_engine                 = {{ mysql_storage_engine }}
 default_time_zone                      = {{ mysql_arg.default_time_zone }}
 character_set_server                   = {{ mysql_arg.character_set }}
-socket                                 = {{ mysql_path }}/mysql/mysql.sock
+socket                                 = /tmp/mysql.sock
 explicit_defaults_for_timestamp        = 0
 log_timestamps                         = SYSTEM
 lower_case_table_names                 = {{ mysql_arg.lower_case_table_names }}

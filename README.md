@@ -43,7 +43,6 @@ This Ansible role installs Percona Server for MySQL on linux operating system, i
 - Backup
   - Scheduled full and incremental backups.
   - Compressed backups.
-  - Uninterrupted transaction processing during backups.
   - Cloud storage backups.
 - Monitoring
   - Status.
@@ -55,7 +54,7 @@ This Ansible role installs Percona Server for MySQL on linux operating system, i
 - Analyzing
   - Query execution logging.
   - Grouped by fingerprint and reported in descending order of query.    
-- Secure Benchmark
+- Security Safeguard Benchmark
   - Data at Rest Encryption.
   - Encrypted backups.
   - Audit logging.
