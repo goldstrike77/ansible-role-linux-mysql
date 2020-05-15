@@ -28,7 +28,12 @@ __Table of Contents__
 ## Overview
 This Ansible role installs Percona Server for MySQL on linux operating system, including establishing a filesystem structure and server configuration with some common operational features.
 
+Orchestrator is a MySQL topology manager and a failover solution, runs as a service and provides command line access, HTTP API and Web interface. used in production on many large MySQL installments. It allows for detecting, querying and refactoring complex replication topologies, and provides reliable failure detection and intelligent recovery and promotion.
+
 >__<span style="color:red">The mysqld service must be disabled and can only be started manually if orchestrator replication management is used. see https://github.com/github/orchestrator/issues/891.</span>__
+
+
+>__<span style="color:red">There are file that record password for replication user in /tmp folder at first master node, Burn after reading!</span>__
 
 - Installation type
   - Standalone.
@@ -201,6 +206,7 @@ See tests/inventory for an example.
     mysql_version='57'
     mysql_cluster_name='cluster01'
     mysql_cluster_mode='replication'
+    mysql_cluster_mgmt='orchestrator'
 
 ### Vars in role configuration
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
