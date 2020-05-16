@@ -28,12 +28,15 @@ __Table of Contents__
 ## Overview
 This Ansible role installs Percona Server for MySQL on linux operating system, including establishing a filesystem structure and server configuration with some common operational features.
 
-Orchestrator is a MySQL topology manager and a failover solution, runs as a service and provides command line access, HTTP API and Web interface. used in production on many large MySQL installments. It allows for detecting, querying and refactoring complex replication topologies, and provides reliable failure detection and intelligent recovery and promotion.
-
 >__<span style="color:red">The mysqld service must be disabled and can only be started manually if orchestrator replication management is used. see https://github.com/github/orchestrator/issues/891.</span>__
 
-
 >__<span style="color:red">There are file that record password for replication user in /tmp folder at first master node, Burn after reading!</span>__
+
+Orchestrator is a MySQL topology manager and a failover solution, runs as a service and provides command line access, HTTP API and Web interface. used in production on many large MySQL installments. It allows for detecting, querying and refactoring complex replication topologies, and provides reliable failure detection and intelligent recovery and promotion.
+
+<p><img src="https://raw.githubusercontent.com/goldstrike77/docs/master/MySQL/orchestrator.png" align="left" border="1" /></p>
+
+----------
 
 - Installation type
   - Standalone.
@@ -62,12 +65,17 @@ Orchestrator is a MySQL topology manager and a failover solution, runs as a serv
 - Security Safeguard Benchmark
   - Data at Rest Encryption.
   - Encrypted backups.
-  - Audit logging.
+  - Auditing provides monitoring and logging of connection and query activity that were performed on MySQL server. Audit log will be transferred to syslog like Graylog or ELK stack.
+    |The following audit events subset will be captured.|
+    -|-|-
+    |"alter_db", "alter_event", "alter_function", "alter_procedure", "alter_table", "alter_user", "create_trigger", "create_user", "delete", "delete_multi", "drop_db", "drop_event", "drop_function", "drop_index", "drop_procedure", "drop_table", "drop_trigger", "drop_user", "drop_view", "grant", "kill", "rename_table", "rename_user", "revoke", "revoke_all", "shutdown", "truncate"| 
   - Streaming the logs to syslog.
   - File System Permissions.
   - SQL Mode.
   - Authentication managerment.
   - Ensure test database is not installed.
+- Failover
+  - Supports automatic failover of the master, and the replication tree can be fixed when servers in the tree fail either manually.
 
 ## Requirements
 ### Operating systems
