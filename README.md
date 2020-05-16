@@ -34,7 +34,7 @@ This Ansible role installs Percona Server for MySQL on linux operating system, i
 
 Orchestrator is a MySQL topology manager and a failover solution, runs as a service and provides command line access, HTTP API and Web interface. used in production on many large MySQL installments. It allows for detecting, querying and refactoring complex replication topologies, and provides reliable failure detection and intelligent recovery and promotion.
 
-<p><img src="https://raw.githubusercontent.com/goldstrike77/docs/master/MySQL/orchestrator.png" align="left" border="1" /></p>
+<p><img src="https://raw.githubusercontent.com/goldstrike77/docs/master/MySQL/orchestrator.png" /></p>
 
 ----------
 
