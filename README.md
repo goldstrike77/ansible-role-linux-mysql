@@ -70,6 +70,13 @@ Orchestrator is a MySQL topology manager and a failover solution, runs as a serv
   - Authentication managerment makes IT infrastructures more secure by leveraging existing security rules and processes.
   - Ensure test database is not installed.
   - Auditing provides monitoring and logging of connection and query activity that were performed on MySQL server. Information will be transferred to syslog like Graylog or ELK stack.
+    The following audit events subset will be captured by default.
+    ┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+    │ "alter_db", "alter_event", "alter_function", "alter_procedure", "alter_table", "alter_user",           │ 
+    │ "create_trigger", "create_user", "delete", "delete_multi", "drop_db", "drop_event", "drop_function",   │
+    │ "drop_index", "drop_procedure", "drop_table", "drop_trigger", "drop_user", "drop_view", "grant",       │
+    │ "kill", "rename_table", "rename_user", "revoke", "revoke_all", "shutdown", "truncate"                  │
+    └────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 - Failover
   - Supports automatic failover of the master, and the replication tree can be fixed when servers in the tree fail either manually.
 
