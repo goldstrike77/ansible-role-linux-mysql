@@ -26,7 +26,9 @@ __Table of Contents__
 - [Contributors](#Contributors)
 
 ## Overview
-This Ansible role installs Percona Server for MySQL on linux operating system, including establishing a filesystem structure and server configuration with some common operational features.
+MySQL is an open-source relational database management system (RDBMS). A relational database organizes data into one or more data tables in which data types may be related to each other; these relations help structure the data. SQL is a language programmers use to create, modify and extract data from the relational database, as well as control user access to the database. In addition to relational databases and SQL, an RDBMS like MySQL works with an operating system to implement a relational database in a computer's storage system, manages users, allows for network access and facilitates testing database integrity and creation of backups.
+
+Percona Server for MySQL is a free, fully compatible, enhanced and open-source drop-in replacement for any MySQL database. It provides superior performance, scalability and instrumentation. Percona Server for MySQL is trusted by thousands of enterprises to provide better performance and concurrency for their most demanding workloads and delivers greater value to MySQL server users with optimized performance, greater performance scalability and availability, enhanced backups and increased visibility.
 
 >__<span style="color:red">The mysqld service must be disabled and can only be started manually if orchestrator replication management is used. see https://github.com/github/orchestrator/issues/891.</span>__
 
@@ -65,17 +67,18 @@ Orchestrator is a MySQL topology manager and a failover solution, runs as a serv
   - Grouped by fingerprint and reported in descending order of query.
 - Security Safeguard Benchmark
   - Transparent Data Encryption (TDE) protects your critical data by enabling data-at-rest encryption in the database. It protects the privacy of your information, prevents data breaches and helps meet regulatory requirements.
+  - Configure TLS/SSL to encrypt client and cluster communications.
   - Encrypt/decrypt local or streaming backup in order to add another layer of protection to the backups.
-  - File system permissions protected when potential vulnerability exist.
-  - Authentication managerment makes IT infrastructures more secure by leveraging existing security rules and processes.
-  - Ensure test database is not installed.
-  - Auditing provides monitoring and logging of connection and query activity that were performed on MySQL server. Information will be transferred to syslog like Graylog or ELK stack.
+  - File system permissions protected when potential vulnerability exists.
+  - Authentication management makes IT infrastructures more secure by leveraging existing security rules and processes.
+  - Ensure the test database is not installed.
+  - Auditing provides monitoring and logging of connection and query activity that was performed on the MySQL server. Information will be transferred to the SIEM subsection like Graylog or ELK stack.
 - Failover
-  - Supports automatic failover of the master, and the replication tree can be fixed when servers in the tree fail either manually.
+  - Supports the automatic failover of the master, and the replication tree can be fixed when servers in the tree fail either manually.
 
 ## Requirements
 ### Operating systems
-This role will work on the following operating systems:
+This Ansible role installs Percona Server for MySQL on linux operating system, including establishing a filesystem structure and server configuration with some common operational features, Will works on the following operating systems:
 
   * CentOS 7
 
@@ -96,6 +99,7 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_user`: System user name for running mysqld services.
 * `mysql_mailto`: MySQL report mail recipient.
 * `mysql_sa_pass`: MySQL root account password.
+* `mysql_ssl`: A boolean value, whether Encrypting client and cluster communications.
 * `mysql_storage_engine`: Preferred storage engine, InnoDB or MyISAM
 * `mysql_innodb_buffer_pool_size`: The size in MB of the buffer pool.
 * `mysql_max_connections`: The maximum permitted number of simultaneous client connections.
@@ -104,9 +108,19 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 ##### Cluster parameters
 * `mysql_cluster_name`: Cluster name of servers that implements distribution performance.
 * `mysql_cluster_mode`: Defines type of cluster type: standalone / replication.
-* `mysql_cluster_mgmt`: High availability and replication management tool.
-* `mysql_cluster_mgmt_user`: Management console authentication user.
-* `mysql_cluster_mgmt_pass`: Management console authentication password.
+
+##### Role dependencies
+* `mysql_orchestrator_dept`: A boolean value, whether Orchestrator use the same environment.
+
+##### Orchestrator parameters
+* `mysql_orchestrator_ui_user`: Management console authentication user.
+* `mysql_orchestrator_ui_pass`: Management console authentication password.
+* `mysql_orchestrator_ui_ssl`: A boolean value, whether Encrypting client communications.
+* `mysql_orchestrator_port_ui`: Orchestrator Web UI listen port.
+* `mysql_orchestrator_port_agent`: Orchestrator Agent listen port.
+* `mysql_orchestrator_port_raft`: Orchestrator Raft listen port.
+* `mysql_orchestrator_mysql_user`: MySQL topology control account name.
+* `mysql_orchestrator_mysql_pass`: MySQL topology control account password.
 
 ##### Backup parameters
 * `mysql_backupset_arg.life`: Lifetime of the latest full backup in seconds.
@@ -121,8 +135,6 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 ##### Listen port
 * `mysql_port_mysqld`: MySQL instance listen port.
 * `mysql_port_exporter`: Prometheus MySQL Exporter listen port.
-* `mysql_port_orchestrator_web`: Orchestrator Web UI listen port.
-* `mysql_port_orchestrator_raft`: Orchestrator Raft listen port.
 
 ##### Server System Variables
 * `mysql_arg.binlog_cache_size`: Size of the cache to hold changes to the binary log during a transaction.
@@ -177,7 +189,7 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `environments`: Define the service environment.
 * `tags`: Define the service custom label.
 * `exporter_is_install`: Whether to install prometheus exporter.
-* `consul_public_register`: false Whether register a exporter service with public consul client.
+* `consul_public_register`: Whether register a exporter service with public consul client.
 * `consul_public_exporter_token`: Public Consul client ACL token.
 * `consul_public_http_prot`: The consul Hypertext Transfer Protocol.
 * `consul_public_clients`: List of public consul clients.
@@ -210,112 +222,120 @@ See tests/inventory for an example.
     mysql_version='57'
     mysql_cluster_name='cluster01'
     mysql_cluster_mode='replication'
-    mysql_cluster_mgmt='orchestrator'
 
 ### Vars in role configuration
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
-    - hosts: all
-      roles:
-         - role: ansible-role-linux-mysql
-           mysql_version: '57'
+```yaml
+- hosts: all
+  roles:
+     - role: ansible-role-linux-mysql
+       mysql_version: '57'
+```
 
 ### Combination of group vars and playbook
-You can also use the group_vars or the host_vars files for setting the variables needed for this role. File you should change: group_vars/all or host_vars/`group_name`
+You can also use the group_vars or the host_vars files for setting the variables needed for this role. File you should change: group_vars/all or host_vars/`group_name`.
 
-    mysql_releases: 'Percona'
-    mysql_version: '57'
-    mysql_path: '/data'
-    mysql_user: 'mysql'
-    mysql_mailto: 'somebody@example.com'
-    mysql_sa_pass: 'changeme'
-    mysql_storage_engine: 'InnoDB'
-    mysql_innodb_buffer_pool_size: '1024'
-    mysql_max_connections: '100'
-    mysql_system_type: 'autopilot'
-    mysql_cluster_name: 'cluster01'
-    mysql_cluster_mode: 'standalone'
-    mysql_cluster_mgmt: 'orchestrator'
-    mysql_cluster_mgmt_user: 'admin'
-    mysql_cluster_mgmt_pass: 'changeme'
-    mysql_backupset_arg:
-      life: '604800'
-      keep: '2'
-      encryptkey: 'Un9FA+CgxM5Yr/MpwTh5s6NXSQE0brp8'
-      cloud_rsync: true
-      cloud_drive: 'azureblob'
-      cloud_bwlimit: '10M'
-      cloud_event: 'sync'
-      cloud_config:
-        account: 'blobuser'
-        key: 'base64encodedkey=='
-        endpoint: 'blob.core.chinacloudapi.cn'
-    mysql_port_mysqld: '3306'
-    mysql_port_exporter: '9104'
-    mysql_port_orchestrator_web: '3002'
-    mysql_port_orchestrator_raft: '10008'
-    mysql_arg:
-      binlog_cache_size: '1048576'
-      binlog_format: 'ROW'
-      binlog_stmt_cache_size: '1048576'
-      character_set: 'utf8mb4'
-      connect_timeout: '30'
-      data_encryption: false
-      default_time_zone: '+8:00'
-      expire_logs_days: '15'
-      enforce_gtid_consistency: 'on'
-      gtid_mode: 'on'
-      lower_case_table_names: '0'
-      innodb_buffer_pool_instances: '8'
-      innodb_flush_log_at_trx_commit: '2'
-      innodb_log_buffer_size: '16'
-      innodb_log_file_size: '1024'
-      innodb_max_dirty_pages_pct: '85'
-      innodb_max_undo_log_size: '1024'
-      innodb_page_cleaners: '4'
-      innodb_purge_threads: '4'
-      innodb_read_io_threads: '4'
-      innodb_write_io_threads: '4'
-      interactive_timeout: '3600'
-      join_buffer_size: '1M'
-      key_buffer_size: '32'
-      log_queries_not_using_indexes: '1'
-      long_query_time: '1'
-      max_allowed_packet: '32M'
-      max_connect_errors: '100'
-      max_heap_table_size: '32M'
-      max_prepared_stmt_count: '262144'
-      open_files_limit: '131072'
-      open_nproc_limit: '131072'
-      performance_schema_max_table_instances: '512'
-      query_cache_size: '0'
-      query_cache_type: '0'
-      read_rnd_buffer_size: '1M'
-      slave_net_timeout: '10'
-      sync_binlog: '1000'
-      table_definition_cache: '4096'
-      table_open_cache: '4096'
-      table_open_cache_instances: '64'
-      thread_cache_size: '50'
-      thread_handling: 'pool-of-threads'
-      thread_pool_max_threads: '1000'
-      thread_pool_oversubscribe: '10'
-      tmp_table_size: '32M'
-      wait_timeout: '3600'
-    environments: 'Development'
-    tags:
-      subscription: 'default'
-      owner: 'nobody'
-      department: 'Infrastructure'
-      organization: 'The Company'
-      region: 'IDC01'
-    exporter_is_install: false
-    consul_public_register: false
-    consul_public_exporter_token: '00000000-0000-0000-0000-000000000000'
-    consul_public_http_prot: 'https'
-    consul_public_http_port: '8500'
-    consul_public_clients:
-      - '127.0.0.1'
+```yaml
+mysql_releases: 'Percona'
+mysql_version: '57'
+mysql_path: '/data'
+mysql_user: 'mysql'
+mysql_mailto: 'somebody@example.com'
+mysql_sa_pass: 'changeme'
+mysql_ssl: false
+mysql_storage_engine: 'InnoDB'
+mysql_innodb_buffer_pool_size: '1024'
+mysql_max_connections: '100'
+mysql_system_type: 'autopilot'
+mysql_cluster_name: 'cluster01'
+mysql_cluster_mode: 'standalone'
+mysql_orchestrator_dept: false
+mysql_orchestrator_ui_user: 'admin'
+mysql_orchestrator_ui_pass: 'changeme'
+mysql_orchestrator_ui_ssl: false
+mysql_orchestrator_port_ui: '3002'
+mysql_orchestrator_port_agent: '3003'
+mysql_orchestrator_port_raft: '10008'
+mysql_orchestrator_mysql_user: 'orchestrator'
+mysql_orchestrator_mysql_pass: 'changeme'
+mysql_backupset_arg:
+  life: '604800'
+  keep: '2'
+  encryptkey: 'Un9FA+CgxM5Yr/MpwTh5s6NXSQE0brp8'
+  cloud_rsync: true
+  cloud_drive: 'azureblob'
+  cloud_bwlimit: '10M'
+  cloud_event: 'sync'
+  cloud_config:
+    account: 'blobuser'
+    key: 'base64encodedkey=='
+    endpoint: 'blob.core.chinacloudapi.cn'
+mysql_port_mysqld: '3306'
+mysql_port_exporter: '9104'
+mysql_arg:
+  binlog_cache_size: '1048576'
+  binlog_format: 'ROW'
+  binlog_stmt_cache_size: '1048576'
+  character_set: 'utf8mb4'
+  connect_timeout: '30'
+  data_encryption: false
+  default_time_zone: '+8:00'
+  expire_logs_days: '15'
+  enforce_gtid_consistency: 'on'
+  gtid_mode: 'on'
+  lower_case_table_names: '0'
+  innodb_buffer_pool_instances: '8'
+  innodb_flush_log_at_trx_commit: '2'
+  innodb_log_buffer_size: '16'
+  innodb_log_file_size: '1024'
+  innodb_max_dirty_pages_pct: '85'
+  innodb_max_undo_log_size: '1024'
+  innodb_page_cleaners: '4'
+  innodb_purge_threads: '4'
+  innodb_read_io_threads: '4'
+  innodb_write_io_threads: '4'
+  interactive_timeout: '3600'
+  join_buffer_size: '1M'
+  key_buffer_size: '32'
+  log_queries_not_using_indexes: '1'
+  long_query_time: '1'
+  max_allowed_packet: '32M'
+  max_connect_errors: '100'
+  max_heap_table_size: '32M'
+  max_prepared_stmt_count: '262144'
+  open_files_limit: '131072'
+  open_nproc_limit: '131072'
+  performance_schema_max_table_instances: '512'
+  query_cache_size: '0'
+  query_cache_type: '0'
+  read_rnd_buffer_size: '1M'
+  slave_net_timeout: '10'
+  sync_binlog: '1000'
+  table_definition_cache: '4096'
+  table_open_cache: '4096'
+  table_open_cache_instances: '64'
+  thread_cache_size: '50'
+  thread_handling: 'pool-of-threads'
+  thread_pool_max_threads: '1000'
+  thread_pool_oversubscribe: '10'
+  tmp_table_size: '32M'
+  wait_timeout: '3600'
+environments: 'Development'
+tags:
+  subscription: 'default'
+  owner: 'nobody'
+  department: 'Infrastructure'
+  organization: 'The Company'
+  region: 'IDC01'
+exporter_is_install: false
+consul_public_register: false
+consul_public_exporter_token: '00000000-0000-0000-0000-000000000000'
+consul_public_http_prot: 'https'
+consul_public_http_port: '8500'
+consul_public_clients:
+  - '127.0.0.1'
+```
 
 ## License
 ![](https://img.shields.io/badge/MIT-purple.svg?style=for-the-badge)

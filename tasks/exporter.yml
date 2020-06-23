@@ -1,10 +1,9 @@
 ---
 - name: Create user prometheus with privileges for replication
   mysql_user:
-    login_host: '127.0.0.1'
     login_user: 'root'
     login_password: '{{ mysql_sa_pass }}'
-    login_port: '{{ mysql_port_mysqld }}'
+    login_unix_socket: '/tmp/mysql.sock'
     name: 'prometheus'
     password: "{{ lookup('password', '' + group_names[-1] + ':prometheus length=12 chars=ascii_letters,digits') }}"
     host: '127.0.0.1'
@@ -18,10 +17,9 @@
 
 - name: Create user prometheus with privileges for standalone
   mysql_user:
-    login_host: '127.0.0.1'
     login_user: 'root'
     login_password: '{{ mysql_sa_pass }}'
-    login_port: '{{ mysql_port_mysqld }}'
+    login_unix_socket: '/tmp/mysql.sock'
     name: 'prometheus'
     password: "{{ lookup('password', '' + group_names[-1] + ':prometheus length=12 chars=ascii_letters,digits') }}"
     host: '127.0.0.1'
@@ -55,9 +53,9 @@
   template:
     src: '{{ item.src }}'
     dest: '{{ item.dest }}'
-    owner: 'root'
-    group: 'root'
-    mode: '0644'
+    owner: 'prometheus'
+    group: 'prometheus'
+    mode: '0640'
   loop:
     - { src: 'prometheus.cnf', dest: '/etc/' }
     - { src: 'mysqld_exporter', dest: '/etc/default/' }    

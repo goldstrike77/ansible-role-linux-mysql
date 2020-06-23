@@ -12,7 +12,9 @@
         {% endif %}\
       {% endfor %}\
       {{ _mysql_servers }}"
-  when: mysql_cluster_mode != 'standalone'
+  when:
+    - mysql_cluster_mode != 'standalone'
+    - mysql_servers is not defined
 
 - name: Check if MySQL tablespace exists
   stat:
@@ -29,6 +31,8 @@
       include: 'selinux.yml' 
     - name: Include firewall tasks
       include: 'firewall.yml'
+    - name: Include certificate tasks.
+      include: 'certificates.yml'
     - name: Include initialization tasks
       include: 'initialization.yml'
     - name: Include user grants tasks
@@ -42,12 +46,6 @@
       include: 'database.yml'
       when:
         - mysql_bu_dbs_arg is defined
-    - name: Include cluster management tasks
-      include: '{{ mysql_cluster_mgmt }}.yml'
-      when:
-        - mysql_cluster_mode == 'replication'
-        - mysql_servers | length > 1
-        - mysql_cluster_mgmt is defined
     - name: Include query analyzes tasks
       include: 'analyzes.yml'
     - name: Include backup tasks

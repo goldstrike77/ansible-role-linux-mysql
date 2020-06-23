@@ -1,10 +1,9 @@
 ---
 - name: Create business database for replication
   mysql_db:
-    login_host: '127.0.0.1'
     login_user: 'root'
     login_password: '{{ mysql_sa_pass }}'
-    login_port: '{{ mysql_port_mysqld }}'
+    login_unix_socket: '/tmp/mysql.sock'
     name: '{{ item.dbs }}'
     encoding: '{{ mysql_arg.character_set }}'
     state: 'present'
@@ -17,14 +16,13 @@
 
 - name: Create business user with privileges for replication
   mysql_user:
-    login_host: '127.0.0.1'
     login_user: 'root'
     login_password: '{{ mysql_sa_pass }}'
-    login_port: '{{ mysql_port_mysqld }}'
+    login_unix_socket: '/tmp/mysql.sock'
     name: '{{ item.user }}'
     password: '{{ item.pass }}'
     host: '{{ item.host }}'
-    priv: '{{ item.dbs }}.*:{{ item.priv }}'
+    priv: '{{ item.dbs }}.*:{{ item.priv }}{% if mysql_ssl | bool %}/*.*:REQUIRESSL{% endif %}'
     state: 'present'
   loop: '{{ mysql_bu_dbs_arg }}'
   no_log: true
@@ -35,10 +33,9 @@
 
 - name: Create business database for standalone
   mysql_db:
-    login_host: '127.0.0.1'
     login_user: 'root'
     login_password: '{{ mysql_sa_pass }}'
-    login_port: '{{ mysql_port_mysqld }}'
+    login_unix_socket: '/tmp/mysql.sock'
     name: '{{ item.dbs }}'
     encoding: '{{ mysql_arg.character_set }}'
     state: 'present'
@@ -49,14 +46,13 @@
 
 - name: Create business user with privileges for standalone
   mysql_user:
-    login_host: '127.0.0.1'
     login_user: 'root'
     login_password: '{{ mysql_sa_pass }}'
-    login_port: '{{ mysql_port_mysqld }}'
+    login_unix_socket: '/tmp/mysql.sock'
     name: '{{ item.user }}'
     password: '{{ item.pass }}'
     host: '{{ item.host }}'
-    priv: '{{ item.dbs }}.*:{{ item.priv }}'
+    priv: '{{ item.dbs }}.*:{{ item.priv }}{% if mysql_ssl | bool %}/*.*:REQUIRESSL{% endif %}'
     state: 'present'
   loop: '{{ mysql_bu_dbs_arg }}'
   no_log: true

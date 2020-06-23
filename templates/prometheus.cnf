@@ -1,3 +1,5 @@
 [client]
+host=127.0.0.1
+port={{ mysql_port_mysqld }}
 user=prometheus
 password={{ lookup('password', '' + group_names[-1] + ':prometheus length=12 chars=ascii_letters,digits') }}

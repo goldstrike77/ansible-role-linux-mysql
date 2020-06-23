@@ -3,6 +3,13 @@
 [client]
 port                                   = {{ mysql_port_mysqld }}
 socket                                 = /tmp/mysql.sock
+{% if mysql_ssl | bool %}
+tls_version                            = TLSv1.2
+ssl-ca                                 = {{ mysql_cert_path }}/ca-cert.pem
+ssl-cert                               = {{ mysql_cert_path }}/client.crt
+ssl-key                                = {{ mysql_cert_path }}/client.key
+ssl-mode                               = PREFERRED
+{% endif %}
 
 [mysqld_safe]
 # GENERAL #
@@ -10,6 +17,14 @@ malloc-lib                             = /usr/lib64/libjemalloc.so.1
 thp-setting                            = never
 
 [mysqld]
+# Encrypted # 
+{% if mysql_ssl | bool %}
+tls_version                            = TLSv1.2
+ssl-ca                                 = {{ mysql_cert_path }}/ca-cert.pem
+ssl-cert                               = {{ mysql_cert_path }}/server.crt
+ssl-key                                = {{ mysql_cert_path }}/server.key
+{% endif %}
+
 # PERFORMANCE #
 #performance-schema-instrument          = 'memory/%=ON' # https://jira.percona.com/browse/PS-3734
 performance_schema                     = 1
@@ -57,7 +72,6 @@ myisam-recover-options                 = FORCE,BACKUP
 # SAFETY #
 #memlock
 #large_pages                            = 1
-skip_ssl
 core-file
 skip-name-resolve
 local-infile                           = 0

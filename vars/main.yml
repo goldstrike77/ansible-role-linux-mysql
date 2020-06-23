@@ -8,6 +8,14 @@ mysql_folder:
   - '{{ mysql_path }}/mysql/mysqlsla_analyzes'
   - '{{ mysql_path }}/backup/mysql'
 
+mysql_python_dependent_packages:
+  - 'pip'
+  - 'cryptography'
+
+mysql_pypi_url: 'pypi.tuna.tsinghua.edu.cn'
+
+mysql_cert_path: '/etc/mysqld/ssl'
+
 mysql_kernel_parameters:
   - { variable: 'fs.aio-max-nr', value: '1048576' }
   - { variable: 'vm.dirty_ratio', value: '15' }

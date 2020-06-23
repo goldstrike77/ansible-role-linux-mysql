@@ -1,14 +1,13 @@
 ---
 - name: Ensure replication user exists on each node.
   mysql_user:
-    login_host: '127.0.0.1'
     login_user: 'root'
     login_password: '{{ mysql_sa_pass }}'
-    login_port: '{{ mysql_port_mysqld }}'
+    login_unix_socket: '/tmp/mysql.sock'
     name: 'replication'
     host: '%'
     password: "{{ lookup('password', '' + group_names[-1] + ':replication length=12 chars=ascii_letters,digits') }}"
-    priv: '*.*:REPLICATION SLAVE,REPLICATION CLIENT'
+    priv: '*.*:REPLICATION SLAVE,REPLICATION CLIENT{% if mysql_ssl | bool %},REQUIRESSL{% endif %}'
     state: 'present'
   no_log: true
 
@@ -44,14 +43,14 @@
 
 - name: Configure replication on the slave.
   mysql_replication:
-    login_host: '127.0.0.1'
     login_user: 'root'
     login_password: '{{ mysql_sa_pass }}'
-    login_port: '{{ mysql_port_mysqld }}'
+    login_unix_socket: '/tmp/mysql.sock'
     mode: 'changemaster'
     master_host: '{{ mysql_servers[0] }}'
     master_user: 'replication'
     master_password: "{{ lookup('password', '' + group_names[-1] + ':replication length=12 chars=ascii_letters,digits') }}"
+    master_ssl: '{{ mysql_ssl | bool | to_json }}'
     master_auto_position: 'yes'
 #    master_log_file: '{{ mysql_master_log_file }}'
 #    master_log_pos: '{{ mysql_master_log_pos }}'
@@ -60,10 +59,24 @@
 
 - name: Start replication.
   mysql_replication:
-    login_host: '127.0.0.1'
     login_user: 'root'
     login_password: '{{ mysql_sa_pass }}'
-    login_port: '{{ mysql_port_mysqld }}'
+    login_unix_socket: '/tmp/mysql.sock'
     mode: 'startslave'
   when: mysql_servers[0] not in ansible_default_ipv4.address
   no_log: true
+
+- name: Create Orchestrator user with privileges for replication.
+  mysql_user:
+    login_user: 'root'
+    login_password: '{{ mysql_sa_pass }}'
+    login_unix_socket: '/tmp/mysql.sock'
+    name: '{{ mysql_orchestrator_mysql_user }}'
+    password: '{{ mysql_orchestrator_mysql_user }}'
+    host: '%'
+    priv: '*.*:SUPER,PROCESS,REPLICATION SLAVE,REPLICATION CLIENT,RELOAD{% if mysql_ssl | bool %},REQUIRESSL{% endif %}/meta.*:SELECT/mysql.slave_master_info:SELECT'
+    state: 'present'
+  no_log: true
+  when:
+    - mysql_orchestrator_dept | bool
+    - mysql_servers[0] in ansible_default_ipv4.address

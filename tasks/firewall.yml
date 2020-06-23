@@ -13,8 +13,6 @@
   loop:
     - '{{ mysql_port_mysqld }}'
     - '{{ mysql_port_exporter }}'
-    - '{{ mysql_port_orchestrator_web }}'
-    - '{{ mysql_port_orchestrator_raft }}'
   when:
     - ansible_distribution_major_version|int > 6
     - services_state.ansible_facts.services["firewalld.service"].state == 'running'
@@ -28,8 +26,6 @@
   loop:
     - '{{ mysql_port_mysqld }}'
     - '{{ mysql_port_exporter }}'
-    - '{{ mysql_port_orchestrator_web }}'
-    - '{{ mysql_port_orchestrator_raft }}'
   register: firewalld_update
   when: ansible_distribution_major_version|int < 7
 
