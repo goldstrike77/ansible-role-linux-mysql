@@ -27,6 +27,7 @@ mysql_system_type: 'autopilot' # Define instance parameters.
 # Cluster parameters #
 mysql_cluster_name: 'cluster01' # Cluster name of servers that implements distribution performance.
 mysql_cluster_mode: 'standalone' # Defines type of cluster type: standalone / replication.
+mysql_cluster_mgmt: '' # MySQL high availability and replication management tool.
 
 # Role dependencies #
 mysql_orchestrator_dept: false # A boolean value, whether Orchestrator use the same environment.

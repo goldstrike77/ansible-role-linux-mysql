@@ -10,6 +10,7 @@ ___
 __Table of Contents__
 
 - [Overview](#overview)
+- [Task Specifications](#Task-Specifications)
 - [Requirements](#requirements)
   * [Operating systems](#operating-systems)
   * [MySQL Versions](#MySQL-versions)
@@ -38,8 +39,7 @@ Orchestrator is a MySQL topology manager and a failover solution, runs as a serv
 
 <p><img src="https://raw.githubusercontent.com/goldstrike77/docs/master/MySQL/orchestrator.png" /></p>
 
-----------
-
+## Task Specifications
 - Installation type
   - Standalone.
   - Replication with orchestrator management.
@@ -108,6 +108,7 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 ##### Cluster parameters
 * `mysql_cluster_name`: Cluster name of servers that implements distribution performance.
 * `mysql_cluster_mode`: Defines type of cluster type: standalone / replication.
+* `mysql_cluster_mgmt`: MySQL high availability and replication management tool.
 
 ##### Role dependencies
 * `mysql_orchestrator_dept`: A boolean value, whether Orchestrator use the same environment.
@@ -207,6 +208,7 @@ There are some variables in vars/main.yml:
 ## Dependencies
 - Ansible versions >= 2.8
 - Python >= 2.7.5
+- [Orchestrator](https://github.com/goldstrike77/ansible-role-linux-orchestrator)
 
 ## Example
 
@@ -250,6 +252,7 @@ mysql_max_connections: '100'
 mysql_system_type: 'autopilot'
 mysql_cluster_name: 'cluster01'
 mysql_cluster_mode: 'standalone'
+mysql_cluster_mgmt: ''
 mysql_orchestrator_dept: false
 mysql_orchestrator_ui_user: 'admin'
 mysql_orchestrator_ui_pass: 'changeme'

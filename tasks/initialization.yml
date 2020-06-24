@@ -71,7 +71,7 @@
 - name: Ensure MySQL service is enabled
   systemd:
     name: 'mysqld.service'
-    enabled: 'yes'
+    enabled: '{% if mysql_cluster_mgmt is not defined or mysql_cluster_mgmt != "orchestrator" %}yes{% else %}no{% endif %}'
     state: 'started'
     daemon_reload: 'yes'
   when: ansible_distribution_major_version|int > 6
@@ -79,6 +79,6 @@
 - name: Ensure MySQL service is enabled
   service:
     name: 'mysql'
-    enabled: 'yes'
+    enabled: '{% if mysql_cluster_mgmt is not defined or mysql_cluster_mgmt != "orchestrator" %}yes{% else %}no{% endif %}'
     state: 'started'
   when: ansible_distribution_major_version|int < 7
