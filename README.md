@@ -1,8 +1,12 @@
 ![](https://img.shields.io/badge/Ansible-mysql-green.svg?logo=angular&style=for-the-badge)
 
->__Please note that the original design goal of this role was more concerned with the initial installation and bootstrapping environment, which currently does not involve performing continuous maintenance, and therefore are only suitable for testing and development purposes,  should not be used in production environments.__
+```diff
+- >__Please note that the original design goal of this role was more concerned with the initial installation and bootstrapping environment, which currently does not involve performing continuous maintenance, and therefore are only suitable for testing and development purposes,  should not be used in production environments.__
+```
 
->__请注意，此角色的最初设计目标更关注初始安装和引导环境，目前不涉及执行连续维护，因此仅适用于测试和开发目的，不应在生产环境中使用。__
+```diff
+- >__请注意，此角色的最初设计目标更关注初始安装和引导环境，目前不涉及执行连续维护，因此仅适用于测试和开发目的，不应在生产环境中使用。__
+```
 ___
 
 <p><img src="https://raw.githubusercontent.com/goldstrike77/goldstrike77.github.io/master/img/logo/logo_mysql.png" align="right" /></p>
@@ -30,10 +34,6 @@ __Table of Contents__
 MySQL is an open-source relational database management system (RDBMS). A relational database organizes data into one or more data tables in which data types may be related to each other; these relations help structure the data. SQL is a language programmers use to create, modify and extract data from the relational database, as well as control user access to the database. In addition to relational databases and SQL, an RDBMS like MySQL works with an operating system to implement a relational database in a computer's storage system, manages users, allows for network access and facilitates testing database integrity and creation of backups.
 
 Percona Server for MySQL is a free, fully compatible, enhanced and open-source drop-in replacement for any MySQL database. It provides superior performance, scalability and instrumentation. Percona Server for MySQL is trusted by thousands of enterprises to provide better performance and concurrency for their most demanding workloads and delivers greater value to MySQL server users with optimized performance, greater performance scalability and availability, enhanced backups and increased visibility.
-
->__The mysqld service must be disabled and can only be started manually if orchestrator replication management is used. see https://github.com/github/orchestrator/issues/891.__
-
->__There are some files that record password for replication, xtrabackup and prometheus MySQL account in /tmp folder at the first master node, Burn after reading!__
 
 Orchestrator is a MySQL topology manager and a failover solution, runs as a service and provides command line access, HTTP API and Web interface. used in production on many large MySQL installments. It allows for detecting, querying and refactoring complex replication topologies, and provides reliable failure detection and intelligent recovery and promotion.
 
@@ -75,6 +75,12 @@ Orchestrator is a MySQL topology manager and a failover solution, runs as a serv
   - Auditing provides monitoring and logging of connection and query activity that was performed on the MySQL server. Information will be transferred to the SIEM subsection like Graylog or ELK stack.
 - Failover
   - Supports the automatic failover of the master, and the replication tree can be fixed when servers in the tree fail either manually.
+
+```diff
++ The mysqld service must be disabled and can only be started manually if orchestrator replication management is used. see https://github.com/github/orchestrator/issues/891.
+
++ There are some files that record password for replication, xtrabackup and prometheus MySQL account in /tmp folder at the first master node, Burn after reading!
+```
 
 ## Requirements
 ### Operating systems
