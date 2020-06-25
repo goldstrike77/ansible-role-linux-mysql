@@ -97,10 +97,10 @@ if [ "$LATEST_FULL" -a `expr $LATEST_FULL_CREATED_AT + $FULLBACKUPLIFE + 5` -ge 
   fi
   
   echo "Running new incremental backup using $INCRBASEDIR as base."
-  $INNOBACKUPEXFULL --defaults-file=$MYCNF --compress --compress-threads=$THREADS --encrypt-threads=$THREADS --encrypt-chunk-size=256K --encrypt=$ENCRYPT --encrypt-key=$ENCRYPTKEY{% if mysql_arg.data_encryption | bool %} --keyring-file-data=$KEYRINGFILEDIR/keyring{% endif %} --parallel=$THREADS $USEROPTIONS --incremental $TMPINCRDIR --incremental-basedir $INCRBASEDIR > $TMPFILE 2>&1
+  $INNOBACKUPEXFULL --defaults-file=$MYCNF --compress --compress-threads=$THREADS --encrypt-threads=$THREADS --encrypt-chunk-size=256K --encrypt=$ENCRYPT --encrypt-key=$ENCRYPTKEY{% if mysql_arg.data_encryption | bool %} --keyring-file-data=$KEYRINGFILEDIR/keyring{% endif %} --parallel=$THREADS --no-version-check $USEROPTIONS --incremental $TMPINCRDIR --incremental-basedir $INCRBASEDIR > $TMPFILE 2>&1
 else
   echo "Running new full backup."
-  $INNOBACKUPEXFULL --defaults-file=$MYCNF --compress --compress-threads=$THREADS --encrypt-threads=$THREADS --encrypt-chunk-size=256K --encrypt=$ENCRYPT --encrypt-key=$ENCRYPTKEY{% if mysql_arg.data_encryption | bool %} --keyring-file-data=$KEYRINGFILEDIR/keyring{% endif %} --parallel=$THREADS $USEROPTIONS $FULLBACKUPDIR > $TMPFILE 2>&1
+  $INNOBACKUPEXFULL --defaults-file=$MYCNF --compress --compress-threads=$THREADS --encrypt-threads=$THREADS --encrypt-chunk-size=256K --encrypt=$ENCRYPT --encrypt-key=$ENCRYPTKEY{% if mysql_arg.data_encryption | bool %} --keyring-file-data=$KEYRINGFILEDIR/keyring{% endif %} --parallel=$THREADS --no-version-check $USEROPTIONS $FULLBACKUPDIR > $TMPFILE 2>&1
 fi
 
 {% if mysql_arg.data_encryption | bool %}

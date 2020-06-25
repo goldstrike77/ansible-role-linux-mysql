@@ -31,14 +31,9 @@ MySQL is an open-source relational database management system (RDBMS). A relatio
 
 Percona Server for MySQL is a free, fully compatible, enhanced and open-source drop-in replacement for any MySQL database. It provides superior performance, scalability and instrumentation. Percona Server for MySQL is trusted by thousands of enterprises to provide better performance and concurrency for their most demanding workloads and delivers greater value to MySQL server users with optimized performance, greater performance scalability and availability, enhanced backups and increased visibility.
 
-<span class="float-left text-red tooltipped tooltipped-n" aria-label="Does not meet accessibility standards"><%= octicon("alert") %></span>
-<div class="text-orange-light mb-2">
-The mysqld service must be disabled and can only be started manually if orchestrator replication management is used. see https://github.com/github/orchestrator/issues/891.
-</div>
+>__The mysqld service must be disabled and can only be started manually if orchestrator replication management is used. see https://github.com/github/orchestrator/issues/891.__
 
-<div class="text-red mb-2">
-There are some files that record password for replication, xtrabackup and prometheus MySQL account in /tmp folder at the first master node, Burn after reading!
-</div>
+>__There are some files that record password for replication, xtrabackup and prometheus MySQL account in /tmp folder at the first master node, Burn after reading!__
 
 Orchestrator is a MySQL topology manager and a failover solution, runs as a service and provides command line access, HTTP API and Web interface. used in production on many large MySQL installments. It allows for detecting, querying and refactoring complex replication topologies, and provides reliable failure detection and intelligent recovery and promotion.
 
