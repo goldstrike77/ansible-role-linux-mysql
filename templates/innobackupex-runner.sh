@@ -15,7 +15,7 @@ MKDIR=/bin/mkdir
 INNOBACKUPEX=innobackupex
 INNOBACKUPEXFULL=/usr/bin/$INNOBACKUPEX
 RCLONE=/bin/rclone
-USEROPTIONS="--user=root --password={{ mysql_sa_pass }} --host=127.0.0.1"
+USEROPTIONS="--user=xtrabackup --password={{ lookup('password', '' + group_names[-1] + ':xtrabackup length=12 chars=ascii_letters,digits') }} --host=127.0.0.1"
 TMPFILE="/tmp/innobackupex-runner.$$.tmp"
 MAILTO={{ mysql_mailto | default('') }}
 MYCNF=/etc/my.cnf

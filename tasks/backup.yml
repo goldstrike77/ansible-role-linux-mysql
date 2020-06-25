@@ -1,4 +1,43 @@
 ---
+- name: Create user xtrabackup with privileges for replication.
+  mysql_user:
+    login_user: 'root'
+    login_password: '{{ mysql_sa_pass }}'
+    login_unix_socket: '/tmp/mysql.sock'
+    name: 'xtrabackup'
+    password: "{{ lookup('password', '' + group_names[-1] + ':xtrabackup length=12 chars=ascii_letters,digits') }}"
+    host: '127.0.0.1'
+    priv: '*.*:RELOAD,LOCK TABLES,REPLICATION CLIENT,CREATE TABLESPACE,PROCESS,SUPER,CREATE,INSERT,SELECT{% if mysql_ssl | bool %},REQUIRESSL{% endif %}'
+    state: 'present'
+  no_log: true
+  when:
+    - mysql_cluster_mode == 'replication'
+    - mysql_servers[0] in ansible_default_ipv4.address
+    - mysql_servers | length > 1
+
+- name: Create user xtrabackup with privileges for standalone.
+  mysql_user:
+    login_user: 'root'
+    login_password: '{{ mysql_sa_pass }}'
+    login_unix_socket: '/tmp/mysql.sock'
+    name: 'xtrabackup'
+    password: "{{ lookup('password', '' + group_names[-1] + ':xtrabackup length=12 chars=ascii_letters,digits') }}"
+    host: '127.0.0.1'
+    priv: '*.*:RELOAD,LOCK TABLES,REPLICATION CLIENT,CREATE TABLESPACE,PROCESS,SUPER,CREATE,INSERT,SELECT{% if mysql_ssl | bool %},REQUIRESSL{% endif %}'
+    state: 'present'
+  no_log: true
+  when: mysql_cluster_mode == 'standalone' or mysql_servers | length == 1
+
+- name: Xtrabackup user password outputs.
+  copy:
+    content: "{{ lookup('password', '' + group_names[-1] + ':xtrabackup length=12 chars=ascii_letters,digits') }}"
+    dest: '/tmp/mysql_xtrabackup_user.passwd'
+    mode: '0600'
+    owner: 'root'
+    group: 'root'
+  when: mysql_servers[0] in ansible_default_ipv4.address
+  no_log: true
+
 - name: Creating Rclone configureation folder.
   file:
     dest: '/etc/rclone'

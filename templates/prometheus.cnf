@@ -3,3 +3,10 @@ host=127.0.0.1
 port={{ mysql_port_mysqld }}
 user=prometheus
 password={{ lookup('password', '' + group_names[-1] + ':prometheus length=12 chars=ascii_letters,digits') }}
+{% if mysql_ssl | bool %}
+tls_version                            = TLSv1.2
+ssl-ca                                 = {{ mysql_cert_path }}/ca-cert.pem
+ssl-cert                               = {{ mysql_cert_path }}/client.crt
+ssl-key                                = {{ mysql_cert_path }}/client.key
+ssl-mode                               = PREFERRED
+{% endif %}
