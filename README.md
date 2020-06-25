@@ -67,7 +67,7 @@ Orchestrator is a MySQL topology manager and a failover solution, runs as a serv
   - Grouped by fingerprint and reported in descending order of query.
 - Security Safeguard Benchmark
   - Transparent Data Encryption (TDE) protects your critical data by enabling data-at-rest encryption in the database. It protects the privacy of your information, prevents data breaches and helps meet regulatory requirements.
-  - Configure TLS/SSL to encrypt client and cluster communications.
+  - Supports secure (encrypted) connections between clients and the server using the Transport Layer Security (TLS) protocol.
   - Encrypt/decrypt local or streaming backup in order to add another layer of protection to the backups.
   - File system permissions protected when potential vulnerability exists.
   - Authentication management makes IT infrastructures more secure by leveraging existing security rules and processes.
@@ -78,7 +78,7 @@ Orchestrator is a MySQL topology manager and a failover solution, runs as a serv
 
 ## Requirements
 ### Operating systems
-This Ansible role installs Percona Server for MySQL on linux operating system, including establishing a filesystem structure and server configuration with some common operational features, Will works on the following operating systems:
+This Ansible role installs Percona Server for MySQL on Linux operating system, including establishing a filesystem structure and server configuration with some common operational features, Will works on the following operating systems:
 
   * CentOS 7
 
