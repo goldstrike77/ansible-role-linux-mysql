@@ -2,15 +2,17 @@
 mysql_epel_repo_name: 'epel'
 mysql_epel_repo_url: 'http://mirrors.tuna.tsinghua.edu.cn/epel/{{ ansible_distribution_major_version }}/$basearch/'
 
-mysql_percona_repo_name: "percona"
-#mysql_percona_repo_url: "http://repo.percona.com/release/{{ ansible_distribution_version.split('.')[0] }}/RPMS/{{ ansible_architecture }}"
-mysql_percona_repo_url: "http://mirrors.tuna.tsinghua.edu.cn/percona/release/{{ ansible_distribution_version.split('.')[0] }}/RPMS/{{ ansible_architecture }}"
+mysql_percona_repo_name: 'percona'
+mysql_percona_repo_url: 'http://mirrors.tuna.tsinghua.edu.cn/percona/release/{{ ansible_distribution_version.split('.')[0] }}/RPMS/{{ ansible_architecture }}''
+
+mysql_percona80_repo_name: 'percona80'
+mysql_percona80_repo_url: 'http://mirrors.tuna.tsinghua.edu.cn/percona/ps-80/yum/release/{{ ansible_distribution_major_version }}/RPMS/$basearch/'
 
 mysql_community_repo_name: "mysql"
 mysql_community_repo_url: "http://mirrors.tuna.tsinghua.edu.cn/mysql/yum/mysql{{ mysql_version }}-community-el{{ ansible_distribution_version.split('.')[0] }}/"
 
 mysql_dependent_packages:
-  - 'percona-xtrabackup-24'
+  - 'percona-xtrabackup-{% if mysql_version == "80" %}80{% else %}24{% endif %}'
   - 'percona-toolkit'
   - 'qpress'
   - 'jemalloc'
@@ -19,13 +21,16 @@ mysql_dependent_packages:
   - 'libselinux-utils'
   - 'policycoreutils-python'
 
-mysql_percona_packages:
-  - "Percona-Server-server-{{ mysql_version }}"
+mysql_percona_packages_57:
+  - 'Percona-Server-server-{{ mysql_version }}'
+
+mysql_percona_packages_80:
+  - 'percona-server-server'
 
 mysql_community_packages:
   - 'mysql-community-server'
 
-mysqld_exporter_repo_name: "prometheus"
+mysqld_exporter_repo_name: 'prometheus'
 mysqld_exporter_repo_url: "http://cache.omygods.com/prometheus-rpm/release/el/{{ansible_distribution_version.split('.')[0]}}/$basearch"
 mysqld_exporter_packages:
   - 'mysqld_exporter'

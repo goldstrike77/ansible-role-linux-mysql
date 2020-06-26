@@ -1,0 +1,177 @@
+[mysql]
+# CLIENT #
+[client]
+port                                   = {{ mysql_port_mysqld }}
+socket                                 = /tmp/mysql.sock
+{% if mysql_ssl | bool %}
+tls_version                            = TLSv1.2
+ssl-ca                                 = {{ mysql_cert_path }}/ca-cert.pem
+ssl-cert                               = {{ mysql_cert_path }}/client.crt
+ssl-key                                = {{ mysql_cert_path }}/client.key
+ssl-mode                               = PREFERRED
+{% endif %}
+
+[mysqld_safe]
+# GENERAL #
+malloc-lib                             = /usr/lib64/libjemalloc.so.1
+thp-setting                            = never
+
+[mysqld]
+# Encrypted # 
+{% if mysql_ssl | bool %}
+tls_version                            = TLSv1.2
+ssl-ca                                 = {{ mysql_cert_path }}/ca-cert.pem
+ssl-cert                               = {{ mysql_cert_path }}/server.crt
+ssl-key                                = {{ mysql_cert_path }}/server.key
+{% endif %}
+
+# PERFORMANCE #
+#performance-schema-instrument          = 'memory/%=ON' # https://jira.percona.com/browse/PS-3734
+performance_schema                     = 1
+{% if mysql_releases | lower == 'percona' %}
+userstat                               = 1
+thread_statistics                      = 1
+query_response_time_stats              = 1
+{% endif %}
+
+# GENERAL #
+report_host                            = {{ ansible_default_ipv4.address }}
+server_id                              = {{ ( 2 ** 32 - 1 ) | random }}
+user                                   = {{ mysql_user }}
+default_storage_engine                 = {{ mysql_storage_engine }}
+default_time_zone                      = {{ mysql_arg.default_time_zone }}
+character_set_server                   = {{ mysql_arg.character_set }}
+socket                                 = /tmp/mysql.sock
+explicit_defaults_for_timestamp        = 0
+log_timestamps                         = SYSTEM
+lower_case_table_names                 = {{ mysql_arg.lower_case_table_names }}
+bind-address                           = 0.0.0.0
+port                                   = {{ mysql_port_mysqld }}
+ignore-db-dir                          = binlog
+ignore-db-dir                          = relaylog
+ignore-db-dir                          = logs
+ignore-db-dir                          = innodb
+ignore-db-dir                          = mysql-keyring
+ignore-db-dir                          = mysqlsla_analyzes
+replicate-ignore-db                    = information_schema
+replicate-ignore-db                    = performance_schema
+replicate-ignore-db                    = sys
+sql_mode                               = {{ ','.join(vars['mysql_sql_mode']) }}
+enforce_gtid_consistency               = {{ mysql_arg.enforce_gtid_consistency }}
+gtid_mode                              = {{ mysql_arg.gtid_mode }}
+slave_net_timeout                      = {{ mysql_arg.slave_net_timeout }}
+master_info_repository                 = TABLE
+relay_log_info_repository              = TABLE
+slave-skip-errors                      = 1062,1053,1146,1213,1264,1205,1396
+read_only                              = {% if mysql_cluster_mode == 'replication' and mysql_servers[0] not in ansible_default_ipv4.address and mysql_servers | length > 1 %}1{% else %}0{% endif %}
+
+# MyISAM #
+key_buffer_size                        = {{ mysql_arg.key_buffer_size }}M
+myisam-recover-options                 = FORCE,BACKUP
+
+# SAFETY #
+#memlock
+#large_pages                            = 1
+core-file
+skip-name-resolve
+local-infile                           = 0
+default_password_lifetime              = 0
+log-raw                                = OFF
+max_prepared_stmt_count                = {{ mysql_arg.max_prepared_stmt_count }}
+max_allowed_packet                     = {{ mysql_arg.max_allowed_packet }}
+max_connect_errors                     = {{ mysql_arg.max_connect_errors }}
+
+# DATA STORAGE #
+datadir                                = {{ mysql_path }}/mysql
+
+# BINARY LOGGING #
+log_bin                                = {{ mysql_path }}/mysql/binlog/mysql_bin
+relay_log                              = {{ mysql_path }}/mysql/relaylog/relay_bin
+binlog_cache_size                      = {{ mysql_arg.binlog_cache_size }}
+binlog_checksum                        = CRC32
+binlog_stmt_cache_size                 = {{ mysql_arg.binlog_stmt_cache_size }}
+binlog_format                          = {{ mysql_arg.binlog_format }}
+expire_logs_days                       = {{ mysql_arg.expire_logs_days }}
+master_verify_checksum                 = ON
+sync_binlog                            = {{ mysql_arg.sync_binlog }}
+log_slave_updates                      = 1
+skip_slave_start                       = 1
+
+# CACHES AND LIMITS #
+connect_timeout                        = {{ mysql_arg.connect_timeout }}
+wait_timeout                           = {{ mysql_arg.wait_timeout }}
+interactive_timeout                    = {{ mysql_arg.interactive_timeout }}
+tmp_table_size                         = {{ mysql_arg.tmp_table_size }}
+max_heap_table_size                    = {{ mysql_arg.max_heap_table_size }}
+join_buffer_size                       = {{ mysql_arg.join_buffer_size }}
+read_rnd_buffer_size                   = {{ mysql_arg.read_rnd_buffer_size }}
+query_cache_type                       = {{ mysql_arg.query_cache_type }}
+query_cache_size                       = {{ mysql_arg.query_cache_size }}
+max_connections                        = {{ mysql_max_connections }}
+thread_cache_size                      = {{ mysql_arg.thread_cache_size }}
+{% if mysql_releases | lower == 'percona' %}
+thread_handling                        = {{ mysql_arg.thread_handling }}
+thread_pool_max_threads                = {{ mysql_arg.thread_pool_max_threads }}
+thread_pool_oversubscribe              = {{ mysql_arg.thread_pool_oversubscribe }}
+{% endif %}
+open_files_limit                       = {{ mysql_arg.open_files_limit }}
+performance_schema_max_table_instances = {{ mysql_arg.performance_schema_max_table_instances }}
+table_definition_cache                 = {{ mysql_arg.table_definition_cache }}
+table_open_cache                       = {{ mysql_arg.table_open_cache }}
+table_open_cache_instances             = {{ mysql_arg.table_open_cache_instances }}
+
+# INNODB #
+innodb_autoinc_lock_mode               = 2
+innodb_buffer_pool_dump_at_shutdown    = 1
+innodb_buffer_pool_dump_now            = 1
+innodb_buffer_pool_dump_pct            = 100
+innodb_buffer_pool_instances           = {{ mysql_arg.innodb_buffer_pool_instances }}
+innodb_buffer_pool_load_at_startup     = 1
+innodb_buffer_pool_load_now 	       = 1
+innodb_buffer_pool_size                = {{ mysql_innodb_buffer_pool_size }}M
+innodb_data_file_path                  = ibdata1:256M;ibdata2:256M:autoextend
+innodb_data_home_dir                   = {{ mysql_path }}/mysql/innodb
+innodb_doublewrite                     = 1
+innodb_file_per_table                  = 1
+innodb_flush_log_at_trx_commit         = {{ mysql_arg.innodb_flush_log_at_trx_commit }}
+innodb_flush_method                    = O_DIRECT
+innodb_io_capacity                     = 1000
+innodb_log_buffer_size                 = {{ mysql_arg.innodb_log_buffer_size }}M
+innodb_log_file_size                   = {{ mysql_arg.innodb_log_file_size }}M
+innodb_log_files_in_group              = 2
+innodb_log_group_home_dir              = {{ mysql_path }}/mysql/innodb
+innodb_max_dirty_pages_pct             = {{ mysql_arg.innodb_max_dirty_pages_pct }}
+innodb_max_undo_log_size               = {{ mysql_arg.innodb_max_undo_log_size }}M
+innodb_page_cleaners                   = {{ mysql_arg.innodb_page_cleaners }}
+innodb_purge_threads                   = {{ mysql_arg.innodb_purge_threads }}
+innodb_read_io_threads                 = {{ mysql_arg.innodb_read_io_threads }}
+innodb_temp_data_file_path             = ibtemp1:128M;ibtemp2:128M:autoextend:max:1024M
+innodb_undo_directory                  = {{ mysql_path }}/mysql/innodb/undolog
+innodb_undo_log_truncate               = 1
+innodb_undo_tablespaces                = 64
+innodb_write_io_threads                = {{ mysql_arg.innodb_write_io_threads }}
+
+# LOGGING #
+log_error                              = {{ mysql_path }}/mysql/logs/mysql_error.log
+slow_query_log                         = 1
+slow_query_log_file                    = {{ mysql_path }}/mysql/logs/mysql_slow.log
+log_queries_not_using_indexes          = {{ mysql_arg.log_queries_not_using_indexes }}
+long_query_time                        = {{ mysql_arg.long_query_time }}
+log_syslog                             = ON
+{% if mysql_releases | lower == 'percona' %}
+audit_log_handler                      = SYSLOG
+audit_log_format                       = CSV
+audit_log_policy                       = QUERIES
+audit_log_syslog_ident                 = mysqld
+audit_log_include_commands             = "{{ ','.join(vars['mysql_audit_log_commands']) }}"
+{% endif %}
+
+# PLUGIN #
+{% if mysql_releases | lower == 'percona' %}
+plugin-load                            = "audit_log=audit_log.so;QUERY_RESPONSE_TIME=query_response_time.so;QUERY_RESPONSE_TIME_AUDIT=query_response_time.so;QUERY_RESPONSE_TIME_READ=query_response_time.so;QUERY_RESPONSE_TIME_WRITE=query_response_time.so"
+{% endif %}
+{% if mysql_arg.data_encryption | bool %}
+early_plugin_load                      = keyring_file.so
+keyring_file_data                      = {{ mysql_path }}/mysql/mysql-keyring/keyring
+innodb_parallel_dblwr_encrypt          = ON
+{% endif %}

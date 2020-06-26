@@ -23,8 +23,8 @@
     update_cache: 'yes'
   register: yum_status
   until: yum_status is succeeded
-  retries: 3
-  delay: 5
+  retries: 5
+  delay: 2
   when:
     - mysql_backupset_arg.cloud_rsync | bool
     - mysql_backupset_arg.cloud_drive is defined
@@ -37,6 +37,18 @@
     baseurl: '{{ mysql_percona_repo_url }}'
     gpgcheck: 'no'
     timeout: '60'
+
+- name: Add Percona 80 MySQL YUM repositories.
+  yum_repository:
+    name: '{{ mysql_percona80_repo_name }}'
+    description: '{{ mysql_percona80_repo_name }} YUM repository'
+    file: '{{ mysql_percona80_repo_name }}'
+    baseurl: '{{ mysql_percona80_repo_url }}'
+    gpgcheck: 'no'
+    timeout: '60'
+  when: 
+    - mysql_version == '80'
+    - mysql_releases | lower == 'percona'
 
 - name: Add Community MySQL YUM repositories.
   yum_repository:
@@ -57,8 +69,8 @@
     update_cache: 'yes'
   register: yum_status
   until: yum_status is succeeded
-  retries: 3
-  delay: 5
+  retries: 5
+  delay: 2
 
 - name: Install the Percona MySQL packages.
   yum:
@@ -70,9 +82,27 @@
     update_cache: 'yes'
   register: yum_status
   until: yum_status is succeeded
-  retries: 3
-  delay: 5
-  when: mysql_releases | lower == 'percona'
+  retries: 5
+  delay: 2
+  when:
+    - mysql_releases | lower == 'percona'
+    - mysql_version == '57'
+
+- name: Install the Percona 80 MySQL packages.
+  yum:
+    name: '{{ mysql_percona_packages_80 }}'
+    state: 'present'
+    enablerepo: 'percona80'
+    validate_certs: 'no'
+    disable_gpg_check: 'yes'
+    update_cache: 'yes'
+  register: yum_status
+  until: yum_status is succeeded
+  retries: 5
+  delay: 2
+  when:
+    - mysql_releases | lower == 'percona'
+    - mysql_version == '80'
 
 - name: Install the Community MySQL packages.
   yum:
@@ -84,6 +114,6 @@
     update_cache: 'yes'
   register: yum_status
   until: yum_status is succeeded
-  retries: 3
-  delay: 5
+  retries: 5
+  delay: 2
   when: mysql_releases | lower == 'community'
