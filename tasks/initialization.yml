@@ -14,14 +14,31 @@
     - '/etc/logrotate.d/mysql'
   when: file_exists.results[0].stat.exists
 
-- name: Creating MySQL folder
+- name: Creating MySQL version 5.7 folder
   file:
     dest: '{{ item }}'
     state: 'directory'
     owner: 'mysql'
     group: 'mysql'
     mode: '0750'
-  loop: '{{ mysql_folder }}'
+  loop:
+    - '{{ mysql_path }}/mysql/logs'
+    - '{{ mysql_path }}/mysql/innodb'
+    - '{{ mysql_path }}/mysql/binlog'
+    - '{{ mysql_path }}/mysql/relaylog'
+    - '{{ mysql_path }}/mysql/mysql-keyring'
+    - '{{ mysql_path }}/mysql/mysqlsla_analyzes'
+    - '{{ mysql_path }}/backup/mysql'
+  when: mysql_version == '57'
+
+- name: Creating MySQL folder
+  file:
+    dest: '{{ mysql_path }}/mysql'
+    state: 'directory'
+    owner: 'mysql'
+    group: 'mysql'
+    mode: '0750'
+  when: mysql_version == '80'
 
 - name: Configure kernel parameters
   sysctl:
@@ -30,7 +47,7 @@
     state: 'present'
     reload: 'yes'
     sysctl_set: 'yes'
-    sysctl_file: /etc/sysctl.d/20-sysctl.conf
+    sysctl_file: '/etc/sysctl.d/20-sysctl.conf'
   loop: '{{ mysql_kernel_parameters }}'
 
 - name: MySQL Configure & Scripts file transfer
@@ -39,17 +56,47 @@
     dest: '{{ item.dest }}'
     owner: 'mysql'
     group: 'mysql'
-    mode: '0664'
+    mode: '0660'
   loop: '{{ mysql_conf_scripts }}'
 
-- name: Initializes the MySQL 5.7 system tables
-  shell: '/usr/sbin/mysqld --defaults-file=/etc/my.cnf --datadir={{ mysql_path }}/mysql --user=mysql --explicit_defaults_for_timestamp --initialize-insecure --ignore-db-dir=prometheus.cnf --ignore-db-dir=mysql-log-rotate'
-  when: mysql_version == '57'
+- name: Initializes the MySQL system tables
+  shell: '/usr/sbin/mysqld --defaults-file=/etc/my.cnf --datadir={{ mysql_path }}/mysql --user=mysql --explicit_defaults_for_timestamp --initialize-insecure'
+
+- name: Enable Audit Log Plugin.
+  blockinfile:
+    state: 'present'
+    path: '/etc/my.cnf'
+    insertafter: 'EOF'
+    block: |
+      plugin-load                            = "audit_log=audit_log.so"
+      audit_log_handler                      = SYSLOG
+      audit_log_format                       = CSV
+      audit_log_policy                       = QUERIES
+      audit_log_syslog_ident                 = mysqld
+      audit_log_include_commands             = "{{ ','.join(vars['mysql_audit_log_commands']) }}"
+      log_error                              = {{ mysql_path }}/mysql/logs/mysql_error.log
+  when:
+    - mysql_version == '80'
+    - mysql_releases | lower == 'percona'
+
+- name: Creating MySQL version 8.0 folder
+  file:
+    dest: '{{ item }}'
+    state: 'directory'
+    owner: 'mysql'
+    group: 'mysql'
+    mode: '0750'
+  loop:
+    - '{{ mysql_path }}/mysql/logs'
+    - '{{ mysql_path }}/mysql/mysql-keyring'
+    - '{{ mysql_path }}/mysql/mysqlsla_analyzes'
+    - '{{ mysql_path }}/backup/mysql'
+  when: mysql_version == '80'
 
 - name: Changing Limits for MySQL services
   lineinfile:
-    dest: /etc/security/limits.conf
-    line: "{{ item.line }}"
+    dest: '/etc/security/limits.conf'
+    line: '{{ item.line }}'
   loop:
     - { line: '{{ mysql_user }} soft nofile {{ mysql_arg.open_files_limit }}' }
     - { line: '{{ mysql_user }} hard nofile {{ mysql_arg.open_files_limit }}' }
@@ -60,7 +107,7 @@
 
 - name: Changing Limits for MySQL services
   lineinfile:
-    state: present
+    state: 'present'
     dest: '/lib/systemd/system/mysqld.service'
     insertafter: '^\[Service\]'
     regexp: '{{ item.regexp }}'

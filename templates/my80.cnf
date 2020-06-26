@@ -31,7 +31,6 @@ performance_schema                     = 1
 {% if mysql_releases | lower == 'percona' %}
 userstat                               = 1
 thread_statistics                      = 1
-query_response_time_stats              = 1
 {% endif %}
 
 # GENERAL #
@@ -47,16 +46,10 @@ log_timestamps                         = SYSTEM
 lower_case_table_names                 = {{ mysql_arg.lower_case_table_names }}
 bind-address                           = 0.0.0.0
 port                                   = {{ mysql_port_mysqld }}
-ignore-db-dir                          = binlog
-ignore-db-dir                          = relaylog
-ignore-db-dir                          = logs
-ignore-db-dir                          = innodb
-ignore-db-dir                          = mysql-keyring
-ignore-db-dir                          = mysqlsla_analyzes
 replicate-ignore-db                    = information_schema
 replicate-ignore-db                    = performance_schema
 replicate-ignore-db                    = sys
-sql_mode                               = {{ ','.join(vars['mysql_sql_mode']) }}
+sql_mode                               = {{ ','.join(vars['mysql80_sql_mode']) }}
 enforce_gtid_consistency               = {{ mysql_arg.enforce_gtid_consistency }}
 gtid_mode                              = {{ mysql_arg.gtid_mode }}
 slave_net_timeout                      = {{ mysql_arg.slave_net_timeout }}
@@ -85,13 +78,12 @@ max_connect_errors                     = {{ mysql_arg.max_connect_errors }}
 datadir                                = {{ mysql_path }}/mysql
 
 # BINARY LOGGING #
-log_bin                                = {{ mysql_path }}/mysql/binlog/mysql_bin
-relay_log                              = {{ mysql_path }}/mysql/relaylog/relay_bin
+log_bin                                = on
 binlog_cache_size                      = {{ mysql_arg.binlog_cache_size }}
 binlog_checksum                        = CRC32
 binlog_stmt_cache_size                 = {{ mysql_arg.binlog_stmt_cache_size }}
 binlog_format                          = {{ mysql_arg.binlog_format }}
-expire_logs_days                       = {{ mysql_arg.expire_logs_days }}
+binlog_expire_logs_seconds             = {{ mysql_arg.expire_logs_days | int * 86400 }}
 master_verify_checksum                 = ON
 sync_binlog                            = {{ mysql_arg.sync_binlog }}
 log_slave_updates                      = 1
@@ -105,8 +97,6 @@ tmp_table_size                         = {{ mysql_arg.tmp_table_size }}
 max_heap_table_size                    = {{ mysql_arg.max_heap_table_size }}
 join_buffer_size                       = {{ mysql_arg.join_buffer_size }}
 read_rnd_buffer_size                   = {{ mysql_arg.read_rnd_buffer_size }}
-query_cache_type                       = {{ mysql_arg.query_cache_type }}
-query_cache_size                       = {{ mysql_arg.query_cache_size }}
 max_connections                        = {{ mysql_max_connections }}
 thread_cache_size                      = {{ mysql_arg.thread_cache_size }}
 {% if mysql_releases | lower == 'percona' %}
@@ -130,7 +120,6 @@ innodb_buffer_pool_load_at_startup     = 1
 innodb_buffer_pool_load_now 	       = 1
 innodb_buffer_pool_size                = {{ mysql_innodb_buffer_pool_size }}M
 innodb_data_file_path                  = ibdata1:256M;ibdata2:256M:autoextend
-innodb_data_home_dir                   = {{ mysql_path }}/mysql/innodb
 innodb_doublewrite                     = 1
 innodb_file_per_table                  = 1
 innodb_flush_log_at_trx_commit         = {{ mysql_arg.innodb_flush_log_at_trx_commit }}
@@ -139,39 +128,25 @@ innodb_io_capacity                     = 1000
 innodb_log_buffer_size                 = {{ mysql_arg.innodb_log_buffer_size }}M
 innodb_log_file_size                   = {{ mysql_arg.innodb_log_file_size }}M
 innodb_log_files_in_group              = 2
-innodb_log_group_home_dir              = {{ mysql_path }}/mysql/innodb
 innodb_max_dirty_pages_pct             = {{ mysql_arg.innodb_max_dirty_pages_pct }}
 innodb_max_undo_log_size               = {{ mysql_arg.innodb_max_undo_log_size }}M
 innodb_page_cleaners                   = {{ mysql_arg.innodb_page_cleaners }}
 innodb_purge_threads                   = {{ mysql_arg.innodb_purge_threads }}
 innodb_read_io_threads                 = {{ mysql_arg.innodb_read_io_threads }}
 innodb_temp_data_file_path             = ibtemp1:128M;ibtemp2:128M:autoextend:max:1024M
-innodb_undo_directory                  = {{ mysql_path }}/mysql/innodb/undolog
 innodb_undo_log_truncate               = 1
 innodb_undo_tablespaces                = 64
 innodb_write_io_threads                = {{ mysql_arg.innodb_write_io_threads }}
 
-# LOGGING #
-log_error                              = {{ mysql_path }}/mysql/logs/mysql_error.log
-slow_query_log                         = 1
-slow_query_log_file                    = {{ mysql_path }}/mysql/logs/mysql_slow.log
-log_queries_not_using_indexes          = {{ mysql_arg.log_queries_not_using_indexes }}
-long_query_time                        = {{ mysql_arg.long_query_time }}
-log_syslog                             = ON
-{% if mysql_releases | lower == 'percona' %}
-audit_log_handler                      = SYSLOG
-audit_log_format                       = CSV
-audit_log_policy                       = QUERIES
-audit_log_syslog_ident                 = mysqld
-audit_log_include_commands             = "{{ ','.join(vars['mysql_audit_log_commands']) }}"
-{% endif %}
-
 # PLUGIN #
-{% if mysql_releases | lower == 'percona' %}
-plugin-load                            = "audit_log=audit_log.so;QUERY_RESPONSE_TIME=query_response_time.so;QUERY_RESPONSE_TIME_AUDIT=query_response_time.so;QUERY_RESPONSE_TIME_READ=query_response_time.so;QUERY_RESPONSE_TIME_WRITE=query_response_time.so"
-{% endif %}
 {% if mysql_arg.data_encryption | bool %}
 early_plugin_load                      = keyring_file.so
 keyring_file_data                      = {{ mysql_path }}/mysql/mysql-keyring/keyring
 innodb_parallel_dblwr_encrypt          = ON
 {% endif %}
+
+# LOGGING #
+slow_query_log                         = 1
+slow_query_log_file                    = {{ mysql_path }}/mysql/logs/mysql_slow.log
+log_queries_not_using_indexes          = {{ mysql_arg.log_queries_not_using_indexes }}
+long_query_time                        = {{ mysql_arg.long_query_time }}

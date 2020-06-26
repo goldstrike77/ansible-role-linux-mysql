@@ -1,13 +1,4 @@
 ---
-mysql_folder:
-  - '{{ mysql_path }}/mysql/logs'
-  - '{{ mysql_path }}/mysql/innodb'
-  - '{{ mysql_path }}/mysql/binlog'
-  - '{{ mysql_path }}/mysql/relaylog'
-  - '{{ mysql_path }}/mysql/mysql-keyring'
-  - '{{ mysql_path }}/mysql/mysqlsla_analyzes'
-  - '{{ mysql_path }}/backup/mysql'
-
 mysql_python_dependent_packages:
   - 'pip'
   - 'cryptography'
@@ -24,7 +15,7 @@ mysql_kernel_parameters:
 
 mysql_conf_scripts:
   - { src: 'my{{ mysql_version }}.cnf', dest: '/etc/my.cnf' }
-  - { src: 'mysql-log-rotate', dest: '{{ mysql_path }}/mysql/mysql-log-rotate' }
+  - { src: 'mysql-log-rotate', dest: '/var/lib/mysql/mysql-log-rotate' }
   - { src: 'innobackupex-runner.sh', dest: '/usr/local/bin/innobackupex-runner.sh' }
   - { src: 'mysqlsla_analyzes.sh', dest: '/usr/local/bin/mysqlsla_analyzes.sh' }
   - { src: 'mysql', dest: '/etc/sysconfig/mysql' }
@@ -73,6 +64,13 @@ mysql_sql_mode: # Specify value the global SQL mode
   - 'ERROR_FOR_DIVISION_BY_ZERO'
   - 'NO_AUTO_CREATE_USER'
   - 'NO_ENGINE_SUBSTITUTION'
+  - 'NO_ZERO_DATE'
+  - 'NO_ZERO_IN_DATE'
+  - 'STRICT_ALL_TABLES'
+  - 'STRICT_TRANS_TABLES'
+
+mysql80_sql_mode: # Specify value the global SQL mode
+  - 'ERROR_FOR_DIVISION_BY_ZERO'
   - 'NO_ZERO_DATE'
   - 'NO_ZERO_IN_DATE'
   - 'STRICT_ALL_TABLES'

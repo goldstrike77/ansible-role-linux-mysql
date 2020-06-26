@@ -53,6 +53,7 @@ ignore-db-dir                          = logs
 ignore-db-dir                          = innodb
 ignore-db-dir                          = mysql-keyring
 ignore-db-dir                          = mysqlsla_analyzes
+ignore-db-dir                          = prometheus.cnf
 replicate-ignore-db                    = information_schema
 replicate-ignore-db                    = performance_schema
 replicate-ignore-db                    = sys

@@ -74,7 +74,7 @@
 
 - name: Install the Percona MySQL packages.
   yum:
-    name: '{{ mysql_percona_packages }}'
+    name: '{{ mysql_percona_packages_57 }}'
     state: 'present'
     enablerepo: 'percona'
     validate_certs: 'no'
