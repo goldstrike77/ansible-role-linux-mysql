@@ -96,7 +96,7 @@ expire_logs_days                       = {{ mysql_arg.expire_logs_days }}
 master_verify_checksum                 = ON
 sync_binlog                            = {{ mysql_arg.sync_binlog }}
 log_slave_updates                      = 1
-skip_slave_start                       = 1
+skip_slave_start                       = 0
 
 # CACHES AND LIMITS #
 connect_timeout                        = {{ mysql_arg.connect_timeout }}
