@@ -27,7 +27,7 @@ mysql_system_type: 'autopilot' # Define instance parameters.
 # Cluster parameters #
 mysql_cluster_name: 'cluster01' # Cluster name of servers that implements distribution performance.
 mysql_cluster_mode: 'standalone' # Defines type of cluster type: standalone / replication.
-mysql_cluster_mgmt: '' # MySQL high availability and replication management tool.
+mysql_cluster_mgmt: '' # MySQL high availability and replication management tool, Currently only orchsetrator is supported.
 
 # Role dependencies #
 mysql_orchestrator_dept: false # A boolean value, whether Orchestrator use the same environment.
@@ -120,12 +120,14 @@ mysql_arg:
 
 # Service Mesh #
 environments: 'Development' # Define the service environment.
+datacenter: 'dc01' # Define the DataCenter.
+domain: 'local' # Define the Domain.
 #tags: # Define the service custom label.
 #  subscription: 'default'
 #  owner: 'nobody'
 #  department: 'Infrastructure'
 #  organization: 'The Company'
-#  region: 'IDC01'
+#  region: 'China'
 exporter_is_install: false # Whether to install prometheus exporter.
 consul_public_register: false # Whether register a exporter service with public consul client.
 consul_public_exporter_token: '00000000-0000-0000-0000-000000000000' # Public Consul client ACL token.

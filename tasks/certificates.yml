@@ -71,7 +71,7 @@
       openssl_privatekey:
         path: '{{ mysql_cert_path }}/client.key'
         select_crypto_backend: 'cryptography'
-        size: '2048'
+        size: '4096'
         type: 'RSA'
         owner: 'root'
         mode: '0644'
