@@ -28,7 +28,6 @@
     - '{{ mysql_path }}/mysql/relaylog'
     - '{{ mysql_path }}/mysql/mysql-keyring'
     - '{{ mysql_path }}/mysql/mysqlsla_analyzes'
-    - '{{ mysql_path }}/backup/mysql'
   when: mysql_version == '57'
 
 - name: Creating MySQL folder
@@ -90,7 +89,6 @@
     - '{{ mysql_path }}/mysql/logs'
     - '{{ mysql_path }}/mysql/mysql-keyring'
     - '{{ mysql_path }}/mysql/mysqlsla_analyzes'
-    - '{{ mysql_path }}/backup/mysql'
   when: mysql_version == '80'
 
 - name: Changing Limits for MySQL services

@@ -1,4 +1,12 @@
 ---
+- name: Creating Mysql backup folder.
+  file:
+    dest: '{{ mysql_path }}/backup/mysql'
+    state: 'directory'
+    owner: 'mysql'
+    group: 'mysql'
+    mode: '0755'
+
 - name: Create user xtrabackup with privileges for replication.
   mysql_user:
     login_user: 'root'
