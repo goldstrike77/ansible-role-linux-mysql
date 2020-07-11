@@ -8,7 +8,7 @@
     mode: '{{ item.mode }}'
   loop:
     - { path: 'backup', owner: 'root', mode: '0755' }
-    - { path: 'backup/mysql', owner: 'mysql', mode: '0640' }  
+    - { path: 'backup/mysql', owner: 'mysql', mode: '0750' }
 
 - name: Create user xtrabackup with privileges for replication.
   mysql_user:
