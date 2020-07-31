@@ -94,6 +94,7 @@ binlog_stmt_cache_size                 = {{ mysql_arg.binlog_stmt_cache_size }}
 binlog_format                          = {{ mysql_arg.binlog_format }}
 expire_logs_days                       = {{ mysql_arg.expire_logs_days }}
 master_verify_checksum                 = ON
+log_bin_trust_function_creators        = ON
 sync_binlog                            = {{ mysql_arg.sync_binlog }}
 log_slave_updates                      = 1
 skip_slave_start                       = 0
