@@ -137,6 +137,7 @@ innodb_temp_data_file_path             = ibtemp1:128M;ibtemp2:128M:autoextend:ma
 innodb_undo_log_truncate               = 1
 innodb_undo_tablespaces                = 64
 innodb_write_io_threads                = {{ mysql_arg.innodb_write_io_threads }}
+innodb_print_all_deadlocks             = 1
 
 # PLUGIN #
 {% if mysql_arg.data_encryption | bool %}

@@ -152,6 +152,7 @@ innodb_undo_directory                  = {{ mysql_path }}/mysql/innodb/undolog
 innodb_undo_log_truncate               = 1
 innodb_undo_tablespaces                = 64
 innodb_write_io_threads                = {{ mysql_arg.innodb_write_io_threads }}
+innodb_print_all_deadlocks             = 1
 
 # LOGGING #
 log_error                              = {{ mysql_path }}/mysql/logs/mysql_error.log
