@@ -161,11 +161,12 @@ slow_query_log_file                    = {{ mysql_path }}/mysql/logs/mysql_slow.
 log_queries_not_using_indexes          = {{ mysql_arg.log_queries_not_using_indexes }}
 long_query_time                        = {{ mysql_arg.long_query_time }}
 log_syslog                             = ON
+log_syslog_tag                         = error
 {% if mysql_releases | lower == 'percona' %}
 audit_log_handler                      = SYSLOG
 audit_log_format                       = CSV
 audit_log_policy                       = QUERIES
-audit_log_syslog_ident                 = mysqld
+audit_log_syslog_ident                 = mysqld-audit
 audit_log_include_commands             = "{{ ','.join(vars['mysql_audit_log_commands']) }}"
 {% endif %}
 

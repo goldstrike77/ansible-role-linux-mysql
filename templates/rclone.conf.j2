@@ -5,3 +5,13 @@ account = {{ mysql_backupset_arg.cloud_config.account }}
 key = {{ mysql_backupset_arg.cloud_config.key }}
 endpoint = {{ mysql_backupset_arg.cloud_config.endpoint }}
 {% endif %}
+{% if mysql_backupset_arg.cloud_drive == 's3' %}
+provider = Minio
+env_auth = false
+access_key_id = {{ mysql_backupset_arg.cloud_config.access_key }}
+secret_access_key = {{ mysql_backupset_arg.cloud_config.secret_key }}
+region = us-east-1
+endpoint = {{ mysql_backupset_arg.cloud_config.endpoint }}
+location_constraint =
+server_side_encryption =
+{% endif %}

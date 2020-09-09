@@ -36,7 +36,7 @@
     mode: '0600'
     owner: 'root'
     group: 'root'
-  when: mysql_servers[0] in ansible_default_ipv4.address
+  when: mysql_servers is not defined or mysql_servers[0] in ansible_default_ipv4.address
   no_log: true
 
 - name: Add Prometheus mysqld_exporter YUM repositories.
