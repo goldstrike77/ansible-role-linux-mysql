@@ -31,9 +31,9 @@ MySQL is an open-source relational database management system (RDBMS). A relatio
 
 Percona Server for MySQL is a free, fully compatible, enhanced and open-source drop-in replacement for any MySQL database. It provides superior performance, scalability and instrumentation. Percona Server for MySQL is trusted by thousands of enterprises to provide better performance and concurrency for their most demanding workloads and delivers greater value to MySQL server users with optimized performance, greater performance scalability and availability, enhanced backups and increased visibility.
 
-Orchestrator is a MySQL topology manager and a failover solution, runs as a service and provides command line access, HTTP API and Web interface. used in production on many large MySQL installments. It allows for detecting, querying and refactoring complex replication topologies, and provides reliable failure detection and intelligent recovery and promotion.
-
 Group-based replication is a technique that can be used to implement fault-tolerant systems. The replication group is a set of servers that interact with each other through message passing. The communication layer provides a set of guarantees such as atomic message delivery and total ordering of messages. These are powerful primitives and abstractions that allow building more advanced database replication solutions.
+
+Orchestrator is a MySQL topology manager and a failover solution, runs as a service and provides command line access, HTTP API and Web interface. used in production on many large MySQL installments. It allows for detecting, querying and refactoring complex replication topologies, and provides reliable failure detection and intelligent recovery and promotion.
 
 <p><img src="https://raw.githubusercontent.com/goldstrike77/docs/master/MySQL/orchestrator.png" /></p>
 
