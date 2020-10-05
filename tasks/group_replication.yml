@@ -1,0 +1,53 @@
+---
+- name: Ensure replication user exists on each node.
+  mysql_user:
+    login_user: 'root'
+    login_password: '{{ mysql_sa_pass }}'
+    login_unix_socket: '/tmp/mysql.sock'
+    name: 'replication'
+    host: '%'
+    password: "{{ lookup('password', '' + group_names[-1] + ':replication length=12 chars=ascii_letters,digits') }}"
+    priv: '*.*:REPLICATION SLAVE,REPLICATION CLIENT{% if mysql_ssl | bool %},REQUIRESSL{% endif %}'
+    state: 'present'
+    sql_log_bin: false
+  no_log: true
+
+- name: Replication user password outputs.
+  copy:
+    content: "{{ lookup('password', '' + group_names[-1] + ':replication length=12 chars=ascii_letters,digits') }}"
+    dest: '/tmp/mysql_replication_user.passwd'
+    mode: '0600'
+    owner: 'root'
+    group: 'root'
+  when: mysql_servers[0] in ansible_default_ipv4.address
+  no_log: true
+
+- name: Bootstrap group replication on first node.
+  command: 'mysql -uroot -p{{ mysql_sa_pass }} -h localhost -ne "{{ item }}"'
+  loop:
+    - 'SET SQL_LOG_BIN=0;'
+    - "CHANGE MASTER TO MASTER_USER='replication', MASTER_PASSWORD='{{ lookup('password', '' + group_names[-1] + ':replication length=12 chars=ascii_letters,digits') }}' FOR CHANNEL 'group_replication_recovery';"
+    - 'set global group_replication_bootstrap_group=ON;'
+    - 'START GROUP_REPLICATION;'
+    - 'SET SQL_LOG_BIN=1;'
+  when: mysql_servers[0] in ansible_default_ipv4.address
+  no_log: true
+
+- name: Bootstrap group replication on remaining nodes.
+  command: 'mysql -uroot -p{{ mysql_sa_pass }} -h localhost -ne "{{ item }}"'
+  loop:
+    - 'SET SQL_LOG_BIN=0;'
+    - "CHANGE MASTER TO MASTER_USER='replication', MASTER_PASSWORD='{{ lookup('password', '' + group_names[-1] + ':replication length=12 chars=ascii_letters,digits') }}' FOR CHANNEL 'group_replication_recovery';"
+    - 'set global group_replication_allow_local_disjoint_gtids_join=ON;'
+    - 'START GROUP_REPLICATION;'
+    - 'SET SQL_LOG_BIN=1;'
+  when: mysql_servers[0] not in ansible_default_ipv4.address
+  no_log: true
+
+- name: Ensure Group Replication starts automatically upon server boot.
+  lineinfile:
+    state: 'present'
+    dest: '/etc/my.cnf'
+    insertafter: 'disabled_storage_engines'
+    regexp: '^loose-group_replication_start_on_boot'
+    line: 'loose-group_replication_start_on_boot                    = on'

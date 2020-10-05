@@ -1,5 +1,46 @@
 ---
-- name: Check register client are accessible from current host
+- name: Check local consul client are accessible from current host.
+  uri:
+    url: '{{ consul_public_http_prot }}://{{ ansible_default_ipv4.address }}:{{ consul_public_http_port }}/v1/agent/service/register'
+    method: 'GET'
+    timeout: '5'
+    validate_certs: 'no'
+  environment:
+    no_proxy: '{{ ansible_default_ipv4.address }}'
+  changed_when: false
+  failed_when: false
+  register: check_consul_local
+  when:
+    - mysql_cluster_mgr_mode == "multi-primary"
+    - mysql_cluster_mode == "mgr"
+
+- name: Register MySQL service with an health check.
+  uri:
+    url: '{{ consul_public_http_prot }}://{{ ansible_default_ipv4.address }}:{{ consul_public_http_port }}/v1/agent/service/register'
+    method: 'PUT'
+    body: '{"tags":["service","mysql"],"ID":"{{ group_names[-1] | upper | regex_replace("_", "-") }}-{{ environments | upper | regex_replace("_", "-") }}-mysql","name":"{{ group_names[-1] | upper | regex_replace("_", "-") }}-{{ environments | upper | regex_replace("_", "-") }}-mysql","address":"{{ ansible_default_ipv4.address }}","port":{{ mysql_port_mgr }},"checks":[{"tcp":"{{ ansible_default_ipv4.address }}:{{ mysql_port_mgr }}","interval":"60s","timeout":"10s"}]}'
+    body_format: 'json'
+    status_code: '200'
+    headers:
+      X-Consul-Token: '{{ consul_public_exporter_token }}'
+      X-Requested-By: '{{ ansible_default_ipv4.address }}'
+      cache-control: 'no-cache'
+    validate_certs: 'no'
+  environment:
+    no_proxy: '{{ ansible_default_ipv4.address }}'
+  when:
+    - check_consul_local.status == 405
+    - mysql_cluster_mgr_mode == "multi-primary"
+    - mysql_cluster_mode == "mgr"
+  register: register_status
+  until: register_status.status == 200
+  retries: 3
+  delay: 2
+  no_log: true
+  changed_when: false
+  failed_when: false
+
+- name: Check register client are accessible from current host.
   uri:
     url: '{{ consul_public_http_prot }}://{{ item }}:{{ consul_public_http_port }}/v1/agent/service/register'
     method: 'GET'
@@ -12,7 +53,7 @@
   failed_when: false
   register: check_consul_reg
 
-- name: Register exporter service with an http health check
+- name: Register MySQL exporter with an health check.
   uri:
     url: '{{ consul_public_http_prot }}://{{ item.client }}:{{ consul_public_http_port }}/v1/agent/service/register'
     method: 'PUT'
@@ -27,12 +68,11 @@
   environment:
     no_proxy: '{{ item.client }}'
   loop: "{{ check_consul_reg.results | json_query('[*].{client:item,status:status}') }}"
-  when:
-    - item.status == 405
+  when: item.status == 405
   register: register_status
   until: register_status.status == 200
   retries: 3
-  delay: 3
+  delay: 2
   no_log: true
   changed_when: false
   failed_when: false

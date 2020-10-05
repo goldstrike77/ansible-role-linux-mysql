@@ -52,7 +52,6 @@ ignore-db-dir                          = relaylog
 ignore-db-dir                          = logs
 ignore-db-dir                          = innodb
 ignore-db-dir                          = mysql-keyring
-ignore-db-dir                          = mysqlsla_analyzes
 ignore-db-dir                          = prometheus.cnf
 replicate-ignore-db                    = information_schema
 replicate-ignore-db                    = performance_schema
@@ -89,7 +88,7 @@ datadir                                = {{ mysql_path }}/mysql
 log_bin                                = {{ mysql_path }}/mysql/binlog/mysql_bin
 relay_log                              = {{ mysql_path }}/mysql/relaylog/relay_bin
 binlog_cache_size                      = {{ mysql_arg.binlog_cache_size }}
-binlog_checksum                        = CRC32
+binlog_checksum                        = NONE
 binlog_stmt_cache_size                 = {{ mysql_arg.binlog_stmt_cache_size }}
 binlog_format                          = {{ mysql_arg.binlog_format }}
 expire_logs_days                       = {{ mysql_arg.expire_logs_days }}
@@ -178,4 +177,23 @@ plugin-load                            = "audit_log=audit_log.so;QUERY_RESPONSE_
 early_plugin_load                      = keyring_file.so
 keyring_file_data                      = {{ mysql_path }}/mysql/mysql-keyring/keyring
 innodb_parallel_dblwr_encrypt          = ON
+{% endif %}
+
+{% if mysql_cluster_mode == "mgr" %}
+# GROUP REPLICATION #
+disabled_storage_engines                                 = "MyISAM,BLACKHOLE,FEDERATED,ARCHIVE,MEMORY"
+transaction_write_set_extraction                         = XXHASH64
+plugin_load_add                                          = "group_replication.so"
+loose-group_replication_group_name                       = {{ groups[group_names[-1]] | to_uuid }}
+loose-group_replication_start_on_boot                    = off
+loose-group_replication_local_address                    = "{{ ansible_default_ipv4.address }}:{{ mysql_port_mgr }}"
+loose-group_replication_ip_whitelist                     = "{{ mysql_servers | list | join(',') }}"
+loose-group_replication_group_seeds                      = "{{ mysql_servers | list | join(':' + mysql_port_mgr + ',') }}:{{ mysql_port_mgr }}"
+loose-group_replication_bootstrap_group                  = off
+loose-group_replication_single_primary_mode              = {{ "on" if mysql_cluster_mgr_mode == "single" else "off" }}
+loose-group_replication_enforce_update_everywhere_checks = {{ "off" if mysql_cluster_mgr_mode == "single" else "on" }}
+{% if mysql_ssl | bool %}
+loose-group_replication_ssl_mode                         = REQUIRED
+loose-group_replication_recovery_use_ssl                 = 1
+{% endif %}
 {% endif %}

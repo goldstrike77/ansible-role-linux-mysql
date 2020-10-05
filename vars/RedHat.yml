@@ -1,14 +1,14 @@
 ---
 mysql_epel_repo_name: 'epel'
-mysql_epel_repo_url: 'http://mirrors.tuna.tsinghua.edu.cn/epel/{{ ansible_distribution_major_version }}/$basearch/'
+mysql_epel_repo_url: 'http://mirrors.tuna.tsinghua.edu.cn/epel/$releasever/$basearch/' 
 
 mysql_percona_repo_name: 'percona'
-mysql_percona_repo_url: "http://mirrors.tuna.tsinghua.edu.cn/percona/release/{{ ansible_distribution_version.split('.')[0] }}/RPMS/{{ ansible_architecture }}"
+mysql_percona_repo_url: 'http://mirrors.tuna.tsinghua.edu.cn/percona/release/$releasever/RPMS/$basearch/'
 
 mysql_percona80_repo_name: 'percona80'
-mysql_percona80_repo_url: 'http://mirrors.tuna.tsinghua.edu.cn/percona/ps-80/yum/release/{{ ansible_distribution_major_version }}/RPMS/$basearch/'
+mysql_percona80_repo_url: 'http://mirrors.tuna.tsinghua.edu.cn/percona/ps-80/yum/release/$releasever/RPMS/$basearch/'
 
-mysql_community_repo_name: "mysql"
+mysql_community_repo_name: 'mysql'
 mysql_community_repo_url: "http://mirrors.tuna.tsinghua.edu.cn/mysql/yum/mysql{{ mysql_version }}-community-el{{ ansible_distribution_version.split('.')[0] }}/"
 
 mysql_dependent_packages:
@@ -32,6 +32,6 @@ mysql_community_packages:
   - 'mysql-community-server'
 
 mysqld_exporter_repo_name: 'prometheus'
-mysqld_exporter_repo_url: "http://cache.omygods.com/prometheus-rpm/release/el/{{ansible_distribution_version.split('.')[0]}}/$basearch"
+mysqld_exporter_repo_url: 'http://cache.omygods.com/prometheus-rpm/release/el/$releasever/$basearch/'
 mysqld_exporter_packages:
   - 'mysqld_exporter'

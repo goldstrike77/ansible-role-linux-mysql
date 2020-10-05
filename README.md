@@ -33,12 +33,15 @@ Percona Server for MySQL is a free, fully compatible, enhanced and open-source d
 
 Orchestrator is a MySQL topology manager and a failover solution, runs as a service and provides command line access, HTTP API and Web interface. used in production on many large MySQL installments. It allows for detecting, querying and refactoring complex replication topologies, and provides reliable failure detection and intelligent recovery and promotion.
 
+Group-based replication is a technique that can be used to implement fault-tolerant systems. The replication group is a set of servers that interact with each other through message passing. The communication layer provides a set of guarantees such as atomic message delivery and total ordering of messages. These are powerful primitives and abstractions that allow building more advanced database replication solutions.
+
 <p><img src="https://raw.githubusercontent.com/goldstrike77/docs/master/MySQL/orchestrator.png" /></p>
 
 ## Task Specifications
 - Installation type
   - Standalone.
   - Replication with orchestrator management.
+  - Group Replication.
 - Configuration
   - Buffer Pool Size, Connections, Character set and other general parameters.
   - Networking and Firewall.
@@ -107,8 +110,11 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 
 ##### Cluster parameters
 * `mysql_cluster_name`: Cluster name of servers that implements distribution performance.
-* `mysql_cluster_mode`: Defines type of cluster type: standalone / replication.
+* `mysql_cluster_mode`: Defines type of cluster type: standalone / replication / mgr.
 * `mysql_cluster_mgmt`: MySQL high availability and replication management tool.
+
+##### Group Replication parameters
+* `mysql_cluster_mgr_mode`: Defines mode of group replication, single or multi-primary.
 
 ##### Role dependencies
 * `mysql_orchestrator_dept`: A boolean value, whether Orchestrator use the same environment.
@@ -135,6 +141,7 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 
 ##### Listen port
 * `mysql_port_mysqld`: MySQL instance listen port.
+* `mysql_port_mgr`: MySQL group replication listen port.
 * `mysql_port_exporter`: Prometheus MySQL Exporter listen port.
 
 ##### Server System Variables
@@ -277,6 +284,7 @@ mysql_backupset_arg:
     key: 'base64encodedkey=='
     endpoint: 'blob.core.chinacloudapi.cn'
 mysql_port_mysqld: '3306'
+mysql_port_mgr: '33061'
 mysql_port_exporter: '9104'
 mysql_arg:
   binlog_cache_size: '1048576'

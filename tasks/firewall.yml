@@ -1,9 +1,9 @@
 ---
-- name: Gathering service facts
+- name: Gathering service facts.
   service_facts:
   register: services_state
 
-- name: Allow MySQL service port
+- name: Allow MySQL service port.
   firewalld:
     port: '{{ item }}/tcp'
     zone: 'public'
@@ -12,12 +12,14 @@
     state: 'enabled'
   loop:
     - '{{ mysql_port_mysqld }}'
+    - '{{ mysql_port_mgr }}'
     - '{{ mysql_port_exporter }}'
   when:
     - ansible_distribution_major_version|int > 6
+    - services_state.ansible_facts.services["firewalld.service"] is defined
     - services_state.ansible_facts.services["firewalld.service"].state == 'running'
 
-- name: Allow MySQL service port
+- name: Allow MySQL service port.
   lineinfile:
     dest: '/etc/sysconfig/iptables'
     regexp: '^-A INPUT -p tcp -m tcp --dport {{ item }} -j ACCEPT$'
@@ -25,11 +27,12 @@
     insertafter: '^:OUTPUT ACCEPT \[\d*:\d*\]$'
   loop:
     - '{{ mysql_port_mysqld }}'
+    - '{{ mysql_port_mgr }}'
     - '{{ mysql_port_exporter }}'
   register: firewalld_update
   when: ansible_distribution_major_version|int < 7
 
-- name: Reload the firewalld
+- name: Reload the firewalld.
   service:
     name: 'iptables'
     state: 'restarted'

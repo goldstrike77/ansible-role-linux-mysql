@@ -9,6 +9,7 @@
     password: "{{ lookup('password', '' + group_names[-1] + ':replication length=12 chars=ascii_letters,digits') }}"
     priv: '*.*:REPLICATION SLAVE,REPLICATION CLIENT{% if mysql_ssl | bool %},REQUIRESSL{% endif %}'
     state: 'present'
+    sql_log_bin: false
   no_log: true
 
 - name: Replication user password outputs.

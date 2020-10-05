@@ -12,8 +12,8 @@ MAILTO="{{ mysql_mailto | default ('') }}"
 SYS_DATE=`$DATE '+%Y%m%d'`
 SYS_YEAR=`$DATE '+%Y'`
 SYS_MONTH=`$DATE '+%m'`
-SLOW_LOG=/data/mysql/logs/mysql_slow.log
-RESULT_PATH=/data/mysql/mysqlsla_analyzes
+SLOW_LOG={{ mysql_path }}/mysql/logs/mysql_slow.log
+RESULT_PATH=/var/lib/mysql/mysqlsla_analyzes
 RESULT_FILE=${RESULT_PATH}/${SYS_YEAR}/${SYS_MONTH}/mysqlsla_analyzes_$SYS_DATE
 
 if [ ! -d "${RESULT_PATH}"/"${SYS_YEAR}"/"${SYS_MONTH}" ]; then

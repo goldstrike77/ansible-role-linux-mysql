@@ -37,6 +37,11 @@
       include: 'initialization.yml'
     - name: Include user grants tasks
       include: 'user.yml'
+    - name: Include group replication tasks
+      include: 'group_replication.yml'
+      when:
+        - mysql_cluster_mode == 'mgr'
+        - mysql_servers | length > 1
     - name: Include replication tasks
       include: 'replication.yml'
       when:
@@ -68,8 +73,7 @@
       when:
         - ansible_distribution_major_version|int < 7
         - mysql_mailto is defined
-  when:
-    - not result.results[0].stat.exists
+  when: not result.results[0].stat.exists
 - name: Registered with HashiCorp Consul
   include: 'register.yml'
   when:

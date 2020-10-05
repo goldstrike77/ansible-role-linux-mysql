@@ -11,7 +11,7 @@
     state: 'present'
   no_log: true
   when:
-    - mysql_cluster_mode == 'replication'
+    - mysql_cluster_mode == 'replication' or mysql_cluster_mode == 'mgr'
     - mysql_servers[0] in ansible_default_ipv4.address
     - mysql_servers | length > 1
 
