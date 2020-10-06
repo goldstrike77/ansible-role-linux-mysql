@@ -16,48 +16,48 @@
     - mysql_cluster_mode != 'standalone'
     - mysql_servers is not defined
 
-- name: Check if MySQL tablespace exists
+- name: Check if MySQL tablespace exists.
   stat:
     path: '{{ item }}'
   loop:
     - '{{ mysql_path }}/mysql/mysql/db.MYD'
   register: result
 
-- name: MySQL operation
+- name: MySQL operation.
   block:
-    - name: Include tasks for specific OS
+    - name: Include tasks for specific OS.
       include: '{{ ansible_os_family }}.yml'
-    - name: Straight to getenforce selinux status
+    - name: Straight to getenforce selinux status.
       include: 'selinux.yml' 
-    - name: Include firewall tasks
+    - name: Include firewall tasks.
       include: 'firewall.yml'
     - name: Include certificate tasks.
       include: 'certificates.yml'
-    - name: Include initialization tasks
+    - name: Include initialization tasks.
       include: 'initialization.yml'
-    - name: Include user grants tasks
+    - name: Include user grants tasks.
       include: 'user.yml'
-    - name: Include group replication tasks
+    - name: Include group replication tasks.
       include: 'group_replication.yml'
       when:
         - mysql_cluster_mode == 'mgr'
         - mysql_servers | length > 1
-    - name: Include replication tasks
+    - name: Include replication tasks.
       include: 'replication.yml'
       when:
         - mysql_cluster_mode == 'replication'
         - mysql_servers | length > 1
-    - name: Include business database tasks
+    - name: Include business database tasks.
       include: 'database.yml'
       when: mysql_bu_dbs_arg is defined
-    - name: Include query analyzes tasks
+    - name: Include query analyzes tasks.
       include: 'analyzes.yml'
     - name: Include backup tasks
       include: 'backup.yml'
-    - name: Include prometheus exporter tasks
+    - name: Include prometheus exporter tasks.
       include: 'exporter.yml'
       when: exporter_is_install | bool
-    - name: Ensure MTA service is enabled
+    - name: Ensure MTA service is enabled.
       systemd:
         name: 'postfix.service'
         enabled: 'yes'
@@ -65,7 +65,7 @@
       when:
         - ansible_distribution_major_version|int > 6
         - mysql_mailto is defined
-    - name: Ensure MTA service is enabled
+    - name: Ensure MTA service is enabled.
       service:
         name: 'postfix'
         enabled: 'yes'
@@ -74,7 +74,7 @@
         - ansible_distribution_major_version|int < 7
         - mysql_mailto is defined
   when: not result.results[0].stat.exists
-- name: Registered with HashiCorp Consul
+- name: Registered with HashiCorp Consul.
   include: 'register.yml'
   when:
     - exporter_is_install | bool
