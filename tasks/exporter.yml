@@ -39,7 +39,7 @@
   when: mysql_servers is not defined or mysql_servers[0] in ansible_default_ipv4.address
   no_log: true
 
-- name: Add Prometheus mysqld_exporter YUM repositories.
+- name: Add MySQL exporter YUM repositories.
   yum_repository:
     name: '{{ mysqld_exporter_repo_name }}'
     description: '{{ mysqld_exporter_repo_name }} YUM repository'
@@ -48,7 +48,7 @@
     gpgcheck: 'no'
     timeout: '60'
 
-- name: Install the Prometheus mysqld_exporter packages
+- name: Install the MySQL exporter packages.
   yum:
     name: '{{ mysqld_exporter_packages }}'
     state: 'present'
@@ -59,7 +59,7 @@
   retries: 5
   delay: 2
 
-- name: Prometheus mysqld_exporter configure file transfer
+- name: MySQL exporter configure file transfer.
   template:
     src: '{{ item.src }}'
     dest: '{{ item.dest }}'
@@ -71,13 +71,13 @@
     - { src: 'mysqld_exporter', dest: '/etc/default/' }    
   no_log: true
 
-- name: Ensure that service scripts have execution privileges
+- name: Ensure that MySQL exporter service have execution privileges.
   file:
     path: '/etc/init.d/mysqld_exporter'
     mode: '0755'
   when: ansible_distribution_major_version|int < 7
 
-- name: Prometheus mysqld_exporter service is enabled
+- name: Ensure MySQL exporter service is enabled.
   systemd:
     name: 'mysqld_exporter.service'
     enabled: 'yes'
@@ -85,7 +85,7 @@
     daemon_reload: 'yes'
   when: ansible_distribution_major_version|int > 6
 
-- name: Prometheus mysqld_exporter service is enabled
+- name: Ensure MySQL exporter service is enabled.
   service:
     name: 'mysqld_exporter'
     enabled: 'yes'

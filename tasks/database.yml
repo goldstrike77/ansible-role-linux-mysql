@@ -1,5 +1,5 @@
 ---
-- name: Create business database for replication
+- name: Create business database for replication.
   mysql_db:
     login_user: 'root'
     login_password: '{{ mysql_sa_pass }}'
@@ -14,7 +14,7 @@
     - mysql_servers[0] in ansible_default_ipv4.address
     - mysql_servers | length > 1
 
-- name: Create business user with privileges for replication
+- name: Create business user with privileges for replication.
   mysql_user:
     login_user: 'root'
     login_password: '{{ mysql_sa_pass }}'
@@ -31,7 +31,7 @@
     - mysql_servers[0] in ansible_default_ipv4.address
     - mysql_servers | length > 1
 
-- name: Create business database for standalone
+- name: Create business database for standalone.
   mysql_db:
     login_user: 'root'
     login_password: '{{ mysql_sa_pass }}'
@@ -44,7 +44,7 @@
   when:
     - mysql_cluster_mode == 'standalone' or mysql_servers | length == 1
 
-- name: Create business user with privileges for standalone
+- name: Create business user with privileges for standalone.
   mysql_user:
     login_user: 'root'
     login_password: '{{ mysql_sa_pass }}'

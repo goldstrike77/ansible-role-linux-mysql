@@ -44,7 +44,6 @@ mysqld_exporter_collector: # Prometheus mysqld exporter collector flags
   - 'info_schema.schemastats'
   - 'info_schema.userstats'
   - 'perf_schema.eventsstatements'
-  - 'perf_schema.eventsstatements.limit'
   - 'perf_schema.eventsstatementssum'
   - 'perf_schema.eventswaits'
   - 'perf_schema.file_events'
