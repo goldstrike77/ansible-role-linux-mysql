@@ -29,9 +29,9 @@
   environment:
     no_proxy: '{{ ansible_default_ipv4.address }}'
   when:
-    - check_consul_local.status == 405
     - mysql_cluster_mgr_mode == "multi-primary"
     - mysql_cluster_mode == "mgr"
+    - check_consul_local.status == 405
   register: register_status
   until: register_status.status == 200
   retries: 3
