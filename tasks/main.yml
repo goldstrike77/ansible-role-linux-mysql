@@ -3,13 +3,8 @@
   set_fact:
     mysql_servers: "\
       {% set _mysql_servers = [] %}\
-      {% for host in groups[group_names[-1]] %}\
-        {% if mysql_cluster_name is defined %}\
-          {% set _mysql_cluster_name = mysql_cluster_name | default('') %}\
-          {% if ( _mysql_cluster_name == mysql_cluster_name ) %}\
-            {% if _mysql_servers.append(hostvars[host]['ansible_host']) %}{% endif %}\
-          {% endif %}\
-        {% endif %}\
+      {% for host in groups[group_names[0]] %}\
+        {% if _mysql_servers.append(hostvars[host]['ansible_host']) %}{% endif %}\
       {% endfor %}\
       {{ _mysql_servers }}"
   when:

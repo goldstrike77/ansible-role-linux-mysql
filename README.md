@@ -1,8 +1,8 @@
 ![](https://img.shields.io/badge/Ansible-mysql-green.svg?logo=angular&style=for-the-badge)
 
->__Please note that the original design goal of this role was more concerned with the initial installation and bootstrapping environment, which currently does not involve performing continuous maintenance, and therefore are only suitable for testing and development purposes,  should not be used in production environments.__
+>__Please note that the original design goal of this role was more concerned with the initial installation and bootstrapping environment, which currently does not involve performing continuous maintenance, and therefore are only suitable for testing and development purposes,  should not be used in production environments. The author does not guarantee the accuracy, completeness, reliability, and availability of the role content. Under no circumstances will the author be held responsible or liable in any way for any claims, damages, losses, expenses, costs or liabilities whatsoever, including, without limitation, any direct or indirect damages for loss of profits, business interruption or loss of information.__
 
->__请注意，此角色的最初设计目标更关注初始安装和引导环境，目前不涉及执行持续维护，因此仅适用于测试和开发目的，不应在生产环境中使用。__
+>__请注意，此角色的最初设计目标更关注初始安装和引导环境，目前不涉及执行连续维护，因此仅适用于测试和开发目的，不应在生产环境中使用。作者不对角色内容之准确性、完整性、可靠性、可用性做保证。在任何情况下，作者均不对任何索赔，损害，损失，费用，成本或负债承担任何责任，包括但不限于因利润损失，业务中断或信息丢失而造成的任何直接或间接损害。__
 ___
 
 <p><img src="https://raw.githubusercontent.com/goldstrike77/goldstrike77.github.io/master/img/logo/logo_mysql.png" align="right" /></p>
@@ -13,7 +13,7 @@ __Table of Contents__
 - [Task Specifications](#Task-Specifications)
 - [Requirements](#requirements)
   * [Operating systems](#operating-systems)
-  * [MySQL Versions](#MySQL-versions)
+  * [Versions](#versions)
 - [ Role variables](#Role-variables)
   * [Main Configuration](#Main-parameters)
   * [Other Configuration](#Other-parameters)
@@ -85,7 +85,7 @@ This Ansible role installs Percona Server for MySQL on Linux operating system, i
 
   * CentOS 7
 
-### MySQL versions
+### Versions
 
 The following list of supported the MySQL releases:
 
@@ -109,7 +109,6 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_system_type`: Define instance parameters.
 
 ##### Cluster parameters
-* `mysql_cluster_name`: Cluster name of servers that implements distribution performance.
 * `mysql_cluster_mode`: Defines type of cluster type: standalone / replication / mgr.
 * `mysql_cluster_mgmt`: MySQL high availability and replication management tool.
 
@@ -197,6 +196,7 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `environments`: Define the service environment.
 * `datacenter`: Define the DataCenter.
 * `domain`: Define the Domain.
+* `customer`: Define the customer name.
 * `tags`: Define the service custom label.
 * `exporter_is_install`: Whether to install prometheus exporter.
 * `consul_public_register`: Whether register a exporter service with public consul client.
@@ -231,7 +231,6 @@ See tests/inventory for an example.
 
     [MySQL:vars]
     mysql_version='57'
-    mysql_cluster_name='cluster01'
     mysql_cluster_mode='replication'
 
 ### Vars in role configuration
@@ -259,7 +258,6 @@ mysql_storage_engine: 'InnoDB'
 mysql_innodb_buffer_pool_size: '1024'
 mysql_max_connections: '100'
 mysql_system_type: 'autopilot'
-mysql_cluster_name: 'cluster01'
 mysql_cluster_mode: 'standalone'
 mysql_cluster_mgmt: ''
 mysql_orchestrator_dept: false
@@ -334,9 +332,10 @@ mysql_arg:
   thread_pool_oversubscribe: '10'
   tmp_table_size: '32M'
   wait_timeout: '3600'
-environments: 'Development'
+environments: 'prd'
 datacenter: 'dc01'
 domain: 'local'
+customer: 'demo'
 tags:
   subscription: 'default'
   owner: 'nobody'

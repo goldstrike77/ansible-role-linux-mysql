@@ -57,7 +57,7 @@ dependencies:
   # if you add dependencies to this list.
   - role: 'ansible-role-linux-orchestrator'
     vars:
-      orchestrator_cluster_name: '{{ mysql_cluster_name }}'
+      orchestrator_cluster_name: '{{ group_names[0] | title | regex_replace("_", "-") }}'
       orchestrator_path: '{{ mysql_path }}'
       orchestrator_ui_user: '{{ mysql_orchestrator_ui_user | default("admin") }}'
       orchestrator_ui_pass: '{{ mysql_orchestrator_ui_pass | default("changeme") }}'

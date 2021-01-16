@@ -25,7 +25,6 @@ mysql_system_type: 'autopilot' # Define instance parameters.
 # └───────────┴─────────────────────────────────────┴────────────┴──────────────┘
 
 # Cluster parameters #
-mysql_cluster_name: 'cluster01' # Cluster name of servers that implements distribution performance.
 mysql_cluster_mode: 'standalone' # Defines type of cluster: standalone / replication / mgr.
 mysql_cluster_mgmt: '' # MySQL high availability and replication management tool, Currently only orchsetrator is supported.
 
@@ -128,9 +127,10 @@ mysql_arg:
 #    priv: 'ALL'
 
 # Service Mesh #
-environments: 'Development' # Define the service environment.
+environments: 'prd' # Define the service environment.
 datacenter: 'dc01' # Define the DataCenter.
 domain: 'local' # Define the Domain.
+customer: 'demo' # Define the customer name.
 #tags: # Define the service custom label.
 #  subscription: 'default'
 #  owner: 'nobody'
