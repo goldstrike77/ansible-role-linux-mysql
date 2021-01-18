@@ -50,6 +50,7 @@
           - 'DNS:localhost'
           - 'DNS:{{ ansible_hostname }}'
           - 'DNS:{{ ansible_fqdn }}'
+          - 'DNS:*.service.{{ datacenter | lower }}.{{ domain | lower }}'
           - 'IP:127.0.0.1'
           - 'IP:{{ ansible_default_ipv4.address }}'
         owner: 'root'
