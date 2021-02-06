@@ -186,7 +186,8 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_arg.table_open_cache`: The number of open tables for all threads.
 * `mysql_arg.table_open_cache_instances`: The number of open tables cache instances.
 * `mysql_arg.thread_cache_size`: How many threads the server should cache for reuse.
-* `mysql_arg.thread_handling`: The thread-handling model used by the server for connection threads. 
+* `mysql_arg.thread_handling`: The thread-handling model used by the server for connection threads.
+* `mysql_arg.thread_pool_size`: Define the number of threads that can use the CPU at the same time.
 * `mysql_arg.thread_pool_max_threads`: The maximum number of threads in the thread pool.
 * `mysql_arg.thread_pool_oversubscribe`: How many worker threads in a thread group can remain active at the same time once a thread group is oversubscribed due to stalls.
 * `mysql_arg.tmp_table_size`: The maximum size of internal in-memory temporary tables.
@@ -328,6 +329,7 @@ mysql_arg:
   table_open_cache_instances: '64'
   thread_cache_size: '50'
   thread_handling: 'pool-of-threads'
+  thread_pool_size: '16'
   thread_pool_max_threads: '1000'
   thread_pool_oversubscribe: '10'
   tmp_table_size: '32M'
