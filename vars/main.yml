@@ -1,7 +1,9 @@
 ---
 mysql_python_dependent_packages:
   - 'pip==20.3.4'
-  - 'cryptography'
+  - 'cryptography==2.4.2'
+  - 'paramiko==2.4.3'
+  - 'pyopenssl==19.0.0'
 
 mysql_pypi_url: 'pypi.tuna.tsinghua.edu.cn'
 
