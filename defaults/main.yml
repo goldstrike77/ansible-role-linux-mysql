@@ -1,13 +1,13 @@
 ---
 # General parameters #
-mysql_is_install: false # A boolean value, whether install the MySQL.
+mysql_is_install: false # A boolean to determine whether or not to install the MySQL.
 mysql_releases: 'Percona' # Define MySQL distribution, Community or Percona.
 mysql_version: '57' # Specify the MySQL version.
 mysql_path: '/data' # Specify the MySQL data directory.
 mysql_user: 'mysql' # System user name for running mysqld services.
 #mysql_mailto: 'somebody@example.com' # MySQL report mail recipient.
 mysql_sa_pass: 'changeme' # MySQL root account password.
-mysql_ssl: false # A boolean value, whether Encrypting client and cluster communications.
+mysql_ssl: false # A boolean to determine whether or not Encrypting client and cluster communications.
 mysql_storage_engine: 'InnoDB' # Preferred storage engine, InnoDB or MyISAM
 mysql_innodb_buffer_pool_size: '{% if ansible_memtotal_mb <= 8192 and mysql_storage_engine == "InnoDB" and mysql_system_type == "autopilot" %}{{ (ansible_memtotal_mb * 0.585)|int }}{% elif ansible_memtotal_mb > 8192 and mysql_storage_engine == "InnoDB" and mysql_system_type == "autopilot" %}{{ (ansible_memtotal_mb * 0.725)|int }}{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "small" %}1536{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "medium" %}4096{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "large" %}10240{% else %}8{% endif %}' # The size in MB of the buffer pool.
 mysql_max_connections: '{% if mysql_system_type == "small" %}110{% elif mysql_system_type == "medium" %}310{% elif mysql_system_type == "large" %}510{% else %}{{ (ansible_memtotal_mb / 40)|int }}{% endif %}' # The maximum permitted number of simultaneous client connections.
@@ -32,12 +32,12 @@ mysql_cluster_mgmt: '' # MySQL high availability and replication management tool
 mysql_cluster_mgr_mode: 'multi-primary' # Defines mode of group replication, single or multi-primary.
 
 # Role dependencies #
-mysql_orchestrator_dept: false # A boolean value, whether Orchestrator use the same environment.
+mysql_orchestrator_dept: false # A boolean to determine whether or not use Orchestrator at the same environment.
 
 # Orchestrator parameters #
 mysql_orchestrator_ui_user: 'admin' # Management console authentication user.
 mysql_orchestrator_ui_pass: 'changeme' # Management console authentication password.
-mysql_orchestrator_ui_ssl: false # A boolean value, whether Encrypting client communications.
+mysql_orchestrator_ui_ssl: true # A boolean to determine whether or not Encrypting client communications.
 mysql_orchestrator_port_ui: '3002' # Orchestrator Web UI listen port.
 mysql_orchestrator_port_agent: '3003' # Orchestrator Agent listen port.
 mysql_orchestrator_port_raft: '10008' # Orchestrator Raft listen port.
@@ -75,7 +75,7 @@ mysql_arg:
   binlog_stmt_cache_size: '{% if mysql_system_type == "small" %}524288{% else %}1048576{% endif %}' # Size of the cache for the binary log to hold nontransactional statements issued during a transaction.
   character_set: 'utf8mb4' # Server's default character set.
   connect_timeout: '30' # Server waits for a connect packet in seconds.
-  data_encryption: false # A boolean value, whether enabled the MySQL Data at Rest Encryption.
+  data_encryption: false # A boolean to determine whether or not to enabled the MySQL Data at Rest Encryption.
   default_time_zone: '+8:00' # Default server time zone.
   expire_logs_days: '10' # The number of days for automatic binary log file removal.
   enforce_gtid_consistency: 'on' # Enforces GTID consistency by allowing execution of only statements that can be safely logged using a GTID.

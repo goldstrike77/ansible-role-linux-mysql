@@ -25,6 +25,7 @@ __Table of Contents__
 - [License](#license)
 - [Author Information](#author-information)
 - [Contributors](#Contributors)
+- [Donations](#Donations)
 
 ## Overview
 MySQL is an open-source relational database management system (RDBMS). A relational database organizes data into one or more data tables in which data types may be related to each other; these relations help structure the data. SQL is a language programmers use to create, modify and extract data from the relational database, as well as control user access to the database. In addition to relational databases and SQL, an RDBMS like MySQL works with an operating system to implement a relational database in a computer's storage system, manages users, allows for network access and facilitates testing database integrity and creation of backups.
@@ -102,7 +103,7 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_user`: System user name for running mysqld services.
 * `mysql_mailto`: MySQL report mail recipient.
 * `mysql_sa_pass`: MySQL root account password.
-* `mysql_ssl`: A boolean value, whether Encrypting client and cluster communications.
+* `mysql_ssl`: A boolean to determine whether or not Encrypting client and cluster communications.
 * `mysql_storage_engine`: Preferred storage engine, InnoDB or MyISAM
 * `mysql_innodb_buffer_pool_size`: The size in MB of the buffer pool.
 * `mysql_max_connections`: The maximum permitted number of simultaneous client connections.
@@ -116,12 +117,12 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_cluster_mgr_mode`: Defines mode of group replication, single or multi-primary.
 
 ##### Role dependencies
-* `mysql_orchestrator_dept`: A boolean value, whether Orchestrator use the same environment.
+* `mysql_orchestrator_dept`: A boolean to determine whether or not use Orchestrator at the same environment.
 
 ##### Orchestrator parameters
 * `mysql_orchestrator_ui_user`: Management console authentication user.
 * `mysql_orchestrator_ui_pass`: Management console authentication password.
-* `mysql_orchestrator_ui_ssl`: A boolean value, whether Encrypting client communications.
+* `mysql_orchestrator_ui_ssl`: A boolean to determine whether or not Encrypting client communications.
 * `mysql_orchestrator_port_ui`: Orchestrator Web UI listen port.
 * `mysql_orchestrator_port_agent`: Orchestrator Agent listen port.
 * `mysql_orchestrator_port_raft`: Orchestrator Raft listen port.
@@ -149,7 +150,7 @@ There are some variables in defaults/main.yml which can (Or needs to) be overrid
 * `mysql_arg.binlog_stmt_cache_size`: Size of the cache for the binary log to hold nontransactional statements issued during a transaction.
 * `mysql_arg.character_set`: Server's default character set.
 * `mysql_arg.connect_timeout`: Server waits for a connect packet in seconds.
-* `mysql_arg.data_encryption`: A boolean value, whether enabled the MySQL Data at Rest Encryption.
+* `mysql_arg.data_encryption`: A boolean to determine whether or not to enabled the MySQL Data at Rest Encryption.
 * `mysql_arg.default_time_zone`: Default server time zone.
 * `mysql_arg.expire_logs_days`: The number of days for automatic binary log file removal.
 * `mysql_arg.enforce_gtid_consistency`: Enforces GTID consistency by allowing execution of only statements that can be safely logged using a GTID.
@@ -264,7 +265,7 @@ mysql_cluster_mgmt: ''
 mysql_orchestrator_dept: false
 mysql_orchestrator_ui_user: 'admin'
 mysql_orchestrator_ui_pass: 'changeme'
-mysql_orchestrator_ui_ssl: false
+mysql_orchestrator_ui_ssl: true
 mysql_orchestrator_port_ui: '3002'
 mysql_orchestrator_port_agent: '3003'
 mysql_orchestrator_port_raft: '10008'
@@ -361,3 +362,8 @@ Please send your suggestions to make this role better.
 
 ## Contributors
 Special thanks to the [Connext Information Technology](http://www.connext.com.cn) for their contributions to this role.
+
+## Donations
+Please donate to the following monero address.
+
+    46CHVMbb6wQV2PJYEbahb353SYGqXhcdFQVEWdCnHb6JaR5125h3kNQ6bcqLye5G7UF7qz6xL9qHLDSAY3baagfmLZABz75
