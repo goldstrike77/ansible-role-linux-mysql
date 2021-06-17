@@ -1,4 +1,7 @@
 ---
+- name: Include OS-specific variables.
+  include_vars: '{{ ansible_os_family }}.yml'
+
 - name: Gather MySQL node variables for cluster.
   set_fact:
     mysql_servers: "\
@@ -49,9 +52,6 @@
       include: 'analyzes.yml'
     - name: Include backup tasks
       include: 'backup.yml'
-    - name: Include prometheus exporter tasks.
-      include: 'exporter.yml'
-      when: exporter_is_install | bool
     - name: Ensure MTA service is enabled.
       systemd:
         name: 'postfix.service'
@@ -69,6 +69,11 @@
         - ansible_distribution_major_version|int < 7
         - mysql_mailto is defined
   when: not result.results[0].stat.exists
+
+- name: Include prometheus exporter tasks.
+  include: 'exporter.yml'
+  when: exporter_is_install | bool
+
 - name: Registered with HashiCorp Consul.
   include: 'register.yml'
   when:
