@@ -55,7 +55,7 @@ gtid_mode                              = {{ mysql_arg.gtid_mode }}
 slave_net_timeout                      = {{ mysql_arg.slave_net_timeout }}
 master_info_repository                 = TABLE
 relay_log_info_repository              = TABLE
-slave-skip-errors                      = 1062,1053,1146,1213,1264,1205,1396
+slave-skip-errors                      = {{ ','.join(vars['mysql_slave_skip_errors']) }}
 read_only                              = {% if mysql_cluster_mode == 'replication' and mysql_servers[0] not in ansible_default_ipv4.address and mysql_servers | length > 1 %}1{% else %}0{% endif %}
 
 # MyISAM #

@@ -41,8 +41,7 @@
     state: 'present'
   loop: '{{ mysql_bu_dbs_arg }}'
   no_log: true
-  when:
-    - mysql_cluster_mode == 'standalone' or mysql_servers | length == 1
+  when: mysql_cluster_mode == 'standalone' or mysql_servers | length == 1
 
 - name: Create business user with privileges for standalone.
   mysql_user:
@@ -56,5 +55,4 @@
     state: 'present'
   loop: '{{ mysql_bu_dbs_arg }}'
   no_log: true
-  when:
-    - mysql_cluster_mode == 'standalone' or mysql_servers | length == 1
+  when: mysql_cluster_mode == 'standalone' or mysql_servers | length == 1

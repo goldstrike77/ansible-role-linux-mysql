@@ -26,8 +26,7 @@
     priv: '*.*:PROCESS,REPLICATION CLIENT,REPLICATION SLAVE,SELECT{% if mysql_ssl | bool %},REQUIRESSL{% endif %}'
     state: 'present'
   no_log: true
-  when:
-    - mysql_cluster_mode == 'standalone' or mysql_servers | length == 1
+  when: mysql_cluster_mode == 'standalone' or mysql_servers | length == 1
 
 - name: Prometheus user password outputs.
   copy:

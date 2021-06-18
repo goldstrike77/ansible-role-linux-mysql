@@ -63,7 +63,17 @@ mysqld_exporter_collector: # Prometheus mysqld exporter collector flags
 #  - 'heartbeat.table'
 #  - 'heartbeat.utc'
 
-mysql_sql_mode: # Specify value the global SQL mode
+mysql_slave_skip_errors: # Tells the slave thread to continue replication when a query event returns an error from the provided list, https://mariadb.com/kb/en/mariadb-error-codes.
+  - '1032'
+  - '1053'
+  - '1062'
+  - '1146'
+  - '1205'
+  - '1213'
+  - '1264'
+  - '1396'
+
+mysql_sql_mode: # Specify value the global SQL mode, https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html.
   - 'ERROR_FOR_DIVISION_BY_ZERO'
   - 'NO_AUTO_CREATE_USER'
   - 'NO_ENGINE_SUBSTITUTION'
@@ -72,14 +82,14 @@ mysql_sql_mode: # Specify value the global SQL mode
   - 'STRICT_ALL_TABLES'
   - 'STRICT_TRANS_TABLES'
 
-mysql80_sql_mode: # Specify value the global SQL mode
+mysql80_sql_mode: # Specify value the global SQL mode, https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html.
   - 'ERROR_FOR_DIVISION_BY_ZERO'
   - 'NO_ZERO_DATE'
   - 'NO_ZERO_IN_DATE'
   - 'STRICT_ALL_TABLES'
   - 'STRICT_TRANS_TABLES'
 
-mysql_audit_log_commands: # Filtering command for audit process
+mysql_audit_log_commands: # Filtering command for audit process.
   - 'alter_db'
   - 'alter_event'
   - 'alter_function'
