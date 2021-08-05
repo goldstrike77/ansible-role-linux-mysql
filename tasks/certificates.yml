@@ -1,9 +1,10 @@
 ---
 - name: Install requirement python package.
   pip:
-    name: '{{ mysql_python_dependent_packages }}'
-    state: 'forcereinstall'
+    name: '{{ item }}'
+    state: 'present'
     extra_args: '--default-timeout=120 -i https://{{ mysql_pypi_url }}/simple --trusted-host {{ mysql_pypi_url }}'
+  loop: '{{ mysql_python_dependent_packages }}'
   register: mysql_python_status
   until: mysql_python_status is succeeded
   retries: 5

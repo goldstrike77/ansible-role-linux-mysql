@@ -44,6 +44,7 @@
     description: '{{ mysqld_exporter_repo_name }} YUM repository'
     file: '{{ mysqld_exporter_repo_name }}'
     baseurl: '{{ mysqld_exporter_repo_url }}'
+    sslverify: 'no'
     gpgcheck: 'no'
     timeout: '60'
 

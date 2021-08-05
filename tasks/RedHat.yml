@@ -6,6 +6,7 @@
     file: '{{ mysql_epel_repo_name }}'
     baseurl: '{{ mysql_epel_repo_url }}'
     gpgcheck: 'no'
+    sslverify: 'no'
     timeout: '60'
   when:
     - mysql_backupset_arg.cloud_rsync | bool
@@ -32,6 +33,7 @@
     description: '{{ mysql_percona_repo_name }} YUM repository'
     file: '{{ mysql_percona_repo_name }}'
     baseurl: '{{ mysql_percona_repo_url }}'
+    sslverify: 'no'
     gpgcheck: 'no'
     timeout: '60'
 
@@ -42,6 +44,7 @@
     file: '{{ mysql_percona80_repo_name }}'
     baseurl: '{{ mysql_percona80_repo_url }}'
     gpgcheck: 'no'
+    sslverify: 'no'
     timeout: '60'
   when: 
     - mysql_version == '80'
@@ -54,6 +57,7 @@
     file: '{{ mysql_community_repo_name }}'
     baseurl: '{{ mysql_community_repo_url }}'
     gpgcheck: 'no'
+    sslverify: 'no'
     timeout: '60'
   when: mysql_releases | lower == 'community' 
 
