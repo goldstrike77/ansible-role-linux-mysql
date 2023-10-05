@@ -1,70 +1,70 @@
 ---
 - name: Check if unused configure file exists.
-  stat: 
-    path: '{{ item }}'
+  stat:
+    path: "{{ item }}"
   loop:
-    - '/etc/logrotate.d/mysql'
+    - "/etc/logrotate.d/mysql"
   register: file_exists
 
 - name: Remove unused configure file.
   file:
-    path: '{{ item }}'
-    state: 'absent'
+    path: "{{ item }}"
+    state: "absent"
   loop:
-    - '/etc/logrotate.d/mysql'
+    - "/etc/logrotate.d/mysql"
   when: file_exists.results[0].stat.exists
 
 - name: Creating MySQL version 5.7 folder.
   file:
-    dest: '{{ item }}'
-    state: 'directory'
-    owner: 'mysql'
-    group: 'mysql'
-    mode: '0750'
+    dest: "{{ item }}"
+    state: "directory"
+    owner: "mysql"
+    group: "mysql"
+    mode: "0750"
   loop:
-    - '{{ mysql_path }}/mysql/logs'
-    - '{{ mysql_path }}/mysql/innodb'
-    - '{{ mysql_path }}/mysql/binlog'
-    - '{{ mysql_path }}/mysql/relaylog'
-    - '{{ mysql_path }}/mysql/mysql-keyring'
+    - "{{ mysql_path }}/mysql/logs"
+    - "{{ mysql_path }}/mysql/innodb"
+    - "{{ mysql_path }}/mysql/binlog"
+    - "{{ mysql_path }}/mysql/relaylog"
+    - "{{ mysql_path }}/mysql/mysql-keyring"
   when: mysql_version == '57'
 
 - name: Creating MySQL data folder.
   file:
-    dest: '{{ mysql_path }}/mysql'
-    state: 'directory'
-    owner: 'mysql'
-    group: 'mysql'
-    mode: '0750'
+    dest: "{{ mysql_path }}/mysql"
+    state: "directory"
+    owner: "mysql"
+    group: "mysql"
+    mode: "0750"
   when: mysql_version == '80'
 
 - name: Configure kernel parameters.
   sysctl:
-    name: '{{ item.variable }}'
-    value: '{{ item.value }}'
-    state: 'present'
-    reload: 'yes'
-    sysctl_set: 'yes'
-    sysctl_file: '/etc/sysctl.d/20-sysctl.conf'
-  loop: '{{ mysql_kernel_parameters }}'
+    name: "{{ item.variable }}"
+    value: "{{ item.value }}"
+    state: "present"
+    reload: "yes"
+    sysctl_set: "yes"
+    sysctl_file: "/etc/sysctl.d/20-sysctl.conf"
+  loop: "{{ mysql_kernel_parameters }}"
 
 - name: MySQL Configure & Scripts file transfer.
   template:
-    src: '{{ item.src }}'
-    dest: '{{ item.dest }}'
-    owner: 'mysql'
-    group: 'mysql'
-    mode: '0660'
-  loop: '{{ mysql_conf_scripts }}'
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "mysql"
+    group: "mysql"
+    mode: "0660"
+  loop: "{{ mysql_conf_scripts }}"
 
 - name: Initializes the MySQL system tables.
-  shell: '/usr/sbin/mysqld --defaults-file=/etc/my.cnf --datadir={{ mysql_path }}/mysql --user=mysql --explicit_defaults_for_timestamp --initialize-insecure'
+  shell: "/usr/sbin/mysqld --defaults-file=/etc/my.cnf --datadir={{ mysql_path }}/mysql --user=mysql --explicit_defaults_for_timestamp --initialize-insecure"
 
 - name: Enable Audit Log Plugin.
   blockinfile:
-    state: 'present'
-    path: '/etc/my.cnf'
-    insertafter: 'EOF'
+    state: "present"
+    path: "/etc/my.cnf"
+    insertafter: "EOF"
     block: |
       plugin-load                            = "audit_log=audit_log.so"
       audit_log_handler                      = SYSLOG
@@ -79,49 +79,49 @@
 
 - name: Creating MySQL version 8.0 folder.
   file:
-    dest: '{{ item }}'
-    state: 'directory'
-    owner: 'mysql'
-    group: 'mysql'
-    mode: '0750'
+    dest: "{{ item }}"
+    state: "directory"
+    owner: "mysql"
+    group: "mysql"
+    mode: "0750"
   loop:
-    - '{{ mysql_path }}/mysql/logs'
-    - '{{ mysql_path }}/mysql/mysql-keyring'
+    - "{{ mysql_path }}/mysql/logs"
+    - "{{ mysql_path }}/mysql/mysql-keyring"
   when: mysql_version == '80'
 
 - name: Changing Limits for MySQL services.
   lineinfile:
-    dest: '/etc/security/limits.conf'
-    line: '{{ item.line }}'
+    dest: "/etc/security/limits.conf"
+    line: "{{ item.line }}"
   loop:
-    - { line: '{{ mysql_user }} soft nofile {{ mysql_arg.open_files_limit }}' }
-    - { line: '{{ mysql_user }} hard nofile {{ mysql_arg.open_files_limit }}' }
-    - { line: '{{ mysql_user }} soft nproc {{ mysql_arg.open_nproc_limit }}' }
-    - { line: '{{ mysql_user }} hard nproc {{ mysql_arg.open_nproc_limit }}' }
-    - { line: '{{ mysql_user }} hard memlock unlimited' }
-    - { line: '{{ mysql_user }} soft memlock unlimited' }
+    - { line: "{{ mysql_user }} soft nofile {{ mysql_arg.open_files_limit }}" }
+    - { line: "{{ mysql_user }} hard nofile {{ mysql_arg.open_files_limit }}" }
+    - { line: "{{ mysql_user }} soft nproc {{ mysql_arg.open_nproc_limit }}" }
+    - { line: "{{ mysql_user }} hard nproc {{ mysql_arg.open_nproc_limit }}" }
+    - { line: "{{ mysql_user }} hard memlock unlimited" }
+    - { line: "{{ mysql_user }} soft memlock unlimited" }
 
 - name: Changing Limits for MySQL services.
   lineinfile:
-    state: 'present'
-    dest: '/lib/systemd/system/mysqld.service'
+    state: "present"
+    dest: "/lib/systemd/system/mysqld.service"
     insertafter: '^\[Service\]'
-    regexp: '{{ item.regexp }}'
-    line: '{{ item.line }}'
-  loop: '{{ mysql_service_parameter }}'
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop: "{{ mysql_service_parameter }}"
   when: ansible_distribution_major_version|int > 6
 
 - name: Ensure MySQL service is enabled.
   systemd:
-    name: 'mysqld.service'
+    name: "mysqld.service"
     enabled: '{% if mysql_cluster_mgmt is not defined or mysql_cluster_mgmt != "orchestrator" %}yes{% else %}no{% endif %}'
-    state: 'started'
-    daemon_reload: 'yes'
+    state: "started"
+    daemon_reload: "yes"
   when: ansible_distribution_major_version|int > 6
 
 - name: Ensure MySQL service is enabled.
   service:
-    name: 'mysql'
+    name: "mysql"
     enabled: '{% if mysql_cluster_mgmt is not defined or mysql_cluster_mgmt != "orchestrator" %}yes{% else %}no{% endif %}'
-    state: 'started'
+    state: "started"
   when: ansible_distribution_major_version|int < 7

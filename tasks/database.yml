@@ -1,13 +1,13 @@
 ---
 - name: Create business database for replication.
   mysql_db:
-    login_user: 'root'
-    login_password: '{{ mysql_sa_pass }}'
-    login_unix_socket: '/tmp/mysql.sock'
-    name: '{{ item.dbs }}'
-    encoding: '{{ mysql_arg.character_set }}'
-    state: 'present'
-  loop: '{{ mysql_bu_dbs_arg }}'
+    login_user: "root"
+    login_password: "{{ mysql_sa_pass }}"
+    login_unix_socket: "/tmp/mysql.sock"
+    name: "{{ item.dbs }}"
+    encoding: "{{ mysql_arg.character_set }}"
+    state: "present"
+  loop: "{{ mysql_bu_dbs_arg }}"
   no_log: true
   when:
     - mysql_cluster_mode == 'replication' or mysql_cluster_mode == 'mgr'
@@ -16,15 +16,15 @@
 
 - name: Create business user with privileges for replication.
   mysql_user:
-    login_user: 'root'
-    login_password: '{{ mysql_sa_pass }}'
-    login_unix_socket: '/tmp/mysql.sock'
-    name: '{{ item.user }}'
-    password: '{{ item.pass }}'
-    host: '{{ item.host }}'
-    priv: '{{ item.dbs }}.*:{{ item.priv }}{% if mysql_ssl | bool %}/*.*:REQUIRESSL{% endif %}'
-    state: 'present'
-  loop: '{{ mysql_bu_dbs_arg }}'
+    login_user: "root"
+    login_password: "{{ mysql_sa_pass }}"
+    login_unix_socket: "/tmp/mysql.sock"
+    name: "{{ item.user }}"
+    password: "{{ item.pass }}"
+    host: "{{ item.host }}"
+    priv: "{{ item.dbs }}.*:{{ item.priv }}{% if mysql_ssl | bool %}/*.*:REQUIRESSL{% endif %}"
+    state: "present"
+  loop: "{{ mysql_bu_dbs_arg }}"
   no_log: true
   when:
     - mysql_cluster_mode == 'replication' or mysql_cluster_mode == 'mgr'
@@ -33,26 +33,26 @@
 
 - name: Create business database for standalone.
   mysql_db:
-    login_user: 'root'
-    login_password: '{{ mysql_sa_pass }}'
-    login_unix_socket: '/tmp/mysql.sock'
-    name: '{{ item.dbs }}'
-    encoding: '{{ mysql_arg.character_set }}'
-    state: 'present'
-  loop: '{{ mysql_bu_dbs_arg }}'
+    login_user: "root"
+    login_password: "{{ mysql_sa_pass }}"
+    login_unix_socket: "/tmp/mysql.sock"
+    name: "{{ item.dbs }}"
+    encoding: "{{ mysql_arg.character_set }}"
+    state: "present"
+  loop: "{{ mysql_bu_dbs_arg }}"
   no_log: true
   when: mysql_cluster_mode == 'standalone' or mysql_servers | length == 1
 
 - name: Create business user with privileges for standalone.
   mysql_user:
-    login_user: 'root'
-    login_password: '{{ mysql_sa_pass }}'
-    login_unix_socket: '/tmp/mysql.sock'
-    name: '{{ item.user }}'
-    password: '{{ item.pass }}'
-    host: '{{ item.host }}'
-    priv: '{{ item.dbs }}.*:{{ item.priv }}{% if mysql_ssl | bool %}/*.*:REQUIRESSL{% endif %}'
-    state: 'present'
-  loop: '{{ mysql_bu_dbs_arg }}'
+    login_user: "root"
+    login_password: "{{ mysql_sa_pass }}"
+    login_unix_socket: "/tmp/mysql.sock"
+    name: "{{ item.user }}"
+    password: "{{ item.pass }}"
+    host: "{{ item.host }}"
+    priv: "{{ item.dbs }}.*:{{ item.priv }}{% if mysql_ssl | bool %}/*.*:REQUIRESSL{% endif %}"
+    state: "present"
+  loop: "{{ mysql_bu_dbs_arg }}"
   no_log: true
   when: mysql_cluster_mode == 'standalone' or mysql_servers | length == 1

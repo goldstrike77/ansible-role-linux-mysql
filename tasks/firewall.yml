@@ -5,15 +5,15 @@
 
 - name: Allow MySQL service port.
   firewalld:
-    port: '{{ item }}/tcp'
-    zone: 'public'
-    permanent: 'true'
-    immediate: 'true'
-    state: 'enabled'
+    port: "{{ item }}/tcp"
+    zone: "public"
+    permanent: "true"
+    immediate: "true"
+    state: "enabled"
   loop:
-    - '{{ mysql_port_mysqld }}'
-    - '{{ mysql_port_mgr }}'
-    - '{{ mysql_port_exporter }}'
+    - "{{ mysql_port_mysqld }}"
+    - "{{ mysql_port_mgr }}"
+    - "{{ mysql_port_exporter }}"
   when:
     - ansible_distribution_major_version|int > 6
     - services_state.ansible_facts.services["firewalld.service"] is defined
@@ -21,21 +21,21 @@
 
 - name: Allow MySQL service port.
   lineinfile:
-    dest: '/etc/sysconfig/iptables'
-    regexp: '^-A INPUT -p tcp -m tcp --dport {{ item }} -j ACCEPT$'
-    line: '-A INPUT -p tcp -m tcp --dport {{ item }} -j ACCEPT'
+    dest: "/etc/sysconfig/iptables"
+    regexp: "^-A INPUT -p tcp -m tcp --dport {{ item }} -j ACCEPT$"
+    line: "-A INPUT -p tcp -m tcp --dport {{ item }} -j ACCEPT"
     insertafter: '^:OUTPUT ACCEPT \[\d*:\d*\]$'
   loop:
-    - '{{ mysql_port_mysqld }}'
-    - '{{ mysql_port_mgr }}'
-    - '{{ mysql_port_exporter }}'
+    - "{{ mysql_port_mysqld }}"
+    - "{{ mysql_port_mgr }}"
+    - "{{ mysql_port_exporter }}"
   register: firewalld_update
   when: ansible_distribution_major_version|int < 7
 
 - name: Reload the firewalld.
   service:
-    name: 'iptables'
-    state: 'restarted'
+    name: "iptables"
+    state: "restarted"
   when:
     - ansible_distribution_major_version|int < 7
     - firewalld_update is changed

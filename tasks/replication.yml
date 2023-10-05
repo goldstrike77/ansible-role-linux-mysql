@@ -1,60 +1,60 @@
 ---
 - name: Ensure replication user exists on each node.
   mysql_user:
-    login_user: 'root'
-    login_password: '{{ mysql_sa_pass }}'
-    login_unix_socket: '/tmp/mysql.sock'
-    name: 'replication'
-    host: '%'
+    login_user: "root"
+    login_password: "{{ mysql_sa_pass }}"
+    login_unix_socket: "/tmp/mysql.sock"
+    name: "replication"
+    host: "%"
     password: "{{ lookup('password', '' + group_names[-1] + ':replication length=12 chars=ascii_letters,digits') }}"
-    priv: '*.*:REPLICATION SLAVE,REPLICATION CLIENT{% if mysql_ssl | bool %},REQUIRESSL{% endif %}'
-    state: 'present'
+    priv: "*.*:REPLICATION SLAVE,REPLICATION CLIENT{% if mysql_ssl | bool %},REQUIRESSL{% endif %}"
+    state: "present"
     sql_log_bin: false
   no_log: true
 
 - name: Replication user password outputs.
   copy:
     content: "{{ lookup('password', '' + group_names[-1] + ':replication length=12 chars=ascii_letters,digits') }}"
-    dest: '/tmp/mysql_replication_user.passwd'
-    mode: '0600'
-    owner: 'root'
-    group: 'root'
+    dest: "/tmp/mysql_replication_user.passwd"
+    mode: "0600"
+    owner: "root"
+    group: "root"
   when: mysql_servers[0] in ansible_default_ipv4.address
   no_log: true
 
 - name: Configure replication on the slave.
   mysql_replication:
-    login_user: 'root'
-    login_password: '{{ mysql_sa_pass }}'
-    login_unix_socket: '/tmp/mysql.sock'
-    mode: 'changemaster'
-    master_host: '{{ mysql_servers[0] }}'
-    master_user: 'replication'
+    login_user: "root"
+    login_password: "{{ mysql_sa_pass }}"
+    login_unix_socket: "/tmp/mysql.sock"
+    mode: "changemaster"
+    master_host: "{{ mysql_servers[0] }}"
+    master_user: "replication"
     master_password: "{{ lookup('password', '' + group_names[-1] + ':replication length=12 chars=ascii_letters,digits') }}"
-    master_ssl: '{{ mysql_ssl | bool | to_json }}'
-    master_auto_position: 'yes'
+    master_ssl: "{{ mysql_ssl | bool | to_json }}"
+    master_auto_position: "yes"
   when: mysql_servers[0] not in ansible_default_ipv4.address
   no_log: true
 
 - name: Start replication.
   mysql_replication:
-    login_user: 'root'
-    login_password: '{{ mysql_sa_pass }}'
-    login_unix_socket: '/tmp/mysql.sock'
-    mode: 'startslave'
+    login_user: "root"
+    login_password: "{{ mysql_sa_pass }}"
+    login_unix_socket: "/tmp/mysql.sock"
+    mode: "startslave"
   when: mysql_servers[0] not in ansible_default_ipv4.address
   no_log: true
 
 - name: Create Orchestrator user with privileges for replication.
   mysql_user:
-    login_user: 'root'
-    login_password: '{{ mysql_sa_pass }}'
-    login_unix_socket: '/tmp/mysql.sock'
-    name: '{{ mysql_orchestrator_mysql_user }}'
-    password: '{{ mysql_orchestrator_mysql_pass }}'
-    host: '%'
-    priv: '*.*:SUPER,PROCESS,REPLICATION SLAVE,REPLICATION CLIENT,RELOAD{% if mysql_ssl | bool %},REQUIRESSL{% endif %}/meta.*:SELECT/mysql.slave_master_info:SELECT'
-    state: 'present'
+    login_user: "root"
+    login_password: "{{ mysql_sa_pass }}"
+    login_unix_socket: "/tmp/mysql.sock"
+    name: "{{ mysql_orchestrator_mysql_user }}"
+    password: "{{ mysql_orchestrator_mysql_pass }}"
+    host: "%"
+    priv: "*.*:SUPER,PROCESS,REPLICATION SLAVE,REPLICATION CLIENT,RELOAD{% if mysql_ssl | bool %},REQUIRESSL{% endif %}/meta.*:SELECT/mysql.slave_master_info:SELECT"
+    state: "present"
   no_log: true
   when:
     - mysql_orchestrator_dept | bool

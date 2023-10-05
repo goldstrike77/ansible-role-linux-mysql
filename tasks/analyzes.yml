@@ -2,7 +2,7 @@
 - name: MySQL slow query log analyzes job.
   cron:
     user: mysql
-    name: 'MySQL slow query log analyze'
-    minute: "{{ 60 | random(seed=ansible_hostname) }}"
-    hour: '0'
-    job: '/bin/sh /usr/local/bin/mysqlsla_analyzes.sh'
+    name: "MySQL slow query log analyze"
+    minute: "{{ ( mysql_servers[0] | default(ansible_hostname) | hash | list | map('int',0,16) | sum ) % 60 }}"
+    hour: "0"
+    job: "/bin/sh /usr/local/bin/mysqlsla_analyzes.sh"

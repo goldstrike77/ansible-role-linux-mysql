@@ -1,24 +1,24 @@
 ---
 - name: Add EPEL YUM repositories.
   yum_repository:
-    name: '{{ mysql_epel_repo_name }}'
-    description: '{{ mysql_epel_repo_name }} YUM repo'
-    file: '{{ mysql_epel_repo_name }}'
-    baseurl: '{{ mysql_epel_repo_url }}'
-    gpgcheck: 'no'
-    sslverify: 'no'
-    timeout: '60'
+    name: "{{ mysql_epel_repo_name }}"
+    description: "{{ mysql_epel_repo_name }} YUM repo"
+    file: "{{ mysql_epel_repo_name }}"
+    baseurl: "{{ mysql_epel_repo_url }}"
+    gpgcheck: "no"
+    sslverify: "no"
+    timeout: "60"
   when:
     - mysql_backupset_arg.cloud_rsync | bool
     - mysql_backupset_arg.cloud_drive is defined
 
 - name: Install the Rclone command line program packages.
   yum:
-    name: 'rclone'
-    state: 'present'
-    validate_certs: 'no'
-    disable_gpg_check: 'yes'
-    update_cache: 'yes'
+    name: "rclone"
+    state: "present"
+    validate_certs: "no"
+    disable_gpg_check: "yes"
+    update_cache: "yes"
   register: yum_status
   until: yum_status is succeeded
   retries: 5
@@ -27,47 +27,25 @@
     - mysql_backupset_arg.cloud_rsync | bool
     - mysql_backupset_arg.cloud_drive is defined
 
-- name: Add Percona MySQL YUM repositories.
+- name: Add MySQL YUM repositories.
   yum_repository:
-    name: '{{ mysql_percona_repo_name }}'
-    description: '{{ mysql_percona_repo_name }} YUM repository'
-    file: '{{ mysql_percona_repo_name }}'
-    baseurl: '{{ mysql_percona_repo_url }}'
-    sslverify: 'no'
-    gpgcheck: 'no'
-    timeout: '60'
-
-- name: Add Percona 80 MySQL YUM repositories.
-  yum_repository:
-    name: '{{ mysql_percona80_repo_name }}'
-    description: '{{ mysql_percona80_repo_name }} YUM repository'
-    file: '{{ mysql_percona80_repo_name }}'
-    baseurl: '{{ mysql_percona80_repo_url }}'
-    gpgcheck: 'no'
-    sslverify: 'no'
-    timeout: '60'
-  when: 
-    - mysql_version == '80'
-    - mysql_releases | lower == 'percona'
-
-- name: Add Community MySQL YUM repositories.
-  yum_repository:
-    name: '{{ mysql_community_repo_name }}'
-    description: '{{ mysql_community_repo_name }} YUM repository'
-    file: '{{ mysql_community_repo_name }}'
-    baseurl: '{{ mysql_community_repo_url }}'
-    gpgcheck: 'no'
-    sslverify: 'no'
-    timeout: '60'
-  when: mysql_releases | lower == 'community' 
+    name: "{{ item.name }}"
+    description: "{{ item.name }} repo"
+    file: "MySQL"
+    baseurl: "{{ item.url }}"
+    sslverify: "no"
+    gpgcheck: "no"
+    timeout: "60"
+  loop: "{{ mysql_repo }}"
+  when: item.create | default(true) | bool
 
 - name: Install the MySQL dependencies packages.
   yum:
-    name: '{{ mysql_dependent_packages }}'
-    state: 'present'
-    validate_certs: 'no'
-    disable_gpg_check: 'yes'
-    update_cache: 'yes'
+    name: "{{ mysql_dependent_packages }}"
+    state: "present"
+    validate_certs: "no"
+    disable_gpg_check: "yes"
+    update_cache: "yes"
   register: yum_status
   until: yum_status is succeeded
   retries: 5
@@ -75,12 +53,12 @@
 
 - name: Install the Percona MySQL packages.
   yum:
-    name: '{{ mysql_percona_packages_57 }}'
-    state: 'present'
-    enablerepo: 'percona'
-    validate_certs: 'no'
-    disable_gpg_check: 'yes'
-    update_cache: 'yes'
+    name: "{{ mysql_percona_packages_57 }}"
+    state: "present"
+    enablerepo: "percona"
+    validate_certs: "no"
+    disable_gpg_check: "yes"
+    update_cache: "yes"
   register: yum_status
   until: yum_status is succeeded
   retries: 5
@@ -91,12 +69,12 @@
 
 - name: Install the Percona 80 MySQL packages.
   yum:
-    name: '{{ mysql_percona_packages_80 }}'
-    state: 'present'
-    enablerepo: 'percona80'
-    validate_certs: 'no'
-    disable_gpg_check: 'yes'
-    update_cache: 'yes'
+    name: "{{ mysql_percona_packages_80 }}"
+    state: "present"
+    enablerepo: "percona80"
+    validate_certs: "no"
+    disable_gpg_check: "yes"
+    update_cache: "yes"
   register: yum_status
   until: yum_status is succeeded
   retries: 5
@@ -107,12 +85,12 @@
 
 - name: Install the Community MySQL packages.
   yum:
-    name: '{{ mysql_community_packages }}'
-    state: 'present'
-    enablerepo: 'percona'
-    validate_certs: 'no'
-    disable_gpg_check: 'yes'
-    update_cache: 'yes'
+    name: "{{ mysql_community_packages }}"
+    state: "present"
+    enablerepo: "percona"
+    validate_certs: "no"
+    disable_gpg_check: "yes"
+    update_cache: "yes"
   register: yum_status
   until: yum_status is succeeded
   retries: 5

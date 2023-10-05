@@ -1,16 +1,16 @@
 ---
 - name: Modify root password.
   mysql_user:
-    login_user: 'root'
-    login_password: ''
-    login_unix_socket: '/tmp/mysql.sock'
-    name: 'root'
-    host: '{{ item }}'
-    password: '{{ mysql_sa_pass }}'
-    priv: '*.*:ALL,GRANT'
-    state: 'present'
+    login_user: "root"
+    login_password: ""
+    login_unix_socket: "/tmp/mysql.sock"
+    name: "root"
+    host: "{{ item }}"
+    password: "{{ mysql_sa_pass }}"
+    priv: "*.*:ALL,GRANT"
+    state: "present"
     sql_log_bin: false
   loop:
-    - '127.0.0.1'
-    - 'localhost'
+    - "127.0.0.1"
+    - "localhost"
   no_log: true

@@ -1,13 +1,13 @@
 ---
 - name: Include OS-specific variables.
-  include_vars: '{{ ansible_os_family }}.yml'
+  include_vars: "{{ ansible_distribution_file_variety }}.yml"
 
 - name: Gather MySQL node variables for cluster.
   set_fact:
     mysql_servers: "\
       {% set _mysql_servers = [] %}\
       {% for host in groups[group_names[0]] %}\
-        {% if _mysql_servers.append(hostvars[host]['ansible_host']) %}{% endif %}\
+      {% if _mysql_servers.append(hostvars[host]['ansible_host']) %}{% endif %}\
       {% endfor %}\
       {{ _mysql_servers }}"
   when:
@@ -16,66 +16,67 @@
 
 - name: Check if MySQL tablespace exists.
   stat:
-    path: '{{ item }}'
+    path: "{{ item }}"
   loop:
-    - '{{ mysql_path }}/mysql/mysql/db.MYD'
+    - "{{ mysql_path }}/mysql/mysql/db.MYD"
   register: result
 
 - name: MySQL operation.
   block:
     - name: Include tasks for specific OS.
-      include: '{{ ansible_os_family }}.yml'
+      include: "{{ ansible_distribution_file_variety }}.yml"
     - name: Straight to getenforce selinux status.
-      include: 'selinux.yml' 
+      include: "selinux.yml"
     - name: Include firewall tasks.
-      include: 'firewall.yml'
+      include: "firewall.yml"
     - name: Include certificate tasks.
-      include: 'certificates.yml'
+      include: "certificates.yml"
+      when: mysql_ssl | bool
     - name: Include initialization tasks.
-      include: 'initialization.yml'
+      include: "initialization.yml"
     - name: Include user grants tasks.
-      include: 'user.yml'
+      include: "user.yml"
     - name: Include group replication tasks.
-      include: 'group_replication.yml'
+      include: "group_replication.yml"
       when:
         - mysql_cluster_mode == 'mgr'
         - mysql_servers | length > 1
     - name: Include replication tasks.
-      include: 'replication.yml'
+      include: "replication.yml"
       when:
         - mysql_cluster_mode == 'replication'
         - mysql_servers | length > 1
     - name: Include business database tasks.
-      include: 'database.yml'
+      include: "database.yml"
       when: mysql_bu_dbs_arg is defined
     - name: Include query analyzes tasks.
-      include: 'analyzes.yml'
+      include: "analyzes.yml"
     - name: Include backup tasks
-      include: 'backup.yml'
+      include: "backup.yml"
     - name: Ensure MTA service is enabled.
       systemd:
-        name: 'postfix.service'
-        enabled: 'yes'
-        state: 'started'
+        name: "postfix.service"
+        enabled: "yes"
+        state: "started"
       when:
         - ansible_distribution_major_version|int > 6
         - mysql_mailto is defined
     - name: Ensure MTA service is enabled.
       service:
-        name: 'postfix'
-        enabled: 'yes'
-        state: 'started'
+        name: "postfix"
+        enabled: "yes"
+        state: "started"
       when:
         - ansible_distribution_major_version|int < 7
         - mysql_mailto is defined
   when: not result.results[0].stat.exists
 
 - name: Include prometheus exporter tasks.
-  include: 'exporter.yml'
+  include: "exporter.yml"
   when: exporter_is_install | bool
 
 - name: Registered with HashiCorp Consul.
-  include: 'register.yml'
+  include: "register.yml"
   when:
     - exporter_is_install | bool
     - consul_public_register | bool

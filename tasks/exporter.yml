@@ -1,14 +1,14 @@
 ---
 - name: Create user prometheus with privileges for replication.
   mysql_user:
-    login_user: 'root'
-    login_password: '{{ mysql_sa_pass }}'
-    login_unix_socket: '/tmp/mysql.sock'
-    name: 'prometheus'
+    login_user: "root"
+    login_password: "{{ mysql_sa_pass }}"
+    login_unix_socket: "/tmp/mysql.sock"
+    name: "prometheus"
     password: "{{ lookup('password', '' + group_names[-1] + ':prometheus length=12 chars=ascii_letters,digits') }}"
-    host: '127.0.0.1'
-    priv: '*.*:PROCESS,REPLICATION CLIENT,REPLICATION SLAVE,SELECT{% if mysql_ssl | bool %},REQUIRESSL{% endif %}'
-    state: 'present'
+    host: "127.0.0.1"
+    priv: "*.*:PROCESS,REPLICATION CLIENT,REPLICATION SLAVE,SELECT{% if mysql_ssl | bool %},REQUIRESSL{% endif %}"
+    state: "present"
   no_log: true
   when:
     - mysql_cluster_mode == 'replication' or mysql_cluster_mode == 'mgr'
@@ -17,43 +17,43 @@
 
 - name: Create user prometheus with privileges for standalone.
   mysql_user:
-    login_user: 'root'
-    login_password: '{{ mysql_sa_pass }}'
-    login_unix_socket: '/tmp/mysql.sock'
-    name: 'prometheus'
+    login_user: "root"
+    login_password: "{{ mysql_sa_pass }}"
+    login_unix_socket: "/tmp/mysql.sock"
+    name: "prometheus"
     password: "{{ lookup('password', '' + group_names[-1] + ':prometheus length=12 chars=ascii_letters,digits') }}"
-    host: '127.0.0.1'
-    priv: '*.*:PROCESS,REPLICATION CLIENT,REPLICATION SLAVE,SELECT{% if mysql_ssl | bool %},REQUIRESSL{% endif %}'
-    state: 'present'
+    host: "127.0.0.1"
+    priv: "*.*:PROCESS,REPLICATION CLIENT,REPLICATION SLAVE,SELECT{% if mysql_ssl | bool %},REQUIRESSL{% endif %}"
+    state: "present"
   no_log: true
   when: mysql_cluster_mode == 'standalone' or mysql_servers | length == 1
 
 - name: Prometheus user password outputs.
   copy:
     content: "{{ lookup('password', '' + group_names[-1] + ':prometheus length=12 chars=ascii_letters,digits') }}"
-    dest: '/tmp/mysql_prometheus_user.passwd'
-    mode: '0600'
-    owner: 'root'
-    group: 'root'
+    dest: "/tmp/mysql_prometheus_user.passwd"
+    mode: "0600"
+    owner: "root"
+    group: "root"
   when: mysql_servers is not defined or mysql_servers[0] in ansible_default_ipv4.address
   no_log: true
 
 - name: Add MySQL exporter YUM repositories.
   yum_repository:
-    name: '{{ mysqld_exporter_repo_name }}'
-    description: '{{ mysqld_exporter_repo_name }} YUM repository'
-    file: '{{ mysqld_exporter_repo_name }}'
-    baseurl: '{{ mysqld_exporter_repo_url }}'
-    sslverify: 'no'
-    gpgcheck: 'no'
-    timeout: '60'
+    name: "{{ mysqld_exporter_repo_name }}"
+    description: "{{ mysqld_exporter_repo_name }} YUM repository"
+    file: "{{ mysqld_exporter_repo_name }}"
+    baseurl: "{{ mysqld_exporter_repo_url }}"
+    sslverify: "no"
+    gpgcheck: "no"
+    timeout: "60"
 
 - name: Install the MySQL exporter packages.
   yum:
-    name: '{{ mysqld_exporter_packages }}'
-    state: 'present'
-    validate_certs: 'no'
-    disable_gpg_check: 'yes'
+    name: "{{ mysqld_exporter_packages }}"
+    state: "present"
+    validate_certs: "no"
+    disable_gpg_check: "yes"
   register: yum_status
   until: yum_status is succeeded
   retries: 5
@@ -61,33 +61,33 @@
 
 - name: MySQL exporter configure file transfer.
   template:
-    src: '{{ item.src }}'
-    dest: '{{ item.dest }}'
-    owner: 'prometheus'
-    group: 'prometheus'
-    mode: '0640'
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "prometheus"
+    group: "prometheus"
+    mode: "0640"
   loop:
-    - { src: 'prometheus.cnf', dest: '/etc/' }
-    - { src: 'mysqld_exporter', dest: '/etc/default/' }    
+    - { src: "prometheus.cnf", dest: "/etc/" }
+    - { src: "mysqld_exporter", dest: "/etc/default/" }
   no_log: true
 
 - name: Ensure that MySQL exporter service have execution privileges.
   file:
-    path: '/etc/init.d/mysqld_exporter'
-    mode: '0755'
+    path: "/etc/init.d/mysqld_exporter"
+    mode: "0755"
   when: ansible_distribution_major_version|int < 7
 
 - name: Ensure MySQL exporter service is enabled.
   systemd:
-    name: 'mysqld_exporter.service'
-    enabled: 'yes'
-    state: 'started'
-    daemon_reload: 'yes'
+    name: "mysqld_exporter.service"
+    enabled: "yes"
+    state: "started"
+    daemon_reload: "yes"
   when: ansible_distribution_major_version|int > 6
 
 - name: Ensure MySQL exporter service is enabled.
   service:
-    name: 'mysqld_exporter'
-    enabled: 'yes'
-    state: 'started'
+    name: "mysqld_exporter"
+    enabled: "yes"
+    state: "started"
   when: ansible_distribution_major_version|int < 7

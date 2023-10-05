@@ -1,37 +1,60 @@
 ---
-mysql_epel_repo_name: 'epel'
-mysql_epel_repo_url: 'http://mirrors.tuna.tsinghua.edu.cn/epel/$releasever/$basearch/' 
+mysql_epel_repo_name: "epel"
+mysql_epel_repo_url: "http://mirrors.aliyun.com/epel/$releasever{% if ansible_distribution_major_version | int > 7 %}/Everything{% endif %}/$basearch/"
 
-mysql_percona_repo_name: 'percona'
-mysql_percona_repo_url: 'http://mirrors.tuna.tsinghua.edu.cn/percona/release/$releasever/RPMS/$basearch/'
-
-mysql_percona80_repo_name: 'percona80'
-mysql_percona80_repo_url: 'http://mirrors.tuna.tsinghua.edu.cn/percona/ps-80/yum/release/$releasever/RPMS/$basearch/'
-
-mysql_community_repo_name: 'mysql'
-mysql_community_repo_url: "http://mirrors.tuna.tsinghua.edu.cn/mysql/yum/mysql{{ mysql_version }}-community-el{{ ansible_distribution_version.split('.')[0] }}/"
+mysql_repo:
+  - {
+      name: "mysql",
+      url: "http://mirrors.tuna.tsinghua.edu.cn/mysql/yum/mysql{{ mysql_version }}-community-el{{ ansible_distribution_version.split('.')[0] }}/",
+      create: '{{ mysql_releases | lower == "community" }}',
+    }
+  - {
+      name: "percona",
+      url: "http://mirrors.tuna.tsinghua.edu.cn/percona/ps-{{ mysql_version }}/yum/release/$releasever/RPMS/$basearch/",
+      create: '{{ mysql_releases | lower == "percona" }}',
+    }
+  - {
+      name: "percona-release",
+      url: "https://mirrors.tuna.tsinghua.edu.cn/percona/release/latest/RPMS/$basearch/",
+    }
 
 mysql_dependent_packages:
   - 'percona-xtrabackup-{% if mysql_version == "80" %}80{% else %}24{% endif %}'
-  - 'percona-toolkit'
-  - 'qpress'
-  - 'jemalloc'
-  - 'MySQL-python'
-  - 'procmail'
-  - 'python-pip'
-  - 'libselinux-utils'
-  - 'policycoreutils-python'
+  - "percona-toolkit"
+  - "qpress"
+  - "jemalloc"
+  - "MySQL-python"
+  - "procmail"
+  - "python-pip"
+  - "libselinux-utils"
+  - "policycoreutils-python"
 
 mysql_percona_packages_57:
-  - 'Percona-Server-server-{{ mysql_version }}'
+  - "Percona-Server-server-{{ mysql_version }}"
 
 mysql_percona_packages_80:
-  - 'percona-server-server'
+  - "percona-server-server"
 
 mysql_community_packages:
-  - 'mysql-community-server'
+  - "mysql-community-server"
 
-mysqld_exporter_repo_name: 'prometheus'
-mysqld_exporter_repo_url: 'http://cache.omygods.com/prometheus-rpm/release/el/$releasever/$basearch/'
+mysqld_exporter_repo_name: "prometheus"
+mysqld_exporter_repo_url: "http://packagecloud.io/prometheus-rpm/release/el/$releasever/$basearch"
 mysqld_exporter_packages:
-  - 'mysqld_exporter'
+  - "mysqld_exporter"
+
+mysql_python_dependent_packages_RedHat_7:
+  - "pip==20.3.4"
+  - "cffi==1.14.6"
+  - "idna==2.10"
+  - "cryptography==2.4.2"
+  - "paramiko==2.4.3"
+  - "pyopenssl==19.0.0"
+
+mysql_python_dependent_packages_RedHat_8:
+  - "pip"
+  - "cffi"
+  - "idna"
+  - "cryptography"
+  - "paramiko"
+  - "pyopenssl"

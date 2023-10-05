@@ -1,121 +1,122 @@
 ---
-mysql_python_dependent_packages:
-  - 'pip==20.3.4'
-  - 'cffi==1.14.6'
-  - 'idna==2.10'
-  - 'cryptography==2.4.2'
-  - 'paramiko==2.4.3'
-  - 'pyopenssl==19.0.0'
+mysql_pypi_url: "pypi.tuna.tsinghua.edu.cn"
 
-mysql_pypi_url: 'pypi.tuna.tsinghua.edu.cn'
-
-mysql_cert_path: '/etc/mysqld/ssl'
+mysql_cert_path: "/etc/mysqld/ssl"
 
 mysql_kernel_parameters:
-  - { variable: 'fs.aio-max-nr', value: '1048576' }
-  - { variable: 'vm.dirty_ratio', value: '15' }
-  - { variable: 'vm.dirty_background_ratio', value: '5' }
-  - { variable: 'vm.swappiness', value: '10' }
+  - { variable: "fs.aio-max-nr", value: "1048576" }
+  - { variable: "vm.dirty_ratio", value: "15" }
+  - { variable: "vm.dirty_background_ratio", value: "5" }
+  - { variable: "vm.swappiness", value: "10" }
 
 mysql_conf_scripts:
-  - { src: 'my{{ mysql_version }}.cnf', dest: '/etc/my.cnf' }
-  - { src: 'mysql-log-rotate', dest: '/var/lib/mysql/mysql-log-rotate' }
-  - { src: 'innobackupex-runner.sh', dest: '/usr/local/bin/innobackupex-runner.sh' }
-  - { src: 'mysqlsla_analyzes.sh', dest: '/usr/local/bin/mysqlsla_analyzes.sh' }
-  - { src: 'mysql', dest: '/etc/sysconfig/mysql' }
+  - { src: "my{{ mysql_version }}.cnf", dest: "/etc/my.cnf" }
+  - { src: "mysql-log-rotate", dest: "/var/lib/mysql/mysql-log-rotate" }
+  - {
+      src: "innobackupex-runner.sh",
+      dest: "/usr/local/bin/innobackupex-runner.sh",
+    }
+  - { src: "mysqlsla_analyzes.sh", dest: "/usr/local/bin/mysqlsla_analyzes.sh" }
+  - { src: "mysql", dest: "/etc/sysconfig/mysql" }
 
 mysql_service_parameter:
-  - { regexp: '^LimitMEMLOCK', line: 'LimitMEMLOCK = infinity' }
-  - { regexp: '^LimitCORE', line: 'LimitCORE = infinity' }
-  - { regexp: '^LimitNPROC', line: 'LimitNPROC = {{ mysql_arg.open_nproc_limit }}' }
-  - { regexp: '^LimitNOFILE', line: 'LimitNOFILE = {{ mysql_arg.open_files_limit }}' }
+  - { regexp: "^LimitMEMLOCK", line: "LimitMEMLOCK = infinity" }
+  - { regexp: "^LimitCORE", line: "LimitCORE = infinity" }
+  - {
+      regexp: "^LimitNPROC",
+      line: "LimitNPROC = {{ mysql_arg.open_nproc_limit }}",
+    }
+  - {
+      regexp: "^LimitNOFILE",
+      line: "LimitNOFILE = {{ mysql_arg.open_files_limit }}",
+    }
 
 mysqld_exporter_collector: # Prometheus mysqld exporter collector flags
-  - 'auto_increment.columns'
-  - 'binlog_size'
-  - 'engine_innodb_status'
-  - 'global_status'
-  - 'global_variables'
-  - 'info_schema.clientstats'
-  - 'info_schema.innodb_metrics'
-  - 'info_schema.innodb_tablespaces'
-  - 'info_schema.innodb_cmp'
-  - 'info_schema.innodb_cmpmem'
-  - 'info_schema.processlist'
-  - 'info_schema.query_response_time'
-  - 'info_schema.tables'
-  - 'info_schema.tablestats'
-  - 'info_schema.schemastats'
-  - 'info_schema.userstats'
-  - 'perf_schema.eventsstatements'
-  - 'perf_schema.eventsstatementssum'
-  - 'perf_schema.eventswaits'
-  - 'perf_schema.file_events'
-  - 'perf_schema.file_instances'
-  - 'perf_schema.indexiowaits'
-  - 'perf_schema.tableiowaits'
-  - 'perf_schema.tablelocks'
-  - 'perf_schema.replication_group_members'
-  - 'perf_schema.replication_group_member_stats'
-#  - 'perf_schema.replication_applier_status_by_worker'
-  - 'slave_hosts'
-#  - 'engine_tokudb_status'  
+  - "auto_increment.columns"
+  - "binlog_size"
+  - "engine_innodb_status"
+  - "global_status"
+  - "global_variables"
+  - "info_schema.clientstats"
+  - "info_schema.innodb_metrics"
+  - "info_schema.innodb_tablespaces"
+  - "info_schema.innodb_cmp"
+  - "info_schema.innodb_cmpmem"
+  - "info_schema.processlist"
+  - "info_schema.query_response_time"
+  - "info_schema.tables"
+  - "info_schema.tablestats"
+  - "info_schema.schemastats"
+  - "info_schema.userstats"
+  - "perf_schema.eventsstatements"
+  - "perf_schema.eventsstatementssum"
+  - "perf_schema.eventswaits"
+  - "perf_schema.file_events"
+  - "perf_schema.file_instances"
+  - "perf_schema.indexiowaits"
+  - "perf_schema.tableiowaits"
+  - "perf_schema.tablelocks"
+  - "perf_schema.replication_group_members"
+  - "perf_schema.replication_group_member_stats"
+  #  - 'perf_schema.replication_applier_status_by_worker'
+  - "slave_hosts"
+#  - 'engine_tokudb_status'
 #  - 'heartbeat'
 #  - 'heartbeat.database'
 #  - 'heartbeat.table'
 #  - 'heartbeat.utc'
 
 mysql_slave_skip_errors: # Tells the slave thread to continue replication when a query event returns an error from the provided list, https://mariadb.com/kb/en/mariadb-error-codes.
-  - '1032'
-  - '1053'
-  - '1062'
-  - '1146'
-  - '1205'
-  - '1213'
-  - '1264'
-  - '1396'
+  - "1032"
+  - "1053"
+  - "1062"
+  - "1146"
+  - "1205"
+  - "1213"
+  - "1264"
+  - "1396"
 
-mysql_sql_mode: # Specify value the global SQL mode, https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html.
-  - 'ERROR_FOR_DIVISION_BY_ZERO'
-  - 'NO_AUTO_CREATE_USER'
-  - 'NO_ENGINE_SUBSTITUTION'
-  - 'NO_ZERO_DATE'
-  - 'NO_ZERO_IN_DATE'
-  - 'STRICT_ALL_TABLES'
-  - 'STRICT_TRANS_TABLES'
+mysql57_sql_mode: # Specify value the global SQL mode, https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html.
+  - "ERROR_FOR_DIVISION_BY_ZERO"
+  - "NO_AUTO_CREATE_USER"
+  - "NO_ENGINE_SUBSTITUTION"
+  - "NO_ZERO_DATE"
+  - "NO_ZERO_IN_DATE"
+  - "STRICT_ALL_TABLES"
+  - "STRICT_TRANS_TABLES"
 
 mysql80_sql_mode: # Specify value the global SQL mode, https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html.
-  - 'ERROR_FOR_DIVISION_BY_ZERO'
-  - 'NO_ZERO_DATE'
-  - 'NO_ZERO_IN_DATE'
-  - 'STRICT_ALL_TABLES'
-  - 'STRICT_TRANS_TABLES'
+  - "ERROR_FOR_DIVISION_BY_ZERO"
+  - "NO_ZERO_DATE"
+  - "NO_ZERO_IN_DATE"
+  - "STRICT_ALL_TABLES"
+  - "STRICT_TRANS_TABLES"
 
 mysql_audit_log_commands: # Filtering command for audit process.
-  - 'alter_db'
-  - 'alter_event'
-  - 'alter_function'
-  - 'alter_procedure'
-  - 'alter_table'
-  - 'alter_user'
-  - 'create_trigger'
-  - 'create_user'
-  - 'delete'
-  - 'delete_multi'
-  - 'drop_db'
-  - 'drop_event'
-  - 'drop_function'
-  - 'drop_index'
-  - 'drop_procedure'
-  - 'drop_table'
-  - 'drop_trigger'
-  - 'drop_user'
-  - 'drop_view'
-  - 'grant'
-  - 'kill'
-  - 'rename_table'
-  - 'rename_user'
-  - 'revoke'
-  - 'revoke_all'
-  - 'shutdown'
-  - 'truncate'
+  - "alter_db"
+  - "alter_event"
+  - "alter_function"
+  - "alter_procedure"
+  - "alter_table"
+  - "alter_user"
+  - "create_trigger"
+  - "create_user"
+  - "delete"
+  - "delete_multi"
+  - "drop_db"
+  - "drop_event"
+  - "drop_function"
+  - "drop_index"
+  - "drop_procedure"
+  - "drop_table"
+  - "drop_trigger"
+  - "drop_user"
+  - "drop_view"
+  - "grant"
+  - "kill"
+  - "rename_table"
+  - "rename_user"
+  - "revoke"
+  - "revoke_all"
+  - "shutdown"
+  - "truncate"

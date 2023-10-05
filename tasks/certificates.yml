@@ -1,10 +1,10 @@
 ---
 - name: Install requirement python package.
   pip:
-    name: '{{ item }}'
-    state: 'present'
-    extra_args: '--default-timeout=120 -i https://{{ mysql_pypi_url }}/simple --trusted-host {{ mysql_pypi_url }}'
-  loop: '{{ mysql_python_dependent_packages }}'
+    name: "{{ item }}"
+    state: "present"
+    extra_args: "--default-timeout=120 -i https://{{ mysql_pypi_url }}/simple --trusted-host {{ mysql_pypi_url }}"
+  loop: "{{ vars['mysql_python_dependent_packages_' + ansible_distribution_file_variety + '_' + ansible_distribution_major_version] }}"
   register: mysql_python_status
   until: mysql_python_status is succeeded
   retries: 5
@@ -12,91 +12,91 @@
 
 - name: Check private key exists.
   stat:
-    path: '{{ mysql_cert_path }}/server.key'
+    path: "{{ mysql_cert_path }}/server.key"
   register: check_cert_keys
 
 - name: Certificate Signing operation.
   block:
     - name: Creating Certificate folder.
       file:
-        dest: '{{ mysql_cert_path }}'
-        state: 'directory'
-        owner: '{{ mysql_user }}'
-        mode: '1755'
+        dest: "{{ mysql_cert_path }}"
+        state: "directory"
+        owner: "{{ mysql_user }}"
+        mode: "1755"
     - name: Selfsigned CA file transfer.
       copy:
-        src: 'ssl/{{ item }}'
-        dest: '{{ mysql_cert_path }}/{{ item }}'
-        owner: '{{ mysql_user }}'
-        mode: '644'
+        src: "ssl/{{ item }}"
+        dest: "{{ mysql_cert_path }}/{{ item }}"
+        owner: "{{ mysql_user }}"
+        mode: "644"
       loop:
-        - 'ca-cert.pem'
-        - 'ca-key.pem'
+        - "ca-cert.pem"
+        - "ca-key.pem"
     - name: Generate an OpenSSL Server private key.
       openssl_privatekey:
-        path: '{{ mysql_cert_path }}/server.key'
-        select_crypto_backend: 'cryptography'
-        size: '4096'
-        type: 'RSA'
-        owner: 'root'
-        mode: '0644'
-        state: 'present'
+        path: "{{ mysql_cert_path }}/server.key"
+        select_crypto_backend: "cryptography"
+        size: "4096"
+        type: "RSA"
+        owner: "root"
+        mode: "0644"
+        state: "present"
     - name: Generate an OpenSSL Server Certificate Signing Request.
       openssl_csr:
-        path: '{{ mysql_cert_path }}/server.csr'
-        privatekey_path: '{{ mysql_cert_path }}/server.key'
-        select_crypto_backend: 'cryptography'
-        common_name: 'Server'
+        path: "{{ mysql_cert_path }}/server.csr"
+        privatekey_path: "{{ mysql_cert_path }}/server.key"
+        select_crypto_backend: "cryptography"
+        common_name: "Server"
         subject_alt_name:
-          - 'DNS:localhost'
-          - 'DNS:{{ ansible_hostname }}'
-          - 'DNS:{{ ansible_fqdn }}'
-          - 'DNS:*.service.{{ datacenter | lower }}.{{ domain | lower }}'
-          - 'IP:127.0.0.1'
-          - 'IP:{{ ansible_default_ipv4.address }}'
-        owner: 'root'
-        mode: '0644'
-        state: 'present'
+          - "DNS:localhost"
+          - "DNS:{{ ansible_hostname }}"
+          - "DNS:{{ ansible_fqdn }}"
+          - "DNS:*.service.{{ datacenter | lower }}.{{ domain | lower }}"
+          - "IP:127.0.0.1"
+          - "IP:{{ ansible_default_ipv4.address }}"
+        owner: "root"
+        mode: "0644"
+        state: "present"
     - name: Generate an OpenSSL Server certificate signed with your own CA certificate.
       openssl_certificate:
-        path: '{{ mysql_cert_path }}/server.crt'
-        csr_path: '{{ mysql_cert_path }}/server.csr'
-        ownca_path: '{{ mysql_cert_path }}/ca-cert.pem'
-        ownca_privatekey_path: '{{ mysql_cert_path }}/ca-key.pem'
-        select_crypto_backend: 'cryptography'
-        ownca_not_after: '+7305d'
-        provider: 'ownca'
-        owner: 'root'
-        mode: '0644'
-        state: 'present'
+        path: "{{ mysql_cert_path }}/server.crt"
+        csr_path: "{{ mysql_cert_path }}/server.csr"
+        ownca_path: "{{ mysql_cert_path }}/ca-cert.pem"
+        ownca_privatekey_path: "{{ mysql_cert_path }}/ca-key.pem"
+        select_crypto_backend: "cryptography"
+        ownca_not_after: "+7305d"
+        provider: "ownca"
+        owner: "root"
+        mode: "0644"
+        state: "present"
     - name: Generate an OpenSSL Client private key.
       openssl_privatekey:
-        path: '{{ mysql_cert_path }}/client.key'
-        select_crypto_backend: 'cryptography'
-        size: '4096'
-        type: 'RSA'
-        owner: 'root'
-        mode: '0644'
-        state: 'present'
+        path: "{{ mysql_cert_path }}/client.key"
+        select_crypto_backend: "cryptography"
+        size: "4096"
+        type: "RSA"
+        owner: "root"
+        mode: "0644"
+        state: "present"
     - name: Generate an OpenSSL Client Certificate Signing Request.
       openssl_csr:
-        path: '{{ mysql_cert_path }}/client.csr'
-        privatekey_path: '{{ mysql_cert_path }}/client.key'
-        select_crypto_backend: 'cryptography'
-        common_name: 'client'
-        owner: 'root'
-        mode: '0644'
-        state: 'present'
+        path: "{{ mysql_cert_path }}/client.csr"
+        privatekey_path: "{{ mysql_cert_path }}/client.key"
+        select_crypto_backend: "cryptography"
+        common_name: "client"
+        owner: "root"
+        mode: "0644"
+        state: "present"
     - name: Generate an OpenSSL Client certificate signed with your own CA certificate.
       openssl_certificate:
-        path: '{{ mysql_cert_path }}/client.crt'
-        csr_path: '{{ mysql_cert_path }}/client.csr'
-        ownca_path: '{{ mysql_cert_path }}/ca-cert.pem'
-        ownca_privatekey_path: '{{ mysql_cert_path }}/ca-key.pem'
-        select_crypto_backend: 'cryptography'
-        ownca_not_after: '+7305d'
-        provider: 'ownca'
-        owner: 'root'
-        mode: '0644'
-        state: 'present'
+        path: "{{ mysql_cert_path }}/client.crt"
+        csr_path: "{{ mysql_cert_path }}/client.csr"
+        ownca_path: "{{ mysql_cert_path }}/ca-cert.pem"
+        ownca_privatekey_path: "{{ mysql_cert_path }}/ca-key.pem"
+        select_crypto_backend: "cryptography"
+        ownca_not_after: "+7305d"
+        provider: "ownca"
+        owner: "root"
+        mode: "0644"
+        state: "present"
   when: not check_cert_keys.stat.exists or check_cert_keys.stat.size == 0

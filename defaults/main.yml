@@ -1,17 +1,17 @@
 ---
 # General parameters #
 mysql_is_install: false # A boolean to determine whether or not to install the MySQL.
-mysql_releases: 'Percona' # Define MySQL distribution, Community or Percona.
-mysql_version: '57' # Specify the MySQL version.
-mysql_path: '/data' # Specify the MySQL data directory.
-mysql_user: 'mysql' # System user name for running mysqld services.
+mysql_releases: "Percona" # Define MySQL distribution, Community or Percona.
+mysql_version: "57" # Specify the MySQL version.
+mysql_path: "/data" # Specify the MySQL data directory.
+mysql_user: "mysql" # System user name for running mysqld services.
 #mysql_mailto: 'somebody@example.com' # MySQL report mail recipient.
-mysql_sa_pass: 'changeme' # MySQL root account password.
+mysql_sa_pass: "changeme" # MySQL root account password.
 mysql_ssl: false # A boolean to determine whether or not Encrypting client and cluster communications.
-mysql_storage_engine: 'InnoDB' # Preferred storage engine, InnoDB or MyISAM
+mysql_storage_engine: "InnoDB" # Preferred storage engine, InnoDB or MyISAM
 mysql_innodb_buffer_pool_size: '{% if ansible_memtotal_mb <= 8192 and mysql_storage_engine == "InnoDB" and mysql_system_type == "autopilot" %}{{ (ansible_memtotal_mb * 0.585)|int }}{% elif ansible_memtotal_mb > 8192 and mysql_storage_engine == "InnoDB" and mysql_system_type == "autopilot" %}{{ (ansible_memtotal_mb * 0.725)|int }}{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "small" %}1536{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "medium" %}4096{% elif mysql_storage_engine == "InnoDB" and mysql_system_type == "large" %}10240{% else %}8{% endif %}' # The size in MB of the buffer pool.
 mysql_max_connections: '{% if mysql_system_type == "small" %}110{% elif mysql_system_type == "medium" %}310{% elif mysql_system_type == "large" %}510{% else %}{{ (ansible_memtotal_mb / 40)|int }}{% endif %}' # The maximum permitted number of simultaneous client connections.
-mysql_system_type: 'autopilot' # Define instance parameters.
+mysql_system_type: "autopilot" # Define instance parameters.
 # ┌───────────┬────────┬────────────┬───────────────┬────────────┬──────────────┐
 # │   type    │ memory │ connection │ InnoDB buffer │ InnoDB log │ binlog cache │
 # ├───────────┼────────┼────────────┼───────────────┼────────────┼──────────────┤
@@ -25,99 +25,99 @@ mysql_system_type: 'autopilot' # Define instance parameters.
 # └───────────┴─────────────────────────────────────┴────────────┴──────────────┘
 
 # Cluster parameters #
-mysql_cluster_mode: 'standalone' # Defines type of cluster: standalone / replication / mgr.
-mysql_cluster_mgmt: '' # MySQL high availability and replication management tool, Currently only orchsetrator is supported.
+mysql_cluster_mode: "standalone" # Defines type of cluster: standalone / replication / mgr.
+mysql_cluster_mgmt: "" # MySQL high availability and replication management tool, Currently only orchsetrator is supported.
 
 # Group replication parameters #
-mysql_cluster_mgr_mode: 'multi-primary' # Defines mode of group replication, single or multi-primary.
+mysql_cluster_mgr_mode: "multi-primary" # Defines mode of group replication, single or multi-primary.
 
 # Role dependencies #
 mysql_orchestrator_dept: false # A boolean to determine whether or not use Orchestrator at the same environment.
 
 # Orchestrator parameters #
-mysql_orchestrator_ui_user: 'admin' # Management console authentication user.
-mysql_orchestrator_ui_pass: 'changeme' # Management console authentication password.
+mysql_orchestrator_ui_user: "admin" # Management console authentication user.
+mysql_orchestrator_ui_pass: "changeme" # Management console authentication password.
 mysql_orchestrator_ui_ssl: true # A boolean to determine whether or not Encrypting client communications.
-mysql_orchestrator_port_ui: '3002' # Orchestrator Web UI listen port.
-mysql_orchestrator_port_agent: '3003' # Orchestrator Agent listen port.
-mysql_orchestrator_port_raft: '10008' # Orchestrator Raft listen port.
-mysql_orchestrator_mysql_user: 'orchestrator' # MySQL topology control account name.
-mysql_orchestrator_mysql_pass: 'changeme' # MySQL topology control account password.
+mysql_orchestrator_port_ui: "3002" # Orchestrator Web UI listen port.
+mysql_orchestrator_port_agent: "3003" # Orchestrator Agent listen port.
+mysql_orchestrator_port_raft: "10008" # Orchestrator Raft listen port.
+mysql_orchestrator_mysql_user: "orchestrator" # MySQL topology control account name.
+mysql_orchestrator_mysql_pass: "changeme" # MySQL topology control account password.
 
 # Backup parameters #
 mysql_backupset_arg:
-  life: '604800' # Lifetime of the latest full backup in seconds.
-  keep: '2' # The number of full backups (and its incrementals) to keep.
-  encryptkey: 'Un9FA+CgxM5Yr/MpwTh5s6NXSQE0brp8' # BackupSet encryption key, Generate by [openssl rand -base64 24].
+  life: "604800" # Lifetime of the latest full backup in seconds.
+  keep: "2" # The number of full backups (and its incrementals) to keep.
+  encryptkey: "Un9FA+CgxM5Yr/MpwTh5s6NXSQE0brp8" # BackupSet encryption key, Generate by [openssl rand -base64 24].
   cloud_rsync: false # Whether rsync for cloud storage.
-  cloud_drive: 'azureblob' # Specify the cloud storage providers, azureblob / s3 for minio.
-  cloud_bwlimit: '10M' # Controls the bandwidth limit.
-  cloud_event: 'sync' # Define transfer events.
+  cloud_drive: "azureblob" # Specify the cloud storage providers, azureblob / s3 for minio.
+  cloud_bwlimit: "10M" # Controls the bandwidth limit.
+  cloud_event: "sync" # Define transfer events.
   cloud_config: # Specify the cloud storage configuration.
-# azureblob #
-    account: 'blobuser' # Storage Account Name.
-    key: 'base64encodedkey==' # Storage Account Key.
-    endpoint: 'blob.core.chinacloudapi.cn' # Endpoint for the service.
+    # azureblob #
+    account: "blobuser" # Storage Account Name.
+    key: "base64encodedkey==" # Storage Account Key.
+    endpoint: "blob.core.chinacloudapi.cn" # Endpoint for the service.
 # s3 #
 #    access_key: 'JPTNJFUFB6UKLUXMRKZT'
 #    secret_key: 'h9KekbhETGC1UNMcbSrWZCOrBgopdgNJWIeAo28i'
 #    endpoint: 'https://storage-production-other-minio.service.dc01.local:9001'
 
 # Listen port #
-mysql_port_mysqld: '3306' # MySQL instance listen port.
-mysql_port_mgr: '33061' # MySQL group replication listen port.
-mysql_port_exporter: '9104' # Prometheus MySQL Exporter listen port.
+mysql_port_mysqld: "3306" # MySQL instance listen port.
+mysql_port_mgr: "33061" # MySQL group replication listen port.
+mysql_port_exporter: "9104" # Prometheus MySQL Exporter listen port.
 
 # Server System Variables #
 mysql_arg:
   binlog_cache_size: '{% if mysql_system_type == "small" %}524288{% else %}1048576{% endif %}' # Size of the cache to hold changes to the binary log during a transaction.
-  binlog_format: 'ROW' # The binary logging format.
+  binlog_format: "ROW" # The binary logging format.
   binlog_stmt_cache_size: '{% if mysql_system_type == "small" %}524288{% else %}1048576{% endif %}' # Size of the cache for the binary log to hold nontransactional statements issued during a transaction.
-  character_set: 'utf8mb4' # Server's default character set.
-  connect_timeout: '30' # Server waits for a connect packet in seconds.
+  character_set: "utf8mb4" # Server's default character set.
+  connect_timeout: "30" # Server waits for a connect packet in seconds.
   data_encryption: false # A boolean to determine whether or not to enabled the MySQL Data at Rest Encryption.
-  default_time_zone: '+8:00' # Default server time zone.
-  expire_logs_days: '10' # The number of days for automatic binary log file removal.
-  enforce_gtid_consistency: 'on' # Enforces GTID consistency by allowing execution of only statements that can be safely logged using a GTID.
-  gtid_mode: 'on' # Controls whether GTID based logging is enabled and what type of transactions the logs can contain.
-  lower_case_table_names: '0' # Affects how the server handles identifier case sensitivity.
-  innodb_buffer_pool_instances: '8' # The number of regions that the InnoDB buffer pool is divided into.
-  innodb_flush_log_at_trx_commit: '2' # Controls the balance between strict ACID compliance for commit operations and higher performance.
-  innodb_log_buffer_size: '16' # Size in MB of the buffer that InnoDB uses to write to the log files on disk.
+  default_time_zone: "+8:00" # Default server time zone.
+  expire_logs_days: "10" # The number of days for automatic binary log file removal.
+  enforce_gtid_consistency: "on" # Enforces GTID consistency by allowing execution of only statements that can be safely logged using a GTID.
+  gtid_mode: "on" # Controls whether GTID based logging is enabled and what type of transactions the logs can contain.
+  lower_case_table_names: "0" # Affects how the server handles identifier case sensitivity.
+  innodb_buffer_pool_instances: "8" # The number of regions that the InnoDB buffer pool is divided into.
+  innodb_flush_log_at_trx_commit: "2" # Controls the balance between strict ACID compliance for commit operations and higher performance.
+  innodb_log_buffer_size: "16" # Size in MB of the buffer that InnoDB uses to write to the log files on disk.
   innodb_log_file_size: '{% if mysql_system_type == "small" %}1024{% else %}4096{% endif %}' # The size in MB of each log file in a log group.
-  innodb_max_dirty_pages_pct: '85' # A target for flushing activity.
+  innodb_max_dirty_pages_pct: "85" # A target for flushing activity.
   innodb_max_undo_log_size: '{% if mysql_system_type == "small" %}256{% else %}1024{% endif %}' # The size in MB of undo tablespaces.
-  innodb_page_cleaners: '4' # The number of page cleaner threads that flush dirty pages from buffer pool instances.
-  innodb_purge_threads: '4' # The number of background threads devoted to the InnoDB purge operation.
-  innodb_read_io_threads: '4' # The number of I/O threads for read operations in InnoDB.
-  innodb_write_io_threads: '4' # The number of I/O threads for write operations in InnoDB.
-  interactive_timeout: '3600' # Server waits for activity on an interactive connection in seconds.
-  join_buffer_size: '1M' # Size of the buffer that is used for index scans.
+  innodb_page_cleaners: "4" # The number of page cleaner threads that flush dirty pages from buffer pool instances.
+  innodb_purge_threads: "4" # The number of background threads devoted to the InnoDB purge operation.
+  innodb_read_io_threads: "4" # The number of I/O threads for read operations in InnoDB.
+  innodb_write_io_threads: "4" # The number of I/O threads for write operations in InnoDB.
+  interactive_timeout: "3600" # Server waits for activity on an interactive connection in seconds.
+  join_buffer_size: "1M" # Size of the buffer that is used for index scans.
   key_buffer_size: '{% if mysql_storage_engine == "MyISAM" %}{{ (ansible_memtotal_mb * 0.4)|int }}{% else %}32{% endif %}' # Size of the buffer used for MyISAM tables index blocks in MB.
-  log_queries_not_using_indexes: '1' # Logs whether queries that do not use indexes.
-  long_query_time: '1' # Logs query that executes longer than in seconds.
-  max_allowed_packet: '32M' # The maximum size of one packet.
-  max_connect_errors: '100' # Limits the maximum number of interrupted without a successful connection.
-  max_heap_table_size: '32M' # The maximum size to which user-created MEMORY tables are permitted to grow.
-  max_prepared_stmt_count: '262144' # Limits the total number of prepared statements in the server.
-  open_files_limit: '131072' # The number of files that the operating system permits MySQL to open.
-  open_nproc_limit: '131072' # The number of processes launched by systemd.
-  performance_schema_max_table_instances: '512' # The maximum number of instrumented table objects.
-  query_cache_size: '0' # Query cache size.
-  query_cache_type: '0' # Query cache type.
-  read_rnd_buffer_size: '1M' # Size of the buffer that is used for reading rows in sorted order.
-  slave_net_timeout: '10' # The number of seconds to wait for more data from the master before the slave.
-  sync_binlog: '500' # Controls how often the MySQL server synchronizes the binary log to disk.
-  table_definition_cache: '4096' # The number of table definitions that can be stored in the definition cache.
-  table_open_cache: '4096' # The number of open tables for all threads.
-  table_open_cache_instances: '64' # The number of open tables cache instances.
-  thread_cache_size: '50' # How many threads the server should cache for reuse.
-  thread_handling: 'pool-of-threads' # The thread-handling model used by the server for connection threads. 
-  thread_pool_size: '16' # Define the number of threads that can use the CPU at the same time.
-  thread_pool_max_threads: '1000' # The maximum number of threads in the thread pool.
-  thread_pool_oversubscribe: '10' # How many worker threads in a thread group can remain active at the same time once a thread group is oversubscribed due to stalls.
-  tmp_table_size: '32M' # The maximum size of internal in-memory temporary tables.
-  wait_timeout: '3600' # Server waits for activity on a noninteractive connection in seconds.
+  log_queries_not_using_indexes: "1" # Logs whether queries that do not use indexes.
+  long_query_time: "1" # Logs query that executes longer than in seconds.
+  max_allowed_packet: "32M" # The maximum size of one packet.
+  max_connect_errors: "100" # Limits the maximum number of interrupted without a successful connection.
+  max_heap_table_size: "32M" # The maximum size to which user-created MEMORY tables are permitted to grow.
+  max_prepared_stmt_count: "262144" # Limits the total number of prepared statements in the server.
+  open_files_limit: "131072" # The number of files that the operating system permits MySQL to open.
+  open_nproc_limit: "131072" # The number of processes launched by systemd.
+  performance_schema_max_table_instances: "512" # The maximum number of instrumented table objects.
+  query_cache_size: "0" # Query cache size.
+  query_cache_type: "0" # Query cache type.
+  read_rnd_buffer_size: "1M" # Size of the buffer that is used for reading rows in sorted order.
+  slave_net_timeout: "10" # The number of seconds to wait for more data from the master before the slave.
+  sync_binlog: "500" # Controls how often the MySQL server synchronizes the binary log to disk.
+  table_definition_cache: "4096" # The number of table definitions that can be stored in the definition cache.
+  table_open_cache: "4096" # The number of open tables for all threads.
+  table_open_cache_instances: "64" # The number of open tables cache instances.
+  thread_cache_size: "50" # How many threads the server should cache for reuse.
+  thread_handling: "pool-of-threads" # The thread-handling model used by the server for connection threads.
+  thread_pool_size: "16" # Define the number of threads that can use the CPU at the same time.
+  thread_pool_max_threads: "1000" # The maximum number of threads in the thread pool.
+  thread_pool_oversubscribe: "10" # How many worker threads in a thread group can remain active at the same time once a thread group is oversubscribed due to stalls.
+  tmp_table_size: "32M" # The maximum size of internal in-memory temporary tables.
+  wait_timeout: "3600" # Server waits for activity on a noninteractive connection in seconds.
 
 # Business Database Variables #
 #mysql_bu_dbs_arg:
@@ -128,10 +128,10 @@ mysql_arg:
 #    priv: 'ALL'
 
 # Service Mesh #
-environments: 'prd' # Define the service environment.
-datacenter: 'dc01' # Define the DataCenter.
-domain: 'local' # Define the Domain.
-customer: 'demo' # Define the customer name.
+environments: "prd" # Define the service environment.
+datacenter: "dc01" # Define the DataCenter.
+domain: "local" # Define the Domain.
+customer: "demo" # Define the customer name.
 #tags: # Define the service custom label.
 #  subscription: 'default'
 #  owner: 'nobody'
@@ -140,8 +140,8 @@ customer: 'demo' # Define the customer name.
 #  region: 'China'
 exporter_is_install: false # Whether to install prometheus exporter.
 consul_public_register: false # Whether register a exporter service with public consul client.
-consul_public_exporter_token: '00000000-0000-0000-0000-000000000000' # Public Consul client ACL token.
-consul_public_http_prot: 'https' # The consul Hypertext Transfer Protocol.
-consul_public_http_port: '8500' # The consul HTTP API port.
+consul_public_exporter_token: "00000000-0000-0000-0000-000000000000" # Public Consul client ACL token.
+consul_public_http_prot: "https" # The consul Hypertext Transfer Protocol.
+consul_public_http_port: "8500" # The consul HTTP API port.
 consul_public_clients: # List of public consul clients.
-  - '127.0.0.1'
+  - "127.0.0.1"
